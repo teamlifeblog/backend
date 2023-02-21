@@ -102,9 +102,6 @@ public class SecurityConfig {
 						.requestMatchers("/members/**").authenticated()
 						// campaigns 캠페인
 						.requestMatchers(HttpMethod.GET,"/campaigns/**").permitAll()//조회
-//						.requestMatchers(HttpMethod.GET,"/campaigns/**").access(new WebExpressionAuthorizationManager("(!isAuthenticated() and #memberId == null) or (isAuthenticated() and ((#memberId == principal.memberId) or hasRole('ADMIN')))"))//조회
-//						.requestMatchers(HttpMethod.GET,"/campaigns/**").access((authentication, object) -> check(object))//조회
-//						.requestMatchers(HttpMethod.GET,"/campaigns/**").access(new WebExpressionAuthorizationManager("@check(authentication,request)"))//조회
 						.requestMatchers("/campaigns/**").hasRole("ADMIN")
 						// applications 신청서
 						.requestMatchers(HttpMethod.GET, "/applications/**").authenticated()//조회
@@ -125,44 +122,5 @@ public class SecurityConfig {
 
         return httpSecurity.build();
     }
-
-//	public AuthorizationDecision check(RequestAuthorizationContext context) {
-////		HttpServletRequest request = context.getRequest();
-////		String memberId = (String) request.getAttribute("memberId");
-//		String memberId = context.getVariables().getOrDefault("memberId", "");
-////		Map<String, String> variables = context.getVariables();
-//
-//		if (SecurityUtil.getCurrentAuthority().equals(Role.ADMIN.getValue())) {
-//			return new AuthorizationDecision(false);
-//		}
-//
-//		if (memberId.equals("")) {
-//			return new AuthorizationDecision(true);
-//		} else if (SecurityUtil.getCurrentMemberId().equals(Long.valueOf(memberId)) || SecurityUtil.getCurrentAuthority().equals(Role.ADMIN.getValue())) {
-//			return new AuthorizationDecision(true);
-//		}
-//		return new AuthorizationDecision(false);
-//	}
-
-//	@Bean
-//	@Scope("prototype")
-//	public boolean check(Supplier<Authentication> authentication, RequestAuthorizationContext context) {
-////		HttpServletRequest request = context.getRequest();
-////		String memberId = (String) request.getAttribute("memberId");
-//		String memberId = context.getVariables().getOrDefault("memberId", "");
-//////		Map<String, String> variables = context.getVariables();
-//
-//		if (SecurityUtil.getCurrentAuthority().equals(Role.ADMIN.getValue())) {
-//			return false;
-//		}
-//
-//		if (memberId.equals("")) {
-//			return true;
-//		} else if (SecurityUtil.getCurrentMemberId().equals(Long.valueOf(memberId)) || SecurityUtil.getCurrentAuthority().equals(Role.ADMIN.getValue())) {
-//			return true;
-//		}
-//		return false;
-//
-//	}
 
 }
