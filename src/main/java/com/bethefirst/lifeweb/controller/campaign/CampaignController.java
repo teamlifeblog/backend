@@ -85,6 +85,7 @@ public class CampaignController {
 	@PutMapping("/pick")
 	public void updatePick(@RequestBody UpdateCampaignPickDto updateCampaignPickDto) {
 		campaignService.updatePick(updateCampaignPickDto);
+		//
 	}
 
 }
