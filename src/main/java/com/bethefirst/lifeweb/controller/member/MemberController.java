@@ -54,8 +54,6 @@ public class MemberController {
     public ResponseEntity<?> update(@PathVariable Long memberId,
                              @Valid @RequestBody UpdateMemberDto updateMemberDto) {
 
-
-
         memberService.updateMemberInfo(updateMemberDto, memberId);
 
         HttpHeaders headers = new HttpHeaders();
