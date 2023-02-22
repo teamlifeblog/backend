@@ -1,6 +1,7 @@
 package com.bethefirst.lifeweb.dto.member.response;
 
 import com.bethefirst.lifeweb.entity.member.Member;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class MemberInfoDto {
 
     private Long memberId; //회원 PK
@@ -31,17 +33,18 @@ public class MemberInfoDto {
     public MemberInfoDto(Member member) {
         this.memberId = member.getId();
         this.email = member.getEmail();
-        this.fileName = member.getFileName() == null ? null : member.getFileName();
-        this.name = member.getName() == null ? null : member.getName();
+        this.fileName = member.getFileName();
+        this.name = member.getName();
         this.nickname = member.getNickname();
-        this.gender = member.getGender() == null ? null : member.getGender();
-        this.birth = member.getBirth() == null ? null : member.getBirth();
-        this.tel = member.getTel() == null ? null : member.getTel();
-        this.postcode = member.getPostcode() == null ? null : member.getPostcode();
-        this.address = member.getAddress() == null ? null : member.getAddress();
-        this.detailAddress = member.getDetailAddress() == null ? null : member.getDetailAddress();
-        this.extraAddress = member.getExtraAddress() == null ? null : member.getExtraAddress();
+        this.gender = member.getGender();
+        this.birth = member.getBirth();
+        this.tel = member.getTel();
+        this.postcode = member.getPostcode();
+        this.address = member.getAddress();
+        this.detailAddress = member.getDetailAddress();
+        this.extraAddress = member.getExtraAddress();
         this.point = member.getPoint();
         this.memberSnsDtoList = member.getMemberSnsList().stream().map(MemberSnsDto::new).collect(Collectors.toList());
     }
+
 }
