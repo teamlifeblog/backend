@@ -3,8 +3,8 @@ package com.bethefirst.lifeweb.controller.member;
 import com.bethefirst.lifeweb.config.security.JwtFilter;
 import com.bethefirst.lifeweb.config.security.TokenProvider;
 import com.bethefirst.lifeweb.dto.jwt.TokenDto;
-import com.bethefirst.lifeweb.dto.member.request.FindPasswordDto;
 import com.bethefirst.lifeweb.dto.member.request.*;
+import com.bethefirst.lifeweb.dto.member.response.ConfirmationEmailDto;
 import com.bethefirst.lifeweb.dto.member.response.MemberInfoDto;
 import com.bethefirst.lifeweb.service.member.interfaces.MemberService;
 import com.bethefirst.lifeweb.service.member.interfaces.MemberSnsService;
@@ -43,8 +43,10 @@ public class MemberController {
     public ResponseEntity<?> join(@Valid @RequestBody JoinDto joinDto) {
 
         memberService.join(joinDto);
+
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("/members/login"));
+
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
@@ -52,14 +54,14 @@ public class MemberController {
     @PutMapping("/{memberId}")
     @PreAuthorize("isAuthenticated() and (( #memberId == principal.memberId ) or hasRole('ADMIN'))")
     public ResponseEntity<?> update(@PathVariable Long memberId,
-                             @Valid @RequestBody UpdateMemberDto updateMemberDto) {
+                             		@Valid @RequestBody UpdateMemberDto updateMemberDto) {
 
         memberService.updateMemberInfo(updateMemberDto, memberId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("/members/" + memberId));
-        return new ResponseEntity<>(headers, HttpStatus.CREATED);
 
+        return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
     /** 로그인 */
@@ -98,7 +100,6 @@ public class MemberController {
 
     /** 회원 전체 조회 */
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public Page<MemberInfoDto> list(@RequestBody MemberSearchRequirements requirements,
                                     @PageableDefault(sort = "id", size = 20, direction = Sort.Direction.DESC)Pageable pageable){
         return memberService.getMemberList(requirements, pageable);
@@ -108,19 +109,19 @@ public class MemberController {
     /** 이미지 수정 */
     @PutMapping("/{memberId}/image")
     @PreAuthorize("isAuthenticated() and (( #memberId == principal.memberId ) or hasRole('ADMIN'))")
-    public ResponseEntity<?> updateMemberImage(@PathVariable Long memberId,
-                                               MultipartFile fileName){
-
+    public ResponseEntity<?> updateMemberImage(@PathVariable Long memberId, MultipartFile fileName){
 
         memberService.updateMemberImage(fileName,memberId);
+
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("/members/" + memberId));
+
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
     /** 비밀번호 변경 */
     @PutMapping("/{memberId}/password")
-    @PreAuthorize("isAuthenticated() and (( #memberId == principal.memberId ) or hasRole('ADMIN'))")
+    @PreAuthorize("!isAuthenticated() or (isAuthenticated() and (( #memberId == principal.memberId ) or hasRole('ADMIN')))")
     public ResponseEntity<?> updatePassword(@PathVariable Long memberId,
                                             @RequestBody UpdatePasswordDto updatePasswordDto){
 
@@ -131,8 +132,21 @@ public class MemberController {
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
+	/** 포인트 수정 */
+	@PutMapping("/{memberId}/point")
+	public ResponseEntity<?> updatePoint(@PathVariable Long memberId,
+							@RequestBody UpdatePointDto updatePointDto) {
+		memberService.updatePoint(memberId, updatePointDto.getPoint());
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setLocation(URI.create("/members"));
+
+		return new ResponseEntity<>(headers, HttpStatus.CREATED);
+	}
+
+
     /** 회원 SNS 등록 */
-    @PostMapping("/sns")
+    @PostMapping("/{memberId}/sns")
     @PreAuthorize("isAuthenticated() and (( #createMemberSnsDto.memberId == principal.memberId ) or hasRole('ADMIN'))")
     public ResponseEntity<?> create(@RequestBody CreateMemberSnsDto createMemberSnsDto){
 
@@ -142,7 +156,6 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.CREATED);
 
     }
-
 
     /** 회원 SNS 삭제 */
     @DeleteMapping("/sns/{memberSnsId}")
@@ -168,12 +181,16 @@ public class MemberController {
         memberService.existsEmail(email);
     }
 
+    /** 인증 메일 전송 */
+    @GetMapping("/confirmation-email")
+    public ResponseEntity<?> confirmationEmail(String email) {
 
-    /** 비밀번호 찾기 */
-    @PutMapping("/password")
-    public void findPassword(@RequestBody FindPasswordDto findPasswordDto){
-        memberService.findPassword(findPasswordDto.getEmail());
+		ConfirmationEmailDto confirmationEmailDto = memberService.sendConfirmationEmail(email);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setLocation(URI.create("/members/" + confirmationEmailDto.getMemberId() + "/password"));
+
+		return new ResponseEntity<>(confirmationEmailDto, headers, HttpStatus.OK);
     }
+
 }
-
-
