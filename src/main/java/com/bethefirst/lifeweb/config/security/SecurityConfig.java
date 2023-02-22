@@ -99,6 +99,7 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.POST,"/members/**").anonymous()//회원가입,로그인
 						.requestMatchers(HttpMethod.GET,"/members/nickname", "/members/email").anonymous()//중복체크
 						.requestMatchers(HttpMethod.GET,"/members/**").hasRole("ADMIN")//전체조회
+						.requestMatchers(HttpMethod.PUT,"/members/{memberId}/point").hasRole("ADMIN")//포인트수정
 						.requestMatchers("/members/**").authenticated()
 						// campaigns 캠페인
 						.requestMatchers(HttpMethod.GET,"/campaigns/**").permitAll()//조회

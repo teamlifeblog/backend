@@ -51,32 +51,28 @@ public class Member {//회원
 	@OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<Applicant> applicationList = new ArrayList<>(); //회원 신청서
 
-	protected Member(Role role, String email, String pwd, String nickname) {
+	public Member(String email, String pwd, String name, String nickname, String gender, LocalDate birth,
+					 String tel, String postcode, String address, String detailAddress, String extraAddress) {
 
-		this.role = role;
+		this.role = Role.USER;
 		this.email = email;
 		this.pwd = pwd;
+		this.name = name;
 		this.nickname = nickname;
+		this.gender = gender;
+		this.birth = birth;
+		this.tel = tel;
+		this.postcode = postcode;
+		this.address = address;
+		this.detailAddress = detailAddress;
+		this.extraAddress = extraAddress;
 		this.point = 0;
-	}
-
-	//회원 생성
-	public static Member createMember(PasswordEncoder passwordEncoder,String email, String pwd,
-							   String nickname){
-		return new Member(Role.USER, email, passwordEncoder.encode(pwd), nickname);
 
 	}
-
-	//관리자 생성
-	public static Member createAdmin(PasswordEncoder passwordEncoder, String email, String pwd,
-									  String nickname){
-		return new Member(Role.ADMIN , email , passwordEncoder.encode(pwd), nickname);
-	}
-
 
 	//== 정보 수정 == /
-	public void updateMember(String name, String nickname, String gender, LocalDate birth,
-							 String tel, String postcode, String address, String detailAddress, String extraAddress){
+	public void updateMember(String name, String nickname, String gender, LocalDate birth, String tel,
+							 String postcode, String address, String detailAddress, String extraAddress){
 
 		this.name = name;
 		this.nickname = nickname;
@@ -95,16 +91,17 @@ public class Member {//회원
 		this.fileName = fileName;
 	}
 
-
-
 	public void updatePassword(PasswordEncoder passwordEncoder, String pwd){
 		this.pwd = passwordEncoder.encode(pwd);
 	}
 
-
 	//비밀번호 변경, 회원 탈퇴 시, 비밀번호를 확인하며, 이때 비밀번호의 일치여부를 판단하는 메서드입니다.
 	public boolean matchPassword(PasswordEncoder passwordEncoder, String checkPassword){
 		return passwordEncoder.matches(checkPassword, getPwd());
+	}
+
+	public void updatePoint(int point) {
+		this.point = point;
 	}
 
 }
