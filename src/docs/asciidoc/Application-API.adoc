@@ -1,0 +1,10 @@
+[[Application-API]]
+== Application API
+
+[[Application-조회]]
+=== Application 조회
+operation::application-controller-test/신청서_조회[snippets='http-request,request-headers,path-parameters,http-response,response-fields']
+
+[[Application-질문-추가]]
+=== Application 질문 추가
+operation::application-controller-test/신청서_질문_추가[snippets='http-request,request-headers,path-parameters,request-fields,http-response,response-headers']

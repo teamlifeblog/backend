@@ -3,6 +3,7 @@ package com.bethefirst.lifeweb.controller.application;
 import com.bethefirst.lifeweb.dto.application.request.CreateApplicationQuestionDto;
 import com.bethefirst.lifeweb.dto.application.response.ApplicationDto;
 import com.bethefirst.lifeweb.service.application.interfaces.ApplicationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -27,9 +28,9 @@ public class ApplicationController {
 	}
 
 	/** 신청서 질문 추가 */
-	@PutMapping("/{applicationId}/question")
+	@PostMapping("/{applicationId}/question")
 	public ResponseEntity<?> createApplicationQuestion(@PathVariable Long applicationId,
-													   @RequestBody CreateApplicationQuestionDto createApplicationQuestionDto) {
+													   @Valid @RequestBody CreateApplicationQuestionDto createApplicationQuestionDto) {
 
 		// 신청서질문 저장
 		applicationService.createApplicationQuestion(applicationId, createApplicationQuestionDto);
