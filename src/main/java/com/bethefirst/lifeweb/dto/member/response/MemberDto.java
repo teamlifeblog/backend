@@ -34,6 +34,7 @@ public class MemberDto {
 
 	private String fileName;//프로필이미지
 
+	private String name; //회원 이름
 	private String nickname;//닉네임
 	private String gender;//성별
 	private LocalDate birth;//생년월일
@@ -53,6 +54,7 @@ public class MemberDto {
 		email = member.getEmail();
 		pwd = member.getPwd();
 		fileName = member.getFileName();
+		name = member.getName();
 		nickname = member.getNickname();
 		gender = member.getGender();
 		birth = member.getBirth();
