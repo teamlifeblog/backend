@@ -1,4 +1,4 @@
-CampaignStatus.adoc:doctype: book
+:doctype: book
 :icons: font
 
 [[QuestionType]]
