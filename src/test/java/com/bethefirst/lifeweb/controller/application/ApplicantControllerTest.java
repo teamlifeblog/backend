@@ -54,8 +54,8 @@ class ApplicantControllerTest extends ControllerTest {
 								requestFields(
 										fieldWithPath("applicationId").type(NUMBER).description("신청서ID"),
 										fieldWithPath("memo").type(STRING).description("메모"),
-										fieldWithPath("applicationQuestionId").type(ARRAY_NUMBER).description("신청서질문ID").optional(),
-										fieldWithPath("answer").type(ARRAY_STRING).description("답변").optional()
+										fieldWithPath("applicationQuestionId").type(arrayType(NUMBER)).description("신청서질문ID").optional(),
+										fieldWithPath("answer").type(arrayType(STRING)).description("답변").optional()
 								),
 								responseHeaders(
 										headerWithName(LOCATION).attributes(path(urlTemplate + "/{applicantId}")).description(LOCATION)
@@ -85,6 +85,7 @@ class ApplicantControllerTest extends ControllerTest {
 										fieldWithPath("id").type(NUMBER).description("신청자ID"),
 										fieldWithPath("memo").type(STRING).description("메모"),
 										fieldWithPath("created").type(LOCAL_DATE_TIME).description("신청일"),
+										fieldWithPath("status").type(enumType(ApplicantStatus.class)).description("상태"),
 										fieldWithPath("applicantAnswerDtoList[].id").type(NUMBER).description("신청자답변ID").optional(),
 										fieldWithPath("applicantAnswerDtoList[].applicationQuestionId").type(NUMBER).description("질문ID").optional(),
 										fieldWithPath("applicantAnswerDtoList[].answer").type(STRING).description("답변").optional()
@@ -116,23 +117,24 @@ class ApplicantControllerTest extends ControllerTest {
 										parameterWithName("sort").attributes(type(STRING)).description("정렬기준,정렬방향").optional(),
 										parameterWithName("memberId").attributes(type(NUMBER)).description("맴버ID").optional(),
 										parameterWithName("campaignId").attributes(type(NUMBER)).description("캠페인ID").optional(),
-										parameterWithName("status").attributes(type(ApplicantStatus.class)).description("상태").optional()
+										parameterWithName("status").attributes(type(enumType(ApplicantStatus.class))).description("상태").optional()
 								),
 								relaxedResponseFields(
 										fieldWithPath("content").type(ARRAY).description("리스트"),
 										fieldWithPath("content.[].id").type(NUMBER).description("신청자ID"),
 										fieldWithPath("content.[].memo").type(STRING).description("메모"),
 										fieldWithPath("content.[].created").type(LOCAL_DATE_TIME).description("신청일"),
+										fieldWithPath("content.[].status").type(enumType(ApplicantStatus.class)).description("상태"),
 										fieldWithPath("content.[].applicantAnswerDtoList[].id").type(NUMBER).description("신청자답변ID").optional(),
 										fieldWithPath("content.[].applicantAnswerDtoList[].applicationQuestionId").type(NUMBER).description("질문ID").optional(),
 										fieldWithPath("content.[].applicantAnswerDtoList[].answer").type(STRING).description("답변").optional(),
-										fieldWithPath("pageable").type(Pageable.class).description("페이징"),
+										fieldWithPath("pageable").type(Pageable.class.getSimpleName()).description("페이징"),
 										fieldWithPath("last").type(BOOLEAN).description("마지막페이지"),
 										fieldWithPath("totalPages").type(NUMBER).description("전체페이지"),
 										fieldWithPath("totalElements").type(NUMBER).description("전체엘리먼트"),
 										fieldWithPath("size").type(NUMBER).description("사이즈"),
 										fieldWithPath("number").type(NUMBER).description("페이지"),
-										fieldWithPath("sort").type(Sort.class).description("정렬"),
+										fieldWithPath("sort").type(Sort.class.getSimpleName()).description("정렬"),
 										fieldWithPath("first").type(BOOLEAN).description("첫페이지"),
 										fieldWithPath("numberOfElements").type(NUMBER).description("엘리먼트"),
 										fieldWithPath("empty").type(BOOLEAN).description("empty")
@@ -164,9 +166,9 @@ class ApplicantControllerTest extends ControllerTest {
 								requestFields(
 										fieldWithPath("applicantId").type(NUMBER).description("신청자ID"),
 										fieldWithPath("memo").type(STRING).description("메모"),
-										fieldWithPath("applicantAnswerId").type(ARRAY_NUMBER).description("신청서질문ID").optional(),
-										fieldWithPath("applicationQuestionId").type(ARRAY_NUMBER).description("신청서질문ID").optional(),
-										fieldWithPath("answer").type(ARRAY_STRING).description("답변").optional()
+										fieldWithPath("applicantAnswerId").type(arrayType(NUMBER)).description("신청서질문ID").optional(),
+										fieldWithPath("applicationQuestionId").type(arrayType(NUMBER)).description("신청서질문ID").optional(),
+										fieldWithPath("answer").type(arrayType(STRING)).description("답변").optional()
 								),
 								responseHeaders(
 										headerWithName(LOCATION).attributes(path(urlTemplate + "/{applicantId}")).description(LOCATION)
@@ -194,8 +196,8 @@ class ApplicantControllerTest extends ControllerTest {
 								),
 								requestFields(
 										fieldWithPath("campaignId").type(NUMBER).description("캠페인ID"),
-										fieldWithPath("selectApplicantId").type(ARRAY_NUMBER).description("선정할 신청자ID"),
-										fieldWithPath("unselectApplicantId").type(ARRAY_NUMBER).description("비선정할 신청자ID")
+										fieldWithPath("selectApplicantId").type(arrayType(NUMBER)).description("선정할 신청자ID"),
+										fieldWithPath("unselectApplicantId").type(arrayType(NUMBER)).description("비선정할 신청자ID")
 								),
 								responseHeaders(
 										headerWithName(LOCATION).attributes(path(urlTemplate)).description(LOCATION)

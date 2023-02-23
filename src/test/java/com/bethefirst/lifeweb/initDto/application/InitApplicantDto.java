@@ -6,6 +6,7 @@ import com.bethefirst.lifeweb.dto.application.response.ApplicantDto;
 import com.bethefirst.lifeweb.dto.application.request.ApplicantSearchRequirements;
 import com.bethefirst.lifeweb.dto.application.request.CreateApplicantDto;
 import com.bethefirst.lifeweb.dto.application.request.UpdateApplicantDto;
+import com.bethefirst.lifeweb.entity.application.ApplicantStatus;
 import org.springframework.data.domain.*;
 
 import java.time.LocalDateTime;
@@ -48,7 +49,7 @@ public class InitApplicantDto {
 		List<ApplicantDto> list = new ArrayList<>();
 
 		for (int i = 0; i < 15; i++) {
-			list.add(new ApplicantDto((long) i, "new memo", LocalDateTime.now(), applicantAnswerDtoList));
+			list.add(new ApplicantDto((long) i, "new memo", LocalDateTime.now(), ApplicantStatus.UNSELECT, applicantAnswerDtoList));
 		}
 
 		return list;

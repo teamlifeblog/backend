@@ -1,0 +1,5 @@
+:doctype: book
+:icons: font
+
+[[CampaignStatus]]
+include::{snippets}/restdocs-controller-test/enum_리스트_조회/enum-response-fields-campaign-status.adoc[]
