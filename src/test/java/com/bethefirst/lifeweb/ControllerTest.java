@@ -64,7 +64,7 @@ public abstract class ControllerTest {
 		PreAuthenticatedAuthenticationToken auth = new PreAuthenticatedAuthenticationToken(user, null, user.getAuthorities());
 
 		SecurityContextHolder.getContext().setAuthentication(auth);
-		return Jwts.builder()
+		return "Bearer " + Jwts.builder()
 				.setSubject(user.getUsername())
 				.claim("memberId", user.getMemberId())
 				.claim("role", user.getAuthorities())
@@ -178,6 +178,10 @@ public abstract class ControllerTest {
 
 	protected Attribute role(Object value) {
 		return field("role", value.toString());
+	}
+
+	protected Attribute path(Object value) {
+		return field("path", value.toString());
 	}
 
 }

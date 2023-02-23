@@ -13,11 +13,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpHeaders;
 
 import static org.mockito.BDDMockito.*;//given,willReturn
 import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,LOCATION
-import static org.springframework.http.MediaType.*;//MULTIPART_FORM_DATA
+import static org.springframework.http.MediaType.*;//MULTIPART_FORM_DATA,APPLICATION_JSON
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;//get,post,multipart...
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;//status
@@ -44,19 +43,22 @@ class ApplicantControllerTest extends ControllerTest {
 		mockMvc.perform(post(urlTemplate)
 						.content(objectMapper.writeValueAsString(toMap(dto)))
 						.contentType(APPLICATION_JSON)
-						.header(HttpHeaders.AUTHORIZATION, getJwt(Role.USER.name(), 1L))
+						.header(AUTHORIZATION, getJwt(Role.USER.name(), 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(
 						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION).attributes(role(Role.USER)).description("token")
+								),
 								requestFields(
 										fieldWithPath("applicationId").type(NUMBER).description("신청서ID"),
 										fieldWithPath("memo").type(STRING).description("메모"),
-										fieldWithPath("applicationQuestionId").type(ARRAY_NUMBER).description("신청서질문ID").optional().optional(),
-										fieldWithPath("answer").type(ARRAY_STRING).description("답변").optional().optional()
+										fieldWithPath("applicationQuestionId").type(ARRAY_NUMBER).description("신청서질문ID").optional(),
+										fieldWithPath("answer").type(ARRAY_STRING).description("답변").optional()
 								),
 								responseHeaders(
-										headerWithName(LOCATION).description(LOCATION)
+										headerWithName(LOCATION).attributes(path(urlTemplate + "/{applicantId}")).description(LOCATION)
 								)
 						)
 				);
@@ -73,6 +75,9 @@ class ApplicantControllerTest extends ControllerTest {
 				.andExpect(status().isOk())
 				.andDo(
 						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION).attributes(role(Role.USER)).description("token")
+								),
 								pathParameters(
 										parameterWithName("applicantId").attributes(type(NUMBER)).description("신청자ID")
 								),
@@ -102,6 +107,9 @@ class ApplicantControllerTest extends ControllerTest {
 				.andExpect(status().isOk())
 				.andDo(
 						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION).attributes(role(Role.USER)).description("token")
+								),
 								queryParameters(
 										parameterWithName("page").attributes(type(NUMBER)).description("페이지").optional(),
 										parameterWithName("size").attributes(type(NUMBER)).description("사이즈").optional(),
@@ -147,6 +155,9 @@ class ApplicantControllerTest extends ControllerTest {
 				.andExpect(status().isCreated())
 				.andDo(
 						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION).attributes(role(Role.USER)).description("token")
+								),
 								pathParameters(
 										parameterWithName("applicantId").attributes(type(NUMBER)).description("신청자ID")
 								),
@@ -158,7 +169,7 @@ class ApplicantControllerTest extends ControllerTest {
 										fieldWithPath("answer").type(ARRAY_STRING).description("답변").optional()
 								),
 								responseHeaders(
-										headerWithName(LOCATION).description(LOCATION)
+										headerWithName(LOCATION).attributes(path(urlTemplate + "/{applicantId}")).description(LOCATION)
 								)
 						)
 				);
@@ -178,10 +189,16 @@ class ApplicantControllerTest extends ControllerTest {
 				.andExpect(status().isCreated())
 				.andDo(
 						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
+								),
 								requestFields(
 										fieldWithPath("campaignId").type(NUMBER).description("캠페인ID"),
 										fieldWithPath("selectApplicantId").type(ARRAY_NUMBER).description("선정할 신청자ID"),
 										fieldWithPath("unselectApplicantId").type(ARRAY_NUMBER).description("비선정할 신청자ID")
+								),
+								responseHeaders(
+										headerWithName(LOCATION).attributes(path(urlTemplate)).description(LOCATION)
 								)
 						)
 				);
@@ -198,6 +215,9 @@ class ApplicantControllerTest extends ControllerTest {
 				.andExpect(status().isNoContent())
 				.andDo(
 						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION).attributes(role(Role.USER)).description("token")
+								),
 								pathParameters(
 										parameterWithName("applicantId").attributes(type(NUMBER)).description("신청자ID")
 								)
