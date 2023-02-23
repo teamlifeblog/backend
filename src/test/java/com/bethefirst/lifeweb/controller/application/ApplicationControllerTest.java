@@ -12,7 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static org.mockito.BDDMockito.*;//given,willReturn
 import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,LOCATION
-import static org.springframework.http.MediaType.*;//MULTIPART_FORM_DATA
+import static org.springframework.http.MediaType.*;//MULTIPART_FORM_DATA,APPLICATION_JSON
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;//get,post,multipart...
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;//status
@@ -41,6 +41,9 @@ class ApplicationControllerTest extends ControllerTest {
 				.andExpect(status().isOk())
 				.andDo(
 						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION).attributes(role(Role.USER)).description("token")
+								),
 								pathParameters(
 										parameterWithName("applicationId").attributes(type(NUMBER)).description("신청서ID")
 								),
@@ -61,7 +64,7 @@ class ApplicationControllerTest extends ControllerTest {
 		CreateApplicationQuestionDto dto = applicationDto.getCreateApplicationQuestionDto();
 		willDoNothing().given(applicationService).createApplicationQuestion(1L, dto);
 
-		mockMvc.perform(put(urlTemplate + "/{applicationId}/question", 1L)
+		mockMvc.perform(post(urlTemplate + "/{applicationId}/question", 1L)
 						.content(objectMapper.writeValueAsString(toMap(dto)))
 						.contentType(APPLICATION_JSON)
 						.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
@@ -69,16 +72,19 @@ class ApplicationControllerTest extends ControllerTest {
 				.andExpect(status().isCreated())
 				.andDo(
 						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
+								),
 								pathParameters(
 										parameterWithName("applicationId").attributes(type(NUMBER)).description("신청서ID")
 								),
 								requestFields(
 										fieldWithPath("question").type(ARRAY_STRING).description("질문"),
 										fieldWithPath("type").type(ARRAY).description("유형"),
-										fieldWithPath("items").type(ARRAY_STRING).description("항목")
+										fieldWithPath("items").type(ARRAY_STRING).description("항목").optional()
 								),
 								responseHeaders(
-										headerWithName(LOCATION).description(LOCATION)
+										headerWithName(LOCATION).attributes(path(urlTemplate + "/{applicationId}")).description(LOCATION)
 								)
 						)
 				);

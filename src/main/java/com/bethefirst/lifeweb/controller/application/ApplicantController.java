@@ -75,10 +75,17 @@ public class ApplicantController {
 	}
 
 	/** 신청자 상태 수정 */
-	@ResponseStatus(HttpStatus.CREATED)
 	@PutMapping("/status")
-	public void updateStatus(@Valid @RequestBody UpdateApplicantStatusDto updateApplicantStatusDto) {
+	public ResponseEntity<?> updateStatus(@Valid @RequestBody UpdateApplicantStatusDto updateApplicantStatusDto) {
+
+		// 신청자 상태 수정
 		applicantService.updateStatus(updateApplicantStatusDto);
+
+		// Location 설정
+		HttpHeaders headers = new HttpHeaders();
+		headers.setLocation(URI.create("/applicants"));
+
+		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}
 
 	/** 신청자 삭제 */

@@ -73,18 +73,32 @@ public class CampaignController {
 	}
 	
 	/** 캠페인 상태 변경 */
-	@ResponseStatus(HttpStatus.CREATED)
 	@PutMapping("/{campaignId}/status")
-	public void updateStatus(@PathVariable Long campaignId,
+	public ResponseEntity<?> updateStatus(@PathVariable Long campaignId,
 							 @Valid @RequestBody CampaignStatusDto campaignStatusDto) {
+
+		// 캠페인 상태 변경
 		campaignService.updateStatus(campaignId, campaignStatusDto.getStatus());
+
+		// Location 설정
+		HttpHeaders headers = new HttpHeaders();
+		headers.setLocation(URI.create("/campaigns/" + campaignId));
+
+		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}
 
 	/** 캠페인 PICK 체크 */
-	@ResponseStatus(HttpStatus.CREATED)
 	@PutMapping("/pick")
-	public void updatePick(@RequestBody UpdateCampaignPickDto updateCampaignPickDto) {
+	public ResponseEntity<?> updatePick(@RequestBody UpdateCampaignPickDto updateCampaignPickDto) {
+
+		// 캠페인 PICK 체크
 		campaignService.updatePick(updateCampaignPickDto);
+
+		// Location 설정
+		HttpHeaders headers = new HttpHeaders();
+		headers.setLocation(URI.create("/campaigns"));
+
+		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}
 
 }

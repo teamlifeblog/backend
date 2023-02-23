@@ -3,7 +3,7 @@
 
 [[Campaign-생성]]
 === Campaign 생성
-operation::campaign-controller-test/캠페인_생성[snippets='http-request,request-parts,http-response,response-headers']
+operation::campaign-controller-test/캠페인_생성[snippets='http-request,request-headers,request-parts,http-response,response-headers']
 
 [[Campaign-단일-조회]]
 === Campaign 단일 조회
@@ -15,4 +15,12 @@ operation::campaign-controller-test/캠페인_리스트_조회[snippets='http-re
 
 [[Campaign-수정]]
 === Campaign 수정
-operation::campaign-controller-test/캠페인_수정[snippets='http-request,path-parameters,request-parts,http-response,response-headers']
+operation::campaign-controller-test/캠페인_수정[snippets='http-request,request-headers,path-parameters,request-parts,http-response,response-headers']
+
+[[Campaign-상태-변경]]
+=== Campaign 상태 변경
+operation::campaign-controller-test/캠페인_상태_변경[snippets='http-request,request-headers,path-parameters,request-fields,http-response,response-headers']
+
+[[Campaign-PICK-체크]]
+=== Campaign PICK 체크
+operation::campaign-controller-test/캠페인_PICK_체크[snippets='http-request,request-headers,request-fields,http-response,response-headers']

@@ -16,14 +16,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 
 import java.util.Map;
 
 import static org.mockito.BDDMockito.*;//given,willReturn
 import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,LOCATION
-import static org.springframework.http.MediaType.*;//MULTIPART_FORM_DATA
+import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.http.MediaType.*;//MULTIPART_FORM_DATA,APPLICATION_JSON
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;//get,post,multipart...
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;//status
@@ -48,9 +47,9 @@ class CampaignControllerTest extends ControllerTest {
 		given(campaignService.createCampaign(dto)).willReturn(1L);
 
 		mockMvc.perform(
-				createMultiPartRequest(multipart(urlTemplate), dto)
-						.contentType(MULTIPART_FORM_DATA)
-						.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
+						createMultiPartRequest(multipart(urlTemplate), dto)
+								.contentType(MULTIPART_FORM_DATA)
+								.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(
@@ -85,7 +84,7 @@ class CampaignControllerTest extends ControllerTest {
 										partWithName("items").attributes(type(STRING)).description("항목").optional()
 								),
 								responseHeaders(
-										headerWithName(LOCATION).description(LOCATION)
+										headerWithName(LOCATION).attributes(path(urlTemplate + "/{campaignId}")).description(LOCATION)
 								)
 						)
 				);
@@ -218,13 +217,16 @@ class CampaignControllerTest extends ControllerTest {
 		willDoNothing().given(campaignService).updateCampaign(1L, dto);
 
 		mockMvc.perform(
-				createMultiPartRequest(CustomRestDocumentationRequestBuilders.multipart(HttpMethod.PUT, urlTemplate + "/{campaignId}", 1L), dto)
-						.contentType(MULTIPART_FORM_DATA)
-						.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
+						createMultiPartRequest(CustomRestDocumentationRequestBuilders.multipart(PUT, urlTemplate + "/{campaignId}", 1L), dto)
+								.contentType(MULTIPART_FORM_DATA)
+								.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(
 						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
+								),
 								pathParameters(
 									parameterWithName("campaignId").attributes(type(NUMBER)).description("캠페인ID")
 								),
@@ -257,7 +259,7 @@ class CampaignControllerTest extends ControllerTest {
 										partWithName("items").attributes(type(ARRAY)).description("항목").optional()
 								),
 								responseHeaders(
-										headerWithName(LOCATION).description(LOCATION)
+										headerWithName(LOCATION).attributes(path(urlTemplate + "/{campaignId}")).description(LOCATION)
 								)
 						)
 				);
@@ -272,17 +274,23 @@ class CampaignControllerTest extends ControllerTest {
 						.content(objectMapper.writeValueAsString(Map.of(
 								"status", CampaignStatus.FILING.name()
 						)))
-						.contentType(MediaType.APPLICATION_JSON)
+						.contentType(APPLICATION_JSON)
 						.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(
 						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
+								),
 								pathParameters(
 										parameterWithName("campaignId").attributes(type(NUMBER)).description("캠페인ID")
 								),
 								requestFields(
 										fieldWithPath("status").type(CampaignStatus.class).description("캠페인상태")
+								),
+								responseHeaders(
+										headerWithName(LOCATION).attributes(path(urlTemplate + "/{campaignId}")).description(LOCATION)
 								)
 						)
 				);
@@ -296,15 +304,21 @@ class CampaignControllerTest extends ControllerTest {
 
 		mockMvc.perform(put(urlTemplate + "/pick")
 						.content(objectMapper.writeValueAsString(dto))
-						.contentType(MediaType.APPLICATION_JSON)
+						.contentType(APPLICATION_JSON)
 						.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(
 						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
+								),
 								requestFields(
 										fieldWithPath("newCampaignId").type(ARRAY_NUMBER).description("pick 선택할 캠페인ID"),
 										fieldWithPath("oldCampaignId").type(ARRAY_NUMBER).description("pick 해제할 캠페인ID")
+								),
+								responseHeaders(
+										headerWithName(LOCATION).attributes(path(urlTemplate)).description(LOCATION)
 								)
 						)
 				);

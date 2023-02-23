@@ -7,17 +7,15 @@ import com.bethefirst.lifeweb.service.campaign.interfaces.CampaignCategoryServic
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 
 import java.util.Map;
 
 import static org.mockito.BDDMockito.*;//given,willReturn
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,LOCATION
+import static org.springframework.http.MediaType.*;//MULTIPART_FORM_DATA,APPLICATION_JSON
+import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;//get,post,multipart...
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;//status
-import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;//responseHeaders
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;//headerWithName
 import static org.springframework.restdocs.request.RequestDocumentation.*;//pathParameters,queryParameters,requestParts
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;//requestFields,responseFields
 import static org.springframework.restdocs.payload.JsonFieldType.*;
@@ -40,17 +38,20 @@ class CampaignCategoryControllerTest extends ControllerTest {
 						.content(objectMapper.writeValueAsString(Map.of(
 								"campaignCategoryName", "new campaignCategoryName"
 						)))
-						.contentType(MediaType.APPLICATION_JSON)
+						.contentType(APPLICATION_JSON)
 						.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(
 						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
+								),
 								requestFields(
 										fieldWithPath("campaignCategoryName").attributes(type(STRING)).description("카테고리이름")
 								),
 								responseHeaders(
-										headerWithName(HttpHeaders.LOCATION).description("Location")
+										headerWithName(LOCATION).attributes(path(urlTemplate)).description("Location")
 								)
 						)
 				);
@@ -82,12 +83,15 @@ class CampaignCategoryControllerTest extends ControllerTest {
 						.content(objectMapper.writeValueAsString(Map.of(
 								"campaignCategoryName", "updated campaignCategoryName"
 						)))
-						.contentType(MediaType.APPLICATION_JSON)
+						.contentType(APPLICATION_JSON)
 						.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(
 						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
+								),
 								pathParameters(
 										parameterWithName("campaignCategoryId").attributes(type(NUMBER)).description("카테고리ID")
 								),
@@ -95,7 +99,7 @@ class CampaignCategoryControllerTest extends ControllerTest {
 										fieldWithPath("campaignCategoryName").type(STRING).description("카테고리이름")
 								),
 								responseHeaders(
-										headerWithName(HttpHeaders.LOCATION).description("Location")
+										headerWithName(LOCATION).attributes(path(urlTemplate)).description("Location")
 								)
 						)
 				);
@@ -112,6 +116,9 @@ class CampaignCategoryControllerTest extends ControllerTest {
 				.andExpect(status().isNoContent())
 				.andDo(
 						restDocs.document(
+								requestHeaders(
+										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
+								),
 								pathParameters(
 										parameterWithName("campaignCategoryId").attributes(type(NUMBER)).description("카테고리ID")
 								)
