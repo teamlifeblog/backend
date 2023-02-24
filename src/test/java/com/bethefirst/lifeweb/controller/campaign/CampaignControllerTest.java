@@ -1,7 +1,7 @@
 package com.bethefirst.lifeweb.controller.campaign;
 
-import com.bethefirst.lifeweb.ControllerTest;
-import com.bethefirst.lifeweb.CustomRestDocumentationRequestBuilders;
+import com.bethefirst.lifeweb.controller.ControllerTest;
+import com.bethefirst.lifeweb.util.CustomRestDocumentationRequestBuilders;
 import com.bethefirst.lifeweb.dto.campaign.request.CreateCampaignDto;
 import com.bethefirst.lifeweb.dto.campaign.request.UpdateCampaignDto;
 import com.bethefirst.lifeweb.dto.campaign.request.UpdateCampaignPickDto;
@@ -19,6 +19,8 @@ import org.springframework.data.domain.Sort;
 
 import java.util.Map;
 
+import static com.bethefirst.lifeweb.util.RestdocsUtil.*;
+import static com.bethefirst.lifeweb.util.SnippetUtil.*;
 import static org.mockito.BDDMockito.*;//given,willReturn
 import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,LOCATION
 import static org.springframework.http.HttpMethod.PUT;
@@ -29,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.restdocs.request.RequestDocumentation.*;//pathParameters,queryParameters,requestParts
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;//requestFields,responseFields
 import static org.springframework.restdocs.payload.JsonFieldType.*;
-import static com.bethefirst.lifeweb.CustomJsonFieldType.*;
+import static com.bethefirst.lifeweb.util.CustomJsonFieldType.*;
 
 @WebMvcTest(CampaignController.class)
 class CampaignControllerTest extends ControllerTest {
@@ -49,7 +51,7 @@ class CampaignControllerTest extends ControllerTest {
 		mockMvc.perform(
 						createMultiPartRequest(multipart(urlTemplate), dto)
 								.contentType(MULTIPART_FORM_DATA)
-								.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
+								.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(
@@ -219,7 +221,7 @@ class CampaignControllerTest extends ControllerTest {
 		mockMvc.perform(
 						createMultiPartRequest(CustomRestDocumentationRequestBuilders.multipart(PUT, urlTemplate + "/{campaignId}", 1L), dto)
 								.contentType(MULTIPART_FORM_DATA)
-								.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
+								.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(
@@ -275,7 +277,7 @@ class CampaignControllerTest extends ControllerTest {
 								"status", CampaignStatus.FILING.name()
 						)))
 						.contentType(APPLICATION_JSON)
-						.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
+						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(
@@ -305,7 +307,7 @@ class CampaignControllerTest extends ControllerTest {
 		mockMvc.perform(put(urlTemplate + "/pick")
 						.content(objectMapper.writeValueAsString(dto))
 						.contentType(APPLICATION_JSON)
-						.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
+						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(

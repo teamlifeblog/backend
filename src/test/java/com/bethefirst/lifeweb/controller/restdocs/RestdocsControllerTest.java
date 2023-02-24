@@ -1,7 +1,7 @@
 package com.bethefirst.lifeweb.controller.restdocs;
 
-import com.bethefirst.lifeweb.ControllerTest;
-import com.bethefirst.lifeweb.EnumResponseFieldsSnippet;
+import com.bethefirst.lifeweb.controller.ControllerTest;
+import com.bethefirst.lifeweb.util.EnumResponseFieldsSnippet;
 import com.bethefirst.lifeweb.util.StringUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;

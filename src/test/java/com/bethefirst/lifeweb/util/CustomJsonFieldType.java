@@ -1,4 +1,4 @@
-package com.bethefirst.lifeweb;
+package com.bethefirst.lifeweb.util;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
