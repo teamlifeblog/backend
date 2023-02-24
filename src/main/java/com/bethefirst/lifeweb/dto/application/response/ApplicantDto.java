@@ -1,6 +1,7 @@
 package com.bethefirst.lifeweb.dto.application.response;
 
 import com.bethefirst.lifeweb.entity.application.Applicant;
+import com.bethefirst.lifeweb.entity.application.ApplicantStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ public class ApplicantDto {
 
 	private String memo;//메모
 	private LocalDateTime created;//신청일
+	private ApplicantStatus status;//상태
 
 	private List<ApplicantAnswerDto> applicantAnswerDtoList;//신청자답변
 
@@ -33,6 +35,7 @@ public class ApplicantDto {
 
 		memo = applicant.getMemo();
 		created = applicant.getCreated();
+		status = applicant.getStatus();
 
 		applicantAnswerDtoList = applicant.getApplicantAnswerList()
 				.stream().map(ApplicantAnswerDto::new)
