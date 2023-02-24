@@ -4,6 +4,7 @@ import com.bethefirst.lifeweb.dto.campaign.response.CampaignCategoryDto;
 import com.bethefirst.lifeweb.entity.campaign.CampaignCategory;
 import com.bethefirst.lifeweb.repository.campaign.CampaignCategoryRepository;
 import com.bethefirst.lifeweb.service.campaign.interfaces.CampaignCategoryService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class CampaignCategoryServiceImpl implements CampaignCategoryService {
 	@Override
 	public void updateCampaignCategory(Long campaignCategoryId, String campaignCategoryName) {
 		campaignCategoryRepository.findById(campaignCategoryId)
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 캠페인카테고리입니다. " + campaignCategoryId))
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 캠페인카테고리입니다. " + campaignCategoryId))
 				.updateCampaignCategory(campaignCategoryName);
 	}
 

@@ -4,6 +4,7 @@ import com.bethefirst.lifeweb.dto.campaign.response.CampaignTypeDto;
 import com.bethefirst.lifeweb.entity.campaign.CampaignType;
 import com.bethefirst.lifeweb.repository.campaign.CampaignTypeRepository;
 import com.bethefirst.lifeweb.service.campaign.interfaces.CampaignTypeService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class CampaignTypeServiceImpl implements CampaignTypeService {
 	@Override
 	public void updateCampaignType(Long campaignTypeId, String campaignTypeName) {
 		campaignTypeRepository.findById(campaignTypeId)
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 캠페인타입입니다. " + campaignTypeId))
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 캠페인타입입니다. " + campaignTypeId))
 				.updateCampaignType(campaignTypeName);
 	}
 

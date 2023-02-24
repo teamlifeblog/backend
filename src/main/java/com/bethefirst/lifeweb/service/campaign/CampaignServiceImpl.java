@@ -7,11 +7,13 @@ import com.bethefirst.lifeweb.dto.campaign.request.UpdateCampaignPickDto;
 import com.bethefirst.lifeweb.dto.campaign.response.CampaignDto;
 import com.bethefirst.lifeweb.entity.campaign.*;
 import com.bethefirst.lifeweb.entity.member.Sns;
+import com.bethefirst.lifeweb.exception.UnprocessableEntityException;
 import com.bethefirst.lifeweb.repository.campaign.*;
 import com.bethefirst.lifeweb.repository.member.SnsRepository;
 import com.bethefirst.lifeweb.service.application.interfaces.ApplicationService;
 import com.bethefirst.lifeweb.service.campaign.interfaces.CampaignService;
 import com.bethefirst.lifeweb.util.ImageUtil;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,11 +49,11 @@ public class CampaignServiceImpl implements CampaignService {
 
 		// 캠페인 저장
 		CampaignCategory campaignCategory = campaignCategoryRepository.findById(createCampaignDto.getCategoryId())
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다. " + createCampaignDto.getCategoryId()));
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 카테고리입니다. " + createCampaignDto.getCategoryId()));
 		CampaignType campaignType = campaignTypeRepository.findById(createCampaignDto.getTypeId())
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 타입입니다. " + createCampaignDto.getTypeId()));
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 타입입니다. " + createCampaignDto.getTypeId()));
 		Sns sns = snsRepository.findById(createCampaignDto.getSnsId())
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 SNS입니다. " + createCampaignDto.getSnsId()));
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 SNS입니다. " + createCampaignDto.getSnsId()));
 
 		createCampaignDto.setFileName(imageUtil.store(createCampaignDto.getUploadFile(), imageFolder));//이미지 파일 저장
 
@@ -62,7 +64,7 @@ public class CampaignServiceImpl implements CampaignService {
 		// 캠페인지역 저장
 		if (createCampaignDto.getLocalId() != null) {
 			Local local = localRepository.findById(createCampaignDto.getLocalId())
-					.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지역입니다. " + createCampaignDto.getLocalId()));
+					.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 지역입니다. " + createCampaignDto.getLocalId()));
 
 			campaignLocalRepository.save(createCampaignDto.getCampaignLocalDto().createCampaignLocal(campaign, local));
 		}
@@ -86,7 +88,7 @@ public class CampaignServiceImpl implements CampaignService {
 	@Override
 	public CampaignDto getCampaignDto(Long campaignId) {
 		return new CampaignDto(campaignRepository.findById(campaignId)
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 캠페인입니다. " + campaignId)));
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 캠페인입니다. " + campaignId)));
 	}
 
 	/** 캠페인 리스트 조회 */
@@ -102,19 +104,19 @@ public class CampaignServiceImpl implements CampaignService {
 
 		// 캠페인 수정
 		Campaign campaign = campaignRepository.findById(campaignId)
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 캠페인입니다. " + campaignId));
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 캠페인입니다. " + campaignId));
 
 		// 상태가 대기 일때만 수정 가능
 		if(!campaign.getStatus().equals(CampaignStatus.STAND)) {
-			throw new IllegalArgumentException("대기상태에서만 캠페인 수정이 가능합니다.");
+			throw new UnprocessableEntityException("대기상태에서만 캠페인 수정이 가능합니다.");
 		}
 
 		CampaignCategory campaignCategory = campaignCategoryRepository.findById(updateCampaignDto.getCategoryId())
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다. " + updateCampaignDto.getCategoryId()));
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 카테고리입니다. " + updateCampaignDto.getCategoryId()));
 		CampaignType campaignType = campaignTypeRepository.findById(updateCampaignDto.getTypeId())
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 타입입니다. " + updateCampaignDto.getTypeId()));
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 타입입니다. " + updateCampaignDto.getTypeId()));
 		Sns sns = snsRepository.findById(updateCampaignDto.getSnsId())
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 SNS입니다. " + updateCampaignDto.getSnsId()));
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 SNS입니다. " + updateCampaignDto.getSnsId()));
 
 		updateCampaignDto.setFileName(imageUtil.store(updateCampaignDto.getUploadFile(), imageFolder));// 이미지 파일 저장
 
@@ -123,7 +125,7 @@ public class CampaignServiceImpl implements CampaignService {
 		// 캠페인지역 수정
 		if (updateCampaignDto.getLocalId() != null) {
 			Local local = localRepository.findById(updateCampaignDto.getLocalId())
-					.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지역입니다. " + updateCampaignDto.getLocalId()));
+					.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 지역입니다. " + updateCampaignDto.getLocalId()));
 			//캠페인지역 insert
 			if (campaign.getCampaignLocal() == null) {
 				campaignLocalRepository.save(updateCampaignDto.getCampaignLocalDto().createCampaignLocal(campaign, local));
@@ -157,7 +159,7 @@ public class CampaignServiceImpl implements CampaignService {
 	@Override
 	public void updateStatus(Long campaignId, CampaignStatus status) {
 		campaignRepository.findById(campaignId)
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 캠페인입니다. " + campaignId))
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 캠페인입니다. " + campaignId))
 				.updateCampaignStatus(status);
 	}
 
@@ -169,7 +171,7 @@ public class CampaignServiceImpl implements CampaignService {
 		campaignRepository.updatePick(false, updateCampaignPickDto.getOldCampaignId());
 
 		if (campaignRepository.countByPick(true) > 10) {
-			throw new RuntimeException("PICK은 10개까지만 선택가능합니다.");
+			throw new UnprocessableEntityException("PICK은 10개까지만 선택가능합니다.");
 		}
 
 	}

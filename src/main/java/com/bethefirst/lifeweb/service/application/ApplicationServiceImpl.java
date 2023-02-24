@@ -9,6 +9,7 @@ import com.bethefirst.lifeweb.entity.campaign.Campaign;
 import com.bethefirst.lifeweb.repository.application.ApplicationQuestionRepository;
 import com.bethefirst.lifeweb.repository.application.ApplicationRepository;
 import com.bethefirst.lifeweb.service.application.interfaces.ApplicationService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Override
 	public ApplicationDto getApplicationDto(Long applicationId) {
 		return new ApplicationDto(applicationRepository.findById(applicationId)
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 신청서입니다. " + applicationId)));
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 신청서입니다. " + applicationId)));
 	}
 
 	/** 신청서 수정 */
@@ -84,7 +85,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	public void createApplicationQuestion(Long applicationId, CreateApplicationQuestionDto createApplicationQuestionDto) {
 
 		Application application = applicationRepository.findById(applicationId)
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 신청서입니다. " + applicationId));
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 신청서입니다. " + applicationId));
 
 		// 신청서질문 저장
 		createApplicationQuestionDto.getApplicationQuestionDtoList()
