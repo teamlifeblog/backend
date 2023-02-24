@@ -109,7 +109,7 @@ asciidoctor {
 	// source가 없으면 .adoc파일을 전부 html로 만들어버림
 	// source 지정시 특정 adoc만 HTML로 만든다.
 	sources{
-		include("**/index.adoc","**/common/*.adoc")
+		include("**/index.adoc","**/enum/*.adoc")
 	}
 
 	// 특정 .adoc에 다른 adoc 파일을 가져와서(include) 사용하고 싶을 경우 경로를 baseDir로 맞춰주는 설정입니다.

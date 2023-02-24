@@ -51,7 +51,7 @@ class ApplicationControllerTest extends ControllerTest {
 										fieldWithPath("id").type(NUMBER).description("신청서ID"),
 										fieldWithPath("applicationQuestionDtoList.[].id").type(NUMBER).description("질문ID").optional(),
 										fieldWithPath("applicationQuestionDtoList.[].question").type(STRING).description("질문").optional(),
-										fieldWithPath("applicationQuestionDtoList.[].type").type(QuestionType.class).description("유형").optional(),
+										fieldWithPath("applicationQuestionDtoList.[].type").type(enumType(QuestionType.class)).description("유형").optional(),
 										fieldWithPath("applicationQuestionDtoList.[].items").type(STRING).description("항목").optional()
 								)
 						)
@@ -79,9 +79,9 @@ class ApplicationControllerTest extends ControllerTest {
 										parameterWithName("applicationId").attributes(type(NUMBER)).description("신청서ID")
 								),
 								requestFields(
-										fieldWithPath("question").type(ARRAY_STRING).description("질문"),
-										fieldWithPath("type").type(ARRAY).description("유형"),
-										fieldWithPath("items").type(ARRAY_STRING).description("항목").optional()
+										fieldWithPath("question").type(arrayType(STRING)).description("질문"),
+										fieldWithPath("type").type(arrayType(enumType(QuestionType.class))).description("유형"),
+										fieldWithPath("items").type(arrayType(STRING)).description("항목").optional()
 								),
 								responseHeaders(
 										headerWithName(LOCATION).attributes(path(urlTemplate + "/{applicationId}")).description(LOCATION)

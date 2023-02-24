@@ -1,6 +1,7 @@
 package com.bethefirst.lifeweb;
 
 import com.bethefirst.lifeweb.dto.CustomUser;
+import com.bethefirst.lifeweb.util.StringUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
@@ -182,6 +183,22 @@ public abstract class ControllerTest {
 
 	protected Attribute path(Object value) {
 		return field("path", value.toString());
+	}
+
+	protected String enumType(Class<? extends Enum> anEnum) {
+		String simpleName = anEnum.getSimpleName();
+		String kebab = StringUtil.convertPascalToKebab(simpleName);
+		return "link:enum/" + kebab + ".html[" + simpleName + ",role=\"popup\"]";
+	}
+
+	protected String arrayType(Object value) {
+		if (value instanceof String || value instanceof Number || value instanceof Enum<?>) {
+			return "Array<" + value + ">";
+		} else if (value instanceof Class<?>) {
+			return "Array<" + ((Class) value).getSimpleName() + ">";
+		} else {
+			return "error";
+		}
 	}
 
 }
