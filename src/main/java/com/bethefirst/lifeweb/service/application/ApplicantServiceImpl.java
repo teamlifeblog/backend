@@ -34,7 +34,7 @@ public class ApplicantServiceImpl implements ApplicantService {
 
 	private final CampaignRepository campaignRepository;
 	private final ApplicantRepository applicantRepository;
-	private final ApplicationAnswerRepository applicationAnswerRepository;
+	private final ApplicantAnswerRepository applicantAnswerRepository;
 	private final MemberRepository memberRepository;
 	private final ApplicationRepository applicationRepository;
 
@@ -67,7 +67,7 @@ public class ApplicantServiceImpl implements ApplicantService {
 			for (ApplicationQuestion applicationQuestion : applicationQuestionList) {
 				for (ApplicantAnswerDto applicantAnswerDto : applicantAnswerDtoList) {
 					if (applicantAnswerDto.getId().equals(applicationQuestion.getId())) {
-						applicationAnswerRepository.save(applicantAnswerDto.createAnswer(applicant, applicationQuestion));
+						applicantAnswerRepository.save(applicantAnswerDto.createAnswer(applicant, applicationQuestion));
 						break;
 					}
 				}
