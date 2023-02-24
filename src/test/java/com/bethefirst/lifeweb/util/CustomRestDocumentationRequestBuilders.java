@@ -1,4 +1,4 @@
-package com.bethefirst.lifeweb;
+package com.bethefirst.lifeweb.util;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.restdocs.generate.RestDocumentationGenerator;

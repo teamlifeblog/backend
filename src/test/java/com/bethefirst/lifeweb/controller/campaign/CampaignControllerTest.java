@@ -1,7 +1,7 @@
 package com.bethefirst.lifeweb.controller.campaign;
 
-import com.bethefirst.lifeweb.ControllerTest;
-import com.bethefirst.lifeweb.CustomRestDocumentationRequestBuilders;
+import com.bethefirst.lifeweb.controller.ControllerTest;
+import com.bethefirst.lifeweb.util.CustomRestDocumentationRequestBuilders;
 import com.bethefirst.lifeweb.dto.campaign.request.CreateCampaignDto;
 import com.bethefirst.lifeweb.dto.campaign.request.UpdateCampaignDto;
 import com.bethefirst.lifeweb.dto.campaign.request.UpdateCampaignPickDto;
@@ -19,6 +19,8 @@ import org.springframework.data.domain.Sort;
 
 import java.util.Map;
 
+import static com.bethefirst.lifeweb.util.RestdocsUtil.*;
+import static com.bethefirst.lifeweb.util.SnippetUtil.*;
 import static org.mockito.BDDMockito.*;//given,willReturn
 import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,LOCATION
 import static org.springframework.http.HttpMethod.PUT;
@@ -29,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.restdocs.request.RequestDocumentation.*;//pathParameters,queryParameters,requestParts
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;//requestFields,responseFields
 import static org.springframework.restdocs.payload.JsonFieldType.*;
-import static com.bethefirst.lifeweb.CustomJsonFieldType.*;
+import static com.bethefirst.lifeweb.util.CustomJsonFieldType.*;
 
 @WebMvcTest(CampaignController.class)
 class CampaignControllerTest extends ControllerTest {
@@ -49,7 +51,7 @@ class CampaignControllerTest extends ControllerTest {
 		mockMvc.perform(
 						createMultiPartRequest(multipart(urlTemplate), dto)
 								.contentType(MULTIPART_FORM_DATA)
-								.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
+								.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(
@@ -78,10 +80,10 @@ class CampaignControllerTest extends ControllerTest {
 										partWithName("latitude").attributes(type(STRING)).description("위도").optional(),
 										partWithName("longitude").attributes(type(STRING)).description("경도").optional(),
 										partWithName("visitNotice").attributes(type(STRING)).description("방문주의사항").optional(),
-										partWithName("uploadFileList").attributes(type(MULTIPART_FILE)).description("이미지").optional(),
-										partWithName("question").attributes(type(STRING)).description("질문").optional(),
-										partWithName("type").attributes(type(STRING)).description("유형").optional(),
-										partWithName("items").attributes(type(STRING)).description("항목").optional()
+										partWithName("uploadFileList").attributes(type(arrayType(MULTIPART_FILE))).description("이미지").optional(),
+										partWithName("question").attributes(type(arrayType(STRING))).description("질문").optional(),
+										partWithName("type").attributes(type(arrayType(enumType(QuestionType.class)))).description("유형").optional(),
+										partWithName("items").attributes(type(arrayType(STRING))).description("항목").optional()
 								),
 								responseHeaders(
 										headerWithName(LOCATION).attributes(path(urlTemplate + "/{campaignId}")).description(LOCATION)
@@ -124,14 +126,14 @@ class CampaignControllerTest extends ControllerTest {
 										fieldWithPath("filingStartDate").type(LOCAL_DATE).description("등록시작일"),
 										fieldWithPath("filingEndDate").type(LOCAL_DATE).description("등록종료일"),
 										fieldWithPath("headcount").type(NUMBER).description("모집인원"),
-										fieldWithPath("status").type(CampaignStatus.class).description("진행상태"),
+										fieldWithPath("status").type(enumType(CampaignStatus.class)).description("진행상태"),
 										fieldWithPath("campaignLocalDto.localId").type(NUMBER).description("지역ID").optional(),
 										fieldWithPath("campaignLocalDto.localName").type(STRING).description("지역이름").optional(),
 										fieldWithPath("campaignLocalDto.address").type(STRING).description("주소").optional(),
 										fieldWithPath("campaignLocalDto.latitude").type(STRING).description("위도").optional(),
 										fieldWithPath("campaignLocalDto.longitude").type(STRING).description("경도").optional(),
 										fieldWithPath("campaignLocalDto.visitNotice").type(STRING).description("방문주의사항").optional(),
-										fieldWithPath("imageList[]").type(ARRAY_STRING).description("이미지").optional()
+										fieldWithPath("imageList").type(arrayType(STRING)).description("이미지").optional()
 								)
 						)
 				);
@@ -159,9 +161,9 @@ class CampaignControllerTest extends ControllerTest {
 										parameterWithName("snsId").attributes(type(NUMBER)).description("SNSID").optional(),
 										parameterWithName("special").attributes(type(BOOLEAN)).description("스페셜").optional(),
 										parameterWithName("pick").attributes(type(BOOLEAN)).description("픽").optional(),
-										parameterWithName("campaignStatus").attributes(type(CampaignStatus.class)).description("캠페인상태").optional(),
+										parameterWithName("campaignStatus").attributes(type(enumType(CampaignStatus.class))).description("캠페인상태").optional(),
 										parameterWithName("localId").attributes(type(NUMBER)).description("지역ID").optional(),
-										parameterWithName("applicantStatus").attributes(type(ApplicantStatus.class)).description("신청자상태").optional(),
+										parameterWithName("applicantStatus").attributes(type(enumType(ApplicantStatus.class))).description("신청자상태").optional(),
 										parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID").optional()
 								),
 								relaxedResponseFields(
@@ -187,21 +189,21 @@ class CampaignControllerTest extends ControllerTest {
 										fieldWithPath("content.[].filingStartDate").type(LOCAL_DATE).description("등록시작일"),
 										fieldWithPath("content.[].filingEndDate").type(LOCAL_DATE).description("등록종료일"),
 										fieldWithPath("content.[].headcount").type(NUMBER).description("모집인원"),
-										fieldWithPath("content.[].status").type(CampaignStatus.class).description("진행상태"),
+										fieldWithPath("content.[].status").type(enumType(CampaignStatus.class)).description("진행상태"),
 										fieldWithPath("content.[].campaignLocalDto.localId").type(NUMBER).description("지역ID").optional(),
 										fieldWithPath("content.[].campaignLocalDto.localName").type(STRING).description("지역이름").optional(),
 										fieldWithPath("content.[].campaignLocalDto.address").type(STRING).description("주소").optional(),
 										fieldWithPath("content.[].campaignLocalDto.latitude").type(STRING).description("위도").optional(),
 										fieldWithPath("content.[].campaignLocalDto.longitude").type(STRING).description("경도").optional(),
 										fieldWithPath("content.[].campaignLocalDto.visitNotice").type(STRING).description("방문주의사항").optional(),
-										fieldWithPath("content.[].imageList[]").type(ARRAY_STRING).description("이미지").optional(),
-										fieldWithPath("pageable").type(Pageable.class).description("페이징"),
+										fieldWithPath("content.[].imageList").type(arrayType(STRING)).description("이미지").optional(),
+										fieldWithPath("pageable").type(Pageable.class.getSimpleName()).description("페이징"),
 										fieldWithPath("last").type(BOOLEAN).description("마지막페이지"),
 										fieldWithPath("totalPages").type(NUMBER).description("전체페이지"),
 										fieldWithPath("totalElements").type(NUMBER).description("전체엘리먼트"),
 										fieldWithPath("size").type(NUMBER).description("사이즈"),
 										fieldWithPath("number").type(NUMBER).description("페이지"),
-										fieldWithPath("sort").type(Sort.class).description("정렬"),
+										fieldWithPath("sort").type(Sort.class.getSimpleName()).description("정렬"),
 										fieldWithPath("first").type(BOOLEAN).description("첫페이지"),
 										fieldWithPath("numberOfElements").type(NUMBER).description("엘리먼트"),
 										fieldWithPath("empty").type(BOOLEAN).description("empty")
@@ -219,7 +221,7 @@ class CampaignControllerTest extends ControllerTest {
 		mockMvc.perform(
 						createMultiPartRequest(CustomRestDocumentationRequestBuilders.multipart(PUT, urlTemplate + "/{campaignId}", 1L), dto)
 								.contentType(MULTIPART_FORM_DATA)
-								.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
+								.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(
@@ -252,11 +254,11 @@ class CampaignControllerTest extends ControllerTest {
 										partWithName("longitude").attributes(type(STRING)).description("경도").optional(),
 										partWithName("visitNotice").attributes(type(STRING)).description("방문주의사항").optional(),
 										partWithName("campaignImageId").attributes(type(NUMBER)).description("기존 이미지 ID").optional(),
-										partWithName("uploadFileList").attributes(type(MULTIPART_FILE)).description("새로운 이미지 파일").optional(),
-										partWithName("applicationQuestionId").attributes(type(NUMBER)).description("질문ID").optional(),
-										partWithName("question").attributes(type(NUMBER)).description("질문").optional(),
-										partWithName("type").attributes(type(QuestionType.class)).description("유형").optional(),
-										partWithName("items").attributes(type(ARRAY)).description("항목").optional()
+										partWithName("uploadFileList").attributes(type(arrayType(MULTIPART_FILE))).description("새로운 이미지 파일").optional(),
+										partWithName("applicationQuestionId").attributes(type(arrayType(NUMBER))).description("질문ID").optional(),
+										partWithName("question").attributes(type(arrayType(NUMBER))).description("질문").optional(),
+										partWithName("type").attributes(type(arrayType(enumType(QuestionType.class)))).description("유형").optional(),
+										partWithName("items").attributes(type(arrayType(STRING))).description("항목").optional()
 								),
 								responseHeaders(
 										headerWithName(LOCATION).attributes(path(urlTemplate + "/{campaignId}")).description(LOCATION)
@@ -275,7 +277,7 @@ class CampaignControllerTest extends ControllerTest {
 								"status", CampaignStatus.FILING.name()
 						)))
 						.contentType(APPLICATION_JSON)
-						.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
+						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(
@@ -287,7 +289,7 @@ class CampaignControllerTest extends ControllerTest {
 										parameterWithName("campaignId").attributes(type(NUMBER)).description("캠페인ID")
 								),
 								requestFields(
-										fieldWithPath("status").type(CampaignStatus.class).description("캠페인상태")
+										fieldWithPath("status").type(enumType(CampaignStatus.class)).description("캠페인상태")
 								),
 								responseHeaders(
 										headerWithName(LOCATION).attributes(path(urlTemplate + "/{campaignId}")).description(LOCATION)
@@ -305,7 +307,7 @@ class CampaignControllerTest extends ControllerTest {
 		mockMvc.perform(put(urlTemplate + "/pick")
 						.content(objectMapper.writeValueAsString(dto))
 						.contentType(APPLICATION_JSON)
-						.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
+						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(
@@ -314,8 +316,8 @@ class CampaignControllerTest extends ControllerTest {
 										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
 								),
 								requestFields(
-										fieldWithPath("newCampaignId").type(ARRAY_NUMBER).description("pick 선택할 캠페인ID"),
-										fieldWithPath("oldCampaignId").type(ARRAY_NUMBER).description("pick 해제할 캠페인ID")
+										fieldWithPath("newCampaignId").type(arrayType(NUMBER)).description("pick 선택할 캠페인ID"),
+										fieldWithPath("oldCampaignId").type(arrayType(NUMBER)).description("pick 해제할 캠페인ID")
 								),
 								responseHeaders(
 										headerWithName(LOCATION).attributes(path(urlTemplate)).description(LOCATION)
