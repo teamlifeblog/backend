@@ -1,6 +1,6 @@
 package com.bethefirst.lifeweb.controller.application;
 
-import com.bethefirst.lifeweb.ControllerTest;
+import com.bethefirst.lifeweb.controller.ControllerTest;
 import com.bethefirst.lifeweb.dto.application.request.CreateApplicationQuestionDto;
 import com.bethefirst.lifeweb.entity.application.QuestionType;
 import com.bethefirst.lifeweb.entity.member.Role;
@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import static com.bethefirst.lifeweb.util.RestdocsUtil.*;
+import static com.bethefirst.lifeweb.util.SnippetUtil.*;
 import static org.mockito.BDDMockito.*;//given,willReturn
 import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,LOCATION
 import static org.springframework.http.MediaType.*;//MULTIPART_FORM_DATA,APPLICATION_JSON
@@ -19,7 +21,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.restdocs.request.RequestDocumentation.*;//pathParameters,queryParameters,requestParts
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;//requestFields,responseFields
 import static org.springframework.restdocs.payload.JsonFieldType.*;
-import static com.bethefirst.lifeweb.CustomJsonFieldType.*;
 
 @WebMvcTest(ApplicationController.class)
 class ApplicationControllerTest extends ControllerTest {
@@ -36,7 +37,7 @@ class ApplicationControllerTest extends ControllerTest {
 		given(applicationService.getApplicationDto(1L)).willReturn(applicationDto.getApplicationDto());
 
 		mockMvc.perform(get(urlTemplate + "/{applicationId}", 1L)
-						.header(AUTHORIZATION, getJwt(Role.USER.name(), 1L))
+						.header(AUTHORIZATION, getJwt(Role.USER, 1L))
 				)
 				.andExpect(status().isOk())
 				.andDo(
@@ -67,7 +68,7 @@ class ApplicationControllerTest extends ControllerTest {
 		mockMvc.perform(post(urlTemplate + "/{applicationId}/question", 1L)
 						.content(objectMapper.writeValueAsString(toMap(dto)))
 						.contentType(APPLICATION_JSON)
-						.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
+						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(

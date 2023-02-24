@@ -1,6 +1,6 @@
 package com.bethefirst.lifeweb.controller.application;
 
-import com.bethefirst.lifeweb.ControllerTest;
+import com.bethefirst.lifeweb.controller.ControllerTest;
 import com.bethefirst.lifeweb.dto.application.request.CreateApplicantDto;
 import com.bethefirst.lifeweb.dto.application.request.UpdateApplicantDto;
 import com.bethefirst.lifeweb.dto.application.request.UpdateApplicantStatusDto;
@@ -14,6 +14,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import static com.bethefirst.lifeweb.util.RestdocsUtil.*;
+import static com.bethefirst.lifeweb.util.SnippetUtil.*;
 import static org.mockito.BDDMockito.*;//given,willReturn
 import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,LOCATION
 import static org.springframework.http.MediaType.*;//MULTIPART_FORM_DATA,APPLICATION_JSON
@@ -23,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.restdocs.request.RequestDocumentation.*;//pathParameters,queryParameters,requestParts
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;//requestFields,responseFields
 import static org.springframework.restdocs.payload.JsonFieldType.*;
-import static com.bethefirst.lifeweb.CustomJsonFieldType.*;
+import static com.bethefirst.lifeweb.util.CustomJsonFieldType.*;
 
 @WebMvcTest(ApplicantController.class)
 class ApplicantControllerTest extends ControllerTest {
@@ -43,7 +45,7 @@ class ApplicantControllerTest extends ControllerTest {
 		mockMvc.perform(post(urlTemplate)
 						.content(objectMapper.writeValueAsString(toMap(dto)))
 						.contentType(APPLICATION_JSON)
-						.header(AUTHORIZATION, getJwt(Role.USER.name(), 1L))
+						.header(AUTHORIZATION, getJwt(Role.USER, 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(
@@ -70,7 +72,7 @@ class ApplicantControllerTest extends ControllerTest {
 		given(applicationService.getApplicantDto(1L)).willReturn(applicantDto.getApplicantDto());
 
 		mockMvc.perform(get(urlTemplate + "/{applicantId}", 1L)
-						.header(AUTHORIZATION, getJwt(Role.USER.name(), 1L))
+						.header(AUTHORIZATION, getJwt(Role.USER, 1L))
 				)
 				.andExpect(status().isOk())
 				.andDo(
@@ -103,7 +105,7 @@ class ApplicantControllerTest extends ControllerTest {
 						.param("page", "1")
 						.param("size", "10")
 						.param("sort", "created,desc")
-						.header(AUTHORIZATION, getJwt(Role.USER.name(), 1L))
+						.header(AUTHORIZATION, getJwt(Role.USER, 1L))
 				)
 				.andExpect(status().isOk())
 				.andDo(
@@ -152,7 +154,7 @@ class ApplicantControllerTest extends ControllerTest {
 		mockMvc.perform(put(urlTemplate + "/{applicantId}", 1L)
 						.content(objectMapper.writeValueAsString(toMap(dto)))
 						.contentType(APPLICATION_JSON)
-						.header(AUTHORIZATION, getJwt(Role.USER.name(), 1L))
+						.header(AUTHORIZATION, getJwt(Role.USER, 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(
@@ -186,7 +188,7 @@ class ApplicantControllerTest extends ControllerTest {
 		mockMvc.perform(put(urlTemplate + "/status")
 						.content(objectMapper.writeValueAsString(toMap(dto)))
 						.contentType(APPLICATION_JSON)
-						.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
+						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(
@@ -212,7 +214,7 @@ class ApplicantControllerTest extends ControllerTest {
 		willDoNothing().given(applicationService).deleteApplicant(1L);
 
 		mockMvc.perform(delete(urlTemplate + "/{applicantId}", 1L)
-						.header(AUTHORIZATION, getJwt(Role.USER.name(), 1L))
+						.header(AUTHORIZATION, getJwt(Role.USER, 1L))
 				)
 				.andExpect(status().isNoContent())
 				.andDo(

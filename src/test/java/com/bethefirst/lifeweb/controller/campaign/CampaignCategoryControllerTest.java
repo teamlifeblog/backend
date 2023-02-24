@@ -1,6 +1,6 @@
 package com.bethefirst.lifeweb.controller.campaign;
 
-import com.bethefirst.lifeweb.ControllerTest;
+import com.bethefirst.lifeweb.controller.ControllerTest;
 import com.bethefirst.lifeweb.entity.member.Role;
 import com.bethefirst.lifeweb.initDto.campaign.InitCampaignCategoryDto;
 import com.bethefirst.lifeweb.service.campaign.interfaces.CampaignCategoryService;
@@ -10,6 +10,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Map;
 
+import static com.bethefirst.lifeweb.util.RestdocsUtil.*;
+import static com.bethefirst.lifeweb.util.SnippetUtil.*;
 import static org.mockito.BDDMockito.*;//given,willReturn
 import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,LOCATION
 import static org.springframework.http.MediaType.*;//MULTIPART_FORM_DATA,APPLICATION_JSON
@@ -39,7 +41,7 @@ class CampaignCategoryControllerTest extends ControllerTest {
 								"campaignCategoryName", "new campaignCategoryName"
 						)))
 						.contentType(APPLICATION_JSON)
-						.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
+						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(
@@ -84,7 +86,7 @@ class CampaignCategoryControllerTest extends ControllerTest {
 								"campaignCategoryName", "updated campaignCategoryName"
 						)))
 						.contentType(APPLICATION_JSON)
-						.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
+						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
 				)
 				.andExpect(status().isCreated())
 				.andDo(
@@ -111,7 +113,7 @@ class CampaignCategoryControllerTest extends ControllerTest {
 		willDoNothing().given(campaignCategoryService).deleteCampaignCategory(1L);
 
 		mockMvc.perform(delete(urlTemplate + "/{campaignCategoryId}", 1L)
-						.header(AUTHORIZATION, getJwt(Role.ADMIN.name(), 1L))
+						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
 				)
 				.andExpect(status().isNoContent())
 				.andDo(

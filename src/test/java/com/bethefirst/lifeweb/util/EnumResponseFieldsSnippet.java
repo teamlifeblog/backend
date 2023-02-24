@@ -1,4 +1,4 @@
-package com.bethefirst.lifeweb;
+package com.bethefirst.lifeweb.util;
 
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.operation.Operation;
