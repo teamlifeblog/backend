@@ -19,8 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-
 @RestController
 @RequestMapping("applicants")
 @RequiredArgsConstructor
@@ -40,7 +38,7 @@ public class ApplicantController {
 
 		// Location 설정
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(URI.create("/applicants/" + applicantId));
+		headers.set(HttpHeaders.CONTENT_LOCATION, "/applicants/" + applicantId);
 
 		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}
@@ -69,7 +67,7 @@ public class ApplicantController {
 
 		// Location 설정
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(URI.create("/applicants/" + applicantId));
+		headers.set(HttpHeaders.CONTENT_LOCATION, "/applicants/" + applicantId);
 
 		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}
@@ -83,7 +81,7 @@ public class ApplicantController {
 
 		// Location 설정
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(URI.create("/applicants"));
+		headers.set(HttpHeaders.CONTENT_LOCATION, "/applicants");
 
 		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}

@@ -16,8 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-
 @RestController
 @RequestMapping("campaigns")
 @RequiredArgsConstructor
@@ -35,7 +33,7 @@ public class CampaignController {
 
 		// Location 설정
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(URI.create("/campaigns/" + campaignId));
+		headers.set(HttpHeaders.CONTENT_LOCATION, "/campaigns/" + campaignId);
 
 		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}
@@ -67,7 +65,7 @@ public class CampaignController {
 
 		// Location 설정
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(URI.create("/campaigns/" + campaignId));
+		headers.set(HttpHeaders.CONTENT_LOCATION, "/campaigns/" + campaignId);
 
 		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}
@@ -82,7 +80,7 @@ public class CampaignController {
 
 		// Location 설정
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(URI.create("/campaigns/" + campaignId));
+		headers.set(HttpHeaders.CONTENT_LOCATION, "/campaigns/" + campaignId);
 
 		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}
@@ -96,7 +94,7 @@ public class CampaignController {
 
 		// Location 설정
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(URI.create("/campaigns"));
+		headers.set(HttpHeaders.CONTENT_LOCATION, "/campaigns");
 
 		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}

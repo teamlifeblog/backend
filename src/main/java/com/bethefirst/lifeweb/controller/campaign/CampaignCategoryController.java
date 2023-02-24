@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.Map;
 
 @RestController
@@ -30,7 +29,7 @@ public class CampaignCategoryController {
 
 		// Location 설정
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(URI.create("/campaign-categories"));
+		headers.set(HttpHeaders.CONTENT_LOCATION, "/campaign-categories");
 
 		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}
@@ -51,7 +50,7 @@ public class CampaignCategoryController {
 
 		// Location 설정
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(URI.create("/campaign-categories"));
+		headers.set(HttpHeaders.CONTENT_LOCATION, "/campaign-categories");
 
 		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}

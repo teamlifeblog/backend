@@ -11,12 +11,14 @@ import com.bethefirst.lifeweb.entity.application.ApplicationQuestion;
 import com.bethefirst.lifeweb.entity.campaign.Campaign;
 import com.bethefirst.lifeweb.entity.campaign.CampaignStatus;
 import com.bethefirst.lifeweb.entity.member.Member;
-import com.bethefirst.lifeweb.repository.application.ApplicationAnswerRepository;
+import com.bethefirst.lifeweb.exception.UnprocessableEntityException;
+import com.bethefirst.lifeweb.repository.application.ApplicantAnswerRepository;
 import com.bethefirst.lifeweb.repository.application.ApplicantRepository;
 import com.bethefirst.lifeweb.repository.application.ApplicationRepository;
 import com.bethefirst.lifeweb.repository.campaign.CampaignRepository;
 import com.bethefirst.lifeweb.repository.member.MemberRepository;
 import com.bethefirst.lifeweb.service.application.interfaces.ApplicantService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -34,7 +36,7 @@ public class ApplicantServiceImpl implements ApplicantService {
 
 	private final CampaignRepository campaignRepository;
 	private final ApplicantRepository applicantRepository;
-	private final ApplicationAnswerRepository applicationAnswerRepository;
+	private final ApplicantAnswerRepository applicantAnswerRepository;
 	private final MemberRepository memberRepository;
 	private final ApplicationRepository applicationRepository;
 
@@ -44,9 +46,9 @@ public class ApplicantServiceImpl implements ApplicantService {
 		
 		// 신청자 저장
 		Member member = memberRepository.findById(memberId)
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. " + memberId));
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다. " + memberId));
 		Application application = applicationRepository.findById(createApplicationDto.getApplicationId())
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 캠페인입니다. " + createApplicationDto.getApplicationId()));
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 캠페인입니다. " + createApplicationDto.getApplicationId()));
 
 		Applicant applicant = createApplicationDto.createApplicant(member, application);
 
@@ -67,7 +69,7 @@ public class ApplicantServiceImpl implements ApplicantService {
 			for (ApplicationQuestion applicationQuestion : applicationQuestionList) {
 				for (ApplicantAnswerDto applicantAnswerDto : applicantAnswerDtoList) {
 					if (applicantAnswerDto.getId().equals(applicationQuestion.getId())) {
-						applicationAnswerRepository.save(applicantAnswerDto.createAnswer(applicant, applicationQuestion));
+						applicantAnswerRepository.save(applicantAnswerDto.createAnswer(applicant, applicationQuestion));
 						break;
 					}
 				}
@@ -82,7 +84,7 @@ public class ApplicantServiceImpl implements ApplicantService {
 	@Override
 	public ApplicantDto getApplicantDto(Long applicantId) {
 		return new ApplicantDto(applicantRepository.findById(applicantId)
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 신청자입니다. " + applicantId)));
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 신청자입니다. " + applicantId)));
 	}
 
 	/** 신청자 리스트 조회 */
@@ -97,13 +99,13 @@ public class ApplicantServiceImpl implements ApplicantService {
 	public void updateApplicant(Long applicantId, UpdateApplicantDto updateApplicantDto) {
 		
 		Applicant application = applicantRepository.findById(applicantId)
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 신청자입니다. " + applicantId));
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 신청자입니다. " + applicantId));
 
 		//  캠페인 상태 != 신청 || 신청서 상태 == 선정 일 떄 수정 불가
 		if (!application.getApplication().getCampaign().getStatus().equals(CampaignStatus.APPLICATION)) {
-			throw new IllegalArgumentException("캠페인 신청기간에만 수정할 수 있습니다");
+			throw new UnprocessableEntityException("캠페인 신청기간에만 수정할 수 있습니다");
 		} else if (application.getStatus().equals(ApplicantStatus.SELECT)) {
-			throw new IllegalArgumentException("선정된 신청자는 수정할 수 없습니다.");
+			throw new UnprocessableEntityException("선정된 신청자는 수정할 수 없습니다.");
 		}
 
 		// 신청자 수정
@@ -141,18 +143,24 @@ public class ApplicantServiceImpl implements ApplicantService {
 		applicantRepository.updateStatus(ApplicantStatus.UNSELECT, updateApplicantStatusDto.getUnselectApplicantId(), updateApplicantStatusDto.getCampaignId());
 
 		Campaign campaign = campaignRepository.findById(updateApplicantStatusDto.getCampaignId())
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 캠페인입니다. " + updateApplicantStatusDto.getCampaignId()));
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 캠페인입니다. " + updateApplicantStatusDto.getCampaignId()));
 
 		if (campaign.getHeadcount() < campaign.getApplication().getApplicantList().size()) {
-			throw new RuntimeException("신청자 선정은 " + campaign.getHeadcount() + "명까지만 가능합니다.");
+			throw new UnprocessableEntityException("신청자 선정은 " + campaign.getHeadcount() + "명까지만 가능합니다.");
 		}
 
 	}
 
 	/** 신청자 삭제 */
 	@Override
-	public void deleteApplicant(Long applicationId) {
-		applicantRepository.deleteById(applicationId);
+	public void deleteApplicant(Long applicantId) {
+
+		// 신청자 조회
+		applicantRepository.findById(applicantId)
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 신청자입니다. " + applicantId));
+
+		// 신청자 삭제
+		applicantRepository.deleteById(applicantId);
 	}
 
 }
