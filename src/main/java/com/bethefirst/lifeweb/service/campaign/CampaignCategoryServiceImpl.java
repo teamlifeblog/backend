@@ -45,6 +45,12 @@ public class CampaignCategoryServiceImpl implements CampaignCategoryService {
 	/** 캠페인카테고리 삭제 */
 	@Override
 	public void deleteCampaignCategory(Long campaignCategoryId) {
+
+		// 캠페인카테고리 조회
+		campaignCategoryRepository.findById(campaignCategoryId)
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 캠페인카테고리입니다. " + campaignCategoryId));
+
+		// 캠페인카테고리 삭제
 		campaignCategoryRepository.deleteById(campaignCategoryId);
 	}
 

@@ -42,6 +42,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	}
 
 	/** 신청서 조회 */
+	@Transactional(readOnly = true)
 	@Override
 	public ApplicationDto getApplicationDto(Long applicationId) {
 		return new ApplicationDto(applicationRepository.findById(applicationId)

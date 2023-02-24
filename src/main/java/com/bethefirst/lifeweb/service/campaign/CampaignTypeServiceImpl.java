@@ -45,6 +45,12 @@ public class CampaignTypeServiceImpl implements CampaignTypeService {
 	/** 캠페인타입 삭제 */
 	@Override
 	public void deleteCampaignType(Long campaignTypeId) {
+
+		// 캠페인타입 조회
+		campaignTypeRepository.findById(campaignTypeId)
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 캠페인타입입니다. " + campaignTypeId));
+
+		// 캠페인타입 삭제
 		campaignTypeRepository.deleteById(campaignTypeId);
 	}
 

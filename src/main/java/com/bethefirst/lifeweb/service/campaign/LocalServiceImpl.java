@@ -45,6 +45,12 @@ public class LocalServiceImpl implements LocalService {
 	/** 지역 삭제 */
 	@Override
 	public void deleteLocal(Long localId) {
+
+		// 지역 조회
+		localRepository.findById(localId)
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 지역입니다. " + localId));
+
+		// 지역 삭제
 		localRepository.deleteById(localId);
 	}
 

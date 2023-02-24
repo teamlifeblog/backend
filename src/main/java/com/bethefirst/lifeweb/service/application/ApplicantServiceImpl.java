@@ -153,8 +153,14 @@ public class ApplicantServiceImpl implements ApplicantService {
 
 	/** 신청자 삭제 */
 	@Override
-	public void deleteApplicant(Long applicationId) {
-		applicantRepository.deleteById(applicationId);
+	public void deleteApplicant(Long applicantId) {
+
+		// 신청자 조회
+		applicantRepository.findById(applicantId)
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 신청자입니다. " + applicantId));
+
+		// 신청자 삭제
+		applicantRepository.deleteById(applicantId);
 	}
 
 }
