@@ -7,7 +7,6 @@ import com.bethefirst.lifeweb.entity.campaign.*;
 import com.bethefirst.lifeweb.entity.member.Sns;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,25 +52,17 @@ public class CreateCampaignDto {
 	@NotBlank(message = "키워드는 필수 입력 값입니다.")
 	private String keywords;//키워드
 
-	@NotBlank(message = "신청시작일은 필수 입력 값입니다.")
-	@Pattern(regexp = "\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$",
-			message = "날짜형식에 맞게 입력해주세요(yyyy-mm-dd)")
-	private String applicationStartDate;//신청시작일
+	@NotNull(message = "신청시작일은 필수 입력 값입니다.")
+	private LocalDate applicationStartDate;//신청시작일
 
-	@NotBlank(message = "신청종료일은 필수 입력 값입니다.")
-	@Pattern(regexp = "\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$",
-			message = "날짜형식에 맞게 입력해주세요(yyyy-mm-dd)")
-	private String applicationEndDate;//신청종료일
+	@NotNull(message = "신청종료일은 필수 입력 값입니다.")
+	private LocalDate applicationEndDate;//신청종료일
 
-	@NotBlank(message = "등록시작일은 필수 입력 값입니다.")
-	@Pattern(regexp = "\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$",
-			message = "날짜형식에 맞게 입력해주세요(yyyy-mm-dd)")
-	private String filingStartDate;//등록시작일
+	@NotNull(message = "등록시작일은 필수 입력 값입니다.")
+	private LocalDate filingStartDate;//등록시작일
 
-	@NotBlank(message = "등록종료일은 필수 입력 값입니다.")
-	@Pattern(regexp = "\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$",
-			message = "날짜형식에 맞게 입력해주세요(yyyy-mm-dd)")
-	private String filingEndDate;//등록종료일
+	@NotNull(message = "등록종료일은 필수 입력 값입니다.")
+	private LocalDate filingEndDate;//등록종료일
 
 	@NotNull(message = "모집인원은 필수 입력 값입니다.")
 	private Integer headcount;//모집인원
@@ -108,10 +99,8 @@ public class CreateCampaignDto {
 		return new Campaign(campaignCategory, campaignType, sns,
 				special, title, fileName, provision,
 				reviewNotice, guideline, keywords,
-//				applicationStartDate, applicationEndDate,
-//				filingStartDate, filingEndDate, headcount);
-				LocalDate.parse(applicationStartDate), LocalDate.parse(applicationEndDate),
-				LocalDate.parse(filingStartDate), LocalDate.parse(filingEndDate), headcount);
+				applicationStartDate, applicationEndDate,
+				filingStartDate, filingEndDate, headcount);
 	}
 
 }
