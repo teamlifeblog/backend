@@ -10,6 +10,7 @@ import com.bethefirst.lifeweb.dto.member.response.MemberInfoDto;
 import com.bethefirst.lifeweb.service.member.interfaces.MemberService;
 import com.bethefirst.lifeweb.service.member.interfaces.MemberSnsService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -34,6 +36,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_LOCATION;
 @RequestMapping("/members")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class MemberController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -106,7 +109,7 @@ public class MemberController {
 
     /** 회원 전체 조회 */
     @GetMapping
-    public Page<MemberInfoDto> list(@RequestBody MemberSearchRequirements requirements,
+    public Page<MemberInfoDto> list(MemberSearchRequirements requirements,
                                     @PageableDefault(sort = "id", size = 20, direction = Sort.Direction.DESC)Pageable pageable){
         return memberService.getMemberList(requirements, pageable);
     }
@@ -138,13 +141,13 @@ public class MemberController {
 
     /** 닉네임 중복 체크 */
     @GetMapping("/nickname")
-    public void existNickname(String nickname){
+    public void existNickname(@Valid @NotBlank(message = "닉네임은 필수 값 입니다.") String nickname){
         memberService.existsNickname(nickname);
     }
 
     /** 이메일 중복 체크 */
     @GetMapping("/email")
-    public void existEmail(String email){
+    public void existEmail(@Valid @NotBlank(message ="이메일은 필수 값 입니다.") String email){
         memberService.existsEmail(email);
     }
 

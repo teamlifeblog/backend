@@ -1,10 +1,12 @@
 package com.bethefirst.lifeweb.dto.member.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@Builder
+@EqualsAndHashCode
 public class MemberSearchRequirements { //회원 검색조건
 
     private String email;
