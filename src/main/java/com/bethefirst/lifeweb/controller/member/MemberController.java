@@ -25,7 +25,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 
@@ -112,20 +111,6 @@ public class MemberController {
         return memberService.getMemberList(requirements, pageable);
     }
 
-
-    /** 이미지 수정 */
-    @PutMapping("/{memberId}/image")
-    @PreAuthorize("isAuthenticated() and (( #memberId == principal.memberId ) or hasRole('ADMIN'))")
-    public ResponseEntity<?> updateMemberImage(@PathVariable Long memberId, MultipartFile fileName){
-
-        memberService.updateMemberImage(fileName,memberId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("/members/" + memberId));
-
-        return new ResponseEntity<>(headers, HttpStatus.CREATED);
-    }
-
     /** 비밀번호 변경 */
     @PutMapping("/{memberId}/password")
     @PreAuthorize("!isAuthenticated() or (isAuthenticated() and (( #memberId == principal.memberId ) or hasRole('ADMIN')))")
@@ -150,31 +135,6 @@ public class MemberController {
 
 		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}
-
-
-    /** 회원 SNS 등록 */
-    @PostMapping("/{memberId}/sns")
-    @PreAuthorize("isAuthenticated() and (( #createMemberSnsDto.memberId == principal.memberId ) or hasRole('ADMIN'))")
-    public ResponseEntity<?> create(@RequestBody CreateMemberSnsDto createMemberSnsDto){
-
-        //회원 SNS 생성
-        memberSnsService.createMemberSns(createMemberSnsDto);
-
-        return new ResponseEntity<>(HttpStatus.CREATED);
-
-    }
-
-    /** 회원 SNS 삭제 */
-    @DeleteMapping("/sns/{memberSnsId}")
-    @PreAuthorize("isAuthenticated() and (( #deleteMemberSnsDto.memberId == principal.memberId ) or hasRole('ADMIN'))")
-    public ResponseEntity<?> delete(@PathVariable Long memberSnsId,
-                                    @RequestBody DeleteMemberSnsDto deleteMemberSnsDto){
-
-        //회원 SNS 삭제
-        memberSnsService.deleteMemberSns(memberSnsId);
-
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
 
     /** 닉네임 중복 체크 */
     @GetMapping("/nickname")

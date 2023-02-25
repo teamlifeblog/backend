@@ -1,13 +1,13 @@
 package com.bethefirst.lifeweb.service.member.interfaces;
 
-import com.bethefirst.lifeweb.dto.member.request.CreateMemberSnsDto;
+import com.bethefirst.lifeweb.dto.member.response.MemberSnsDto;
+import com.bethefirst.lifeweb.entity.member.Member;
+
+import java.util.List;
 
 public interface MemberSnsService {
 
-    /** 회원 SNS 등록 **/
-    void createMemberSns(CreateMemberSnsDto createMemberSnsDto);
-
-    /** 회원 SNS 삭제 */
-    void deleteMemberSns(Long memberSnsId);
-
+	/** 회원 SNS 수정 */
+	void updateMemberSns(Member member, List<MemberSnsDto> memberSnsDtoList);
+	
 }

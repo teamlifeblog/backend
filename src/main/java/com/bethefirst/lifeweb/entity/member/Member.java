@@ -71,9 +71,10 @@ public class Member {//회원
 	}
 
 	//== 정보 수정 == /
-	public void updateMember(String name, String nickname, String gender, LocalDate birth, String tel,
+	public void updateMember(String fileName, String name, String nickname, String gender, LocalDate birth, String tel,
 							 String postcode, String address, String detailAddress, String extraAddress){
 
+		this.fileName = fileName;
 		this.name = name;
 		this.nickname = nickname;
 		this.gender = gender;
