@@ -4,6 +4,9 @@ import com.bethefirst.lifeweb.entity.member.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.restdocs.snippet.Attributes.Attribute;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 @Slf4j
 public class SnippetUtil {
 
@@ -13,6 +16,12 @@ public class SnippetUtil {
 		} else {
 			return new Attribute("info", info.toString());
 		}
+	}
+
+	public static Attribute info(Role... roles) {
+		return info(Arrays.stream(roles)
+				.map(Role::getDescription)
+				.collect(Collectors.joining(", ")));
 	}
 
 	public static Attribute type(Object value) {
