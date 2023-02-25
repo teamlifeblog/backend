@@ -1,12 +1,16 @@
 package com.bethefirst.lifeweb.dto.member.request;
 
 
+import com.bethefirst.lifeweb.dto.member.response.MemberSnsDto;
 import com.bethefirst.lifeweb.entity.member.Member;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,13 +19,16 @@ import java.time.LocalDate;
 @EqualsAndHashCode
 public class UpdateMemberDto {
 
+	private MultipartFile uploadFile;//파일
+	private String fileName;//프로필이미지
+
+	@NotBlank(message = "이름은 필수 입력 값입니다.")
+	private String name; //이름
+
 	@NotBlank(message = "닉네임은 필수 입력 값입니다.")
 //    @Pattern(regexp = "/^[\\w\\Wㄱ-ㅎㅏ-ㅣ가-힣]{2,15}$/",
 //            message = "닉네임은 특수문자를 제외한 2자 ~ 15자여야 합니다. ")
 	private String nickname;//닉네임
-
-	@NotBlank(message = "이름은 필수 입력 값입니다.")
-	private String name; //이름
 
 	@NotBlank(message = "성별은 필수 입력 값입니다.")
 	private String gender; //성별
@@ -43,8 +50,20 @@ public class UpdateMemberDto {
 	@NotBlank(message = "참고사항은 필수 입력 값입니다.")
 	private String extraAddress; //참고사항
 
-    public void updateMember(Member member){
-        member.updateMember(name, nickname, gender, birth, tel, postcode, address, detailAddress, extraAddress);
+	private List<Long> memberSnsId = new ArrayList<>();
+	private List<Long> snsId;
+	private List<String> url;
+
+	public List<MemberSnsDto> getMemberSnsDtoList() {
+		List<MemberSnsDto> list = new ArrayList<>();
+		for (int i = 0; i < memberSnsId.size(); i++) {
+			list.add(new MemberSnsDto(memberSnsId.get(i), snsId.get(i), url.get(i)));
+		}
+		return list;
+	}
+
+    public void updateMember(Member member) {
+        member.updateMember(fileName, name, nickname, gender, birth, tel, postcode, address, detailAddress, extraAddress);
     }
 
 }
