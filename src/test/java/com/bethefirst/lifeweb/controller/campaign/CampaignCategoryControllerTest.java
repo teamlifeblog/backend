@@ -34,11 +34,11 @@ class CampaignCategoryControllerTest extends ControllerTest {
 	@Test
 	void 캠페인카테고리_생성() throws Exception {
 
-		willDoNothing().given(campaignCategoryService).createCampaignCategory("new campaignCategoryName");
+		willDoNothing().given(campaignCategoryService).createCampaignCategory("새 카테고리이름");
 
 		mockMvc.perform(post(urlTemplate)
 						.content(objectMapper.writeValueAsString(Map.of(
-								"campaignCategoryName", "new campaignCategoryName"
+								"campaignCategoryName", "새 카테고리이름"
 						)))
 						.contentType(APPLICATION_JSON)
 						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
@@ -79,11 +79,11 @@ class CampaignCategoryControllerTest extends ControllerTest {
 	@Test
 	void 캠페인카테고리_수정() throws Exception {
 
-		willDoNothing().given(campaignCategoryService).updateCampaignCategory(1L, "updated campaignCategoryName");
+		willDoNothing().given(campaignCategoryService).updateCampaignCategory(1L, "수정된 카테고리이름");
 
 		mockMvc.perform(put(urlTemplate + "/{campaignCategoryId}", 1L)
 						.content(objectMapper.writeValueAsString(Map.of(
-								"campaignCategoryName", "updated campaignCategoryName"
+								"campaignCategoryName", "수정된 카테고리이름"
 						)))
 						.contentType(APPLICATION_JSON)
 						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))

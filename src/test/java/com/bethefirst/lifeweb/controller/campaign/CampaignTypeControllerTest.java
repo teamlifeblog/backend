@@ -34,11 +34,11 @@ class CampaignTypeControllerTest extends ControllerTest {
 	@Test
 	void 캠페인타입_생성() throws Exception {
 
-		willDoNothing().given(campaignTypeService).createCampaignType("new campaignTypeName");
+		willDoNothing().given(campaignTypeService).createCampaignType("새 타입이름");
 
 		mockMvc.perform(post(urlTemplate)
 						.content(objectMapper.writeValueAsString(Map.of(
-								"campaignTypeName", "new campaignTypeName"
+								"campaignTypeName", "새 타입이름"
 						)))
 						.contentType(APPLICATION_JSON)
 						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
@@ -79,11 +79,11 @@ class CampaignTypeControllerTest extends ControllerTest {
 	@Test
 	void 캠페인타입_수정() throws Exception {
 
-		willDoNothing().given(campaignTypeService).updateCampaignType(1L, "updated campaignTypeName");
+		willDoNothing().given(campaignTypeService).updateCampaignType(1L, "수정된 타입이름");
 
 		mockMvc.perform(put(urlTemplate + "/{campaignTypeId}", 1L)
 						.content(objectMapper.writeValueAsString(Map.of(
-								"campaignTypeName", "updated campaignTypeName"
+								"campaignTypeName", "수정된 타입이름"
 						)))
 						.contentType(APPLICATION_JSON)
 						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
