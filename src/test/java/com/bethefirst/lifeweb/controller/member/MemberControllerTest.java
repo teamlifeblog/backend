@@ -1,7 +1,7 @@
 package com.bethefirst.lifeweb.controller.member;
 
-import com.bethefirst.lifeweb.ControllerTest;
 import com.bethefirst.lifeweb.config.security.TokenProvider;
+import com.bethefirst.lifeweb.controller.ControllerTest;
 import com.bethefirst.lifeweb.entity.member.Role;
 import com.bethefirst.lifeweb.initDto.mamber.InitMemberDto;
 import com.bethefirst.lifeweb.service.member.interfaces.MemberService;
@@ -11,17 +11,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import static com.bethefirst.lifeweb.CustomJsonFieldType.LOCAL_DATE_TIME;
+import static com.bethefirst.lifeweb.util.CustomJsonFieldType.LOCAL_DATE;
+import static com.bethefirst.lifeweb.util.RestdocsUtil.getJwt;
+import static com.bethefirst.lifeweb.util.SnippetUtil.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.http.HttpHeaders.CONTENT_LOCATION;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -48,7 +52,6 @@ public class MemberControllerTest extends ControllerTest {
     void 회원_닉네임_중복체크() throws Exception{
         //given
         String nickname = "테스트닉네임1";
-
         willDoNothing().given(memberService).existsNickname(nickname);
 
         mockMvc.perform(get(urlTemplate + "/nickname")
@@ -90,7 +93,7 @@ public class MemberControllerTest extends ControllerTest {
 
 
         mockMvc.perform(get(urlTemplate + "/{memberId}", 1L)
-                        .header(AUTHORIZATION, getJwt(Role.USER.name(),1L)))
+                        .header(AUTHORIZATION, getJwt(Role.USER,1L)))
                 .andExpect(status().isOk())
                 .andDo(
                         restDocs.document(
@@ -109,7 +112,7 @@ public class MemberControllerTest extends ControllerTest {
                                         fieldWithPath("name").type(STRING).description("이름"),
                                         fieldWithPath("nickname").type(STRING).description("닉네임"),
                                         fieldWithPath("gender").type(STRING).description("성별"),
-                                        fieldWithPath("birth").type(LOCAL_DATE_TIME).description("생일"),
+                                        fieldWithPath("birth").type(LOCAL_DATE).description("생일"),
                                         fieldWithPath("tel").type(STRING).description("전화번호"),
                                         fieldWithPath("postcode").type(STRING).description("우편번호"),
                                         fieldWithPath("address").type(STRING).description("주소"),
@@ -127,5 +130,46 @@ public class MemberControllerTest extends ControllerTest {
                 );
 
     }
+
+    @Test
+    @DisplayName("회원 가입")
+    void 회원_가입() throws Exception{
+
+        willDoNothing().given(memberService).join(initMemberDto.getJoinDto());
+
+        String json = objectMapper.writeValueAsString(initMemberDto.getJoinDto());
+
+        mockMvc.perform(post(urlTemplate)
+                        .contentType(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON)
+                        .content(json)
+                        .characterEncoding(UTF_8))
+                .andExpect(status().isCreated())
+                .andDo(
+                        restDocs.document(
+                                requestFields(
+                                        fieldWithPath("email").attributes(type(STRING)).description("이메일"),
+                                        fieldWithPath("pwd").attributes(type(STRING)).description("비밀번호"),
+                                        fieldWithPath("nickname").attributes(type(STRING)).description("닉네임"),
+                                        fieldWithPath("name").attributes(type(STRING)).description("이름"),
+                                        fieldWithPath("gender").attributes(type(STRING)).description("성별"),
+                                        fieldWithPath("birth").attributes(type(LOCAL_DATE)).description("생일"),
+                                        fieldWithPath("tel").attributes(type(STRING)).description("휴대폰번호"),
+                                        fieldWithPath("postcode").attributes(type(STRING)).description("우편번호"),
+                                        fieldWithPath("address").attributes(type(STRING)).description("주소"),
+                                        fieldWithPath("detailAddress").attributes(type(STRING)).description("상세주소").optional(),
+                                        fieldWithPath("extraAddress").attributes(type(STRING)).description("참고사항")
+
+                                ),
+                                responseHeaders(
+                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/login")).description(CONTENT_LOCATION)
+                                )
+                        )
+                );
+
+
+
+    }
+
 
 }

@@ -1,5 +1,6 @@
 package com.bethefirst.lifeweb.initDto.mamber;
 
+import com.bethefirst.lifeweb.dto.member.request.JoinDto;
 import com.bethefirst.lifeweb.dto.member.request.LoginDto;
 import com.bethefirst.lifeweb.dto.member.response.MemberInfoDto;
 import com.bethefirst.lifeweb.dto.member.response.MemberSnsDto;
@@ -13,12 +14,15 @@ public class InitMemberDto {
 
     InitMemberSnsDto initMemberSnsDto = new InitMemberSnsDto();
 
-    public LoginDto getLoginDto(){
+    public LoginDto getLoginDto() {
         return new LoginDto("test1@naver.com", "a1231231#");
     }
 
+    public JoinDto getJoinDto() {
+        return new JoinDto("test1@naver.com", "a1231231#", "닉네임", "이름", "남자", now(), "01000000001", "11901", "경기 구리시 갈매동 215-56", "1층", "(갈매동))");
+    }
 
-    public MemberInfoDto getMemberInfoDto(){
+    public MemberInfoDto getMemberInfoDto() {
 
         return getMemberInfoDtoList().get(0);
     }
@@ -37,7 +41,7 @@ public class InitMemberDto {
 
             MemberInfoDto memberInfoDto = new MemberInfoDto((long) i + 1, "test" + i + "@naver.com", null, "테스트이름" + i,
                     "테스트닉네임" + i, gender, now(), "0100000000" + i, "1190" + i, "경기 구리시 갈매동 215-56" + i, i + "층", "(갈매동)",
-                    0,new ArrayList<>());
+                    0, new ArrayList<>());
             memberInfoDtoList.add(memberInfoDto);
 
         }
