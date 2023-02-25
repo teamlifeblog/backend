@@ -13,7 +13,7 @@ import java.util.Map;
 import static com.bethefirst.lifeweb.util.RestdocsUtil.*;
 import static com.bethefirst.lifeweb.util.SnippetUtil.*;
 import static org.mockito.BDDMockito.*;//given,willReturn
-import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,LOCATION
+import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,CONTENT_LOCATION
 import static org.springframework.http.MediaType.*;//MULTIPART_FORM_DATA,APPLICATION_JSON
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;//get,post,multipart...
@@ -34,11 +34,11 @@ class CampaignCategoryControllerTest extends ControllerTest {
 	@Test
 	void 캠페인카테고리_생성() throws Exception {
 
-		willDoNothing().given(campaignCategoryService).createCampaignCategory("new campaignCategoryName");
+		willDoNothing().given(campaignCategoryService).createCampaignCategory("새 카테고리이름");
 
 		mockMvc.perform(post(urlTemplate)
 						.content(objectMapper.writeValueAsString(Map.of(
-								"campaignCategoryName", "new campaignCategoryName"
+								"campaignCategoryName", "새 카테고리이름"
 						)))
 						.contentType(APPLICATION_JSON)
 						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
@@ -53,7 +53,7 @@ class CampaignCategoryControllerTest extends ControllerTest {
 										fieldWithPath("campaignCategoryName").attributes(type(STRING)).description("카테고리이름")
 								),
 								responseHeaders(
-										headerWithName(LOCATION).attributes(path(urlTemplate)).description("Location")
+										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate)).description(CONTENT_LOCATION)
 								)
 						)
 				);
@@ -79,11 +79,11 @@ class CampaignCategoryControllerTest extends ControllerTest {
 	@Test
 	void 캠페인카테고리_수정() throws Exception {
 
-		willDoNothing().given(campaignCategoryService).updateCampaignCategory(1L, "updated campaignCategoryName");
+		willDoNothing().given(campaignCategoryService).updateCampaignCategory(1L, "수정된 카테고리이름");
 
 		mockMvc.perform(put(urlTemplate + "/{campaignCategoryId}", 1L)
 						.content(objectMapper.writeValueAsString(Map.of(
-								"campaignCategoryName", "updated campaignCategoryName"
+								"campaignCategoryName", "수정된 카테고리이름"
 						)))
 						.contentType(APPLICATION_JSON)
 						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
@@ -101,7 +101,7 @@ class CampaignCategoryControllerTest extends ControllerTest {
 										fieldWithPath("campaignCategoryName").type(STRING).description("카테고리이름")
 								),
 								responseHeaders(
-										headerWithName(LOCATION).attributes(path(urlTemplate)).description("Location")
+										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate)).description(CONTENT_LOCATION)
 								)
 						)
 				);

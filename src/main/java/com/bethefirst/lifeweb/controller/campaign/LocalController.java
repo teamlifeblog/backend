@@ -30,7 +30,7 @@ public class LocalController {
 
 		// Location 설정
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(URI.create("/locals"));
+		headers.set(HttpHeaders.CONTENT_LOCATION, "/locals");
 
 		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}
@@ -51,7 +51,7 @@ public class LocalController {
 
 		// Location 설정
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(URI.create("/locals"));
+		headers.set(HttpHeaders.CONTENT_LOCATION, "/locals");
 
 		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}

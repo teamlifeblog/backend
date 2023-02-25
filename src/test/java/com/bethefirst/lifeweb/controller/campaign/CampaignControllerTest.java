@@ -22,7 +22,7 @@ import java.util.Map;
 import static com.bethefirst.lifeweb.util.RestdocsUtil.*;
 import static com.bethefirst.lifeweb.util.SnippetUtil.*;
 import static org.mockito.BDDMockito.*;//given,willReturn
-import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,LOCATION
+import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,CONTENT_LOCATION
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.MediaType.*;//MULTIPART_FORM_DATA,APPLICATION_JSON
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
@@ -86,7 +86,7 @@ class CampaignControllerTest extends ControllerTest {
 										partWithName("items").attributes(type(arrayType(STRING))).description("항목").optional()
 								),
 								responseHeaders(
-										headerWithName(LOCATION).attributes(path(urlTemplate + "/{campaignId}")).description(LOCATION)
+										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{campaignId}")).description(CONTENT_LOCATION)
 								)
 						)
 				);
@@ -261,7 +261,7 @@ class CampaignControllerTest extends ControllerTest {
 										partWithName("items").attributes(type(arrayType(STRING))).description("항목").optional()
 								),
 								responseHeaders(
-										headerWithName(LOCATION).attributes(path(urlTemplate + "/{campaignId}")).description(LOCATION)
+										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{campaignId}")).description(CONTENT_LOCATION)
 								)
 						)
 				);
@@ -292,7 +292,7 @@ class CampaignControllerTest extends ControllerTest {
 										fieldWithPath("status").type(enumType(CampaignStatus.class)).description("캠페인상태")
 								),
 								responseHeaders(
-										headerWithName(LOCATION).attributes(path(urlTemplate + "/{campaignId}")).description(LOCATION)
+										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{campaignId}")).description(CONTENT_LOCATION)
 								)
 						)
 				);
@@ -320,7 +320,7 @@ class CampaignControllerTest extends ControllerTest {
 										fieldWithPath("oldCampaignId").type(arrayType(NUMBER)).description("pick 해제할 캠페인ID")
 								),
 								responseHeaders(
-										headerWithName(LOCATION).attributes(path(urlTemplate)).description(LOCATION)
+										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate)).description(CONTENT_LOCATION)
 								)
 						)
 				);

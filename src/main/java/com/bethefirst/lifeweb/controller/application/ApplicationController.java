@@ -11,8 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-
 @RestController
 @RequestMapping("applications")
 @RequiredArgsConstructor
@@ -37,7 +35,7 @@ public class ApplicationController {
 
 		// Location 설정
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(URI.create("/applications/" + applicationId));
+		headers.set(HttpHeaders.CONTENT_LOCATION, "/applications/" + applicationId);
 
 		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}
