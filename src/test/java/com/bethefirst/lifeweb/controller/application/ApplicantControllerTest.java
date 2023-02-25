@@ -51,7 +51,8 @@ class ApplicantControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(role(Role.USER)).description("token")
+										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
+										headerWithName(AUTHORIZATION).attributes(info(Role.USER)).description("token")
 								),
 								requestFields(
 										fieldWithPath("applicationId").type(NUMBER).description("신청서ID"),
@@ -78,7 +79,7 @@ class ApplicantControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(role(Role.USER)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.USER)).description("token")
 								),
 								pathParameters(
 										parameterWithName("applicantId").attributes(type(NUMBER)).description("신청자ID")
@@ -111,7 +112,7 @@ class ApplicantControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(role(Role.USER)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.USER)).description("token")
 								),
 								queryParameters(
 										parameterWithName("page").attributes(type(NUMBER)).description("페이지").optional(),
@@ -160,7 +161,8 @@ class ApplicantControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(role(Role.USER)).description("token")
+										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
+										headerWithName(AUTHORIZATION).attributes(info(Role.USER)).description("token")
 								),
 								pathParameters(
 										parameterWithName("applicantId").attributes(type(NUMBER)).description("신청자ID")
@@ -194,7 +196,8 @@ class ApplicantControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
+										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
 								),
 								requestFields(
 										fieldWithPath("campaignId").type(NUMBER).description("캠페인ID"),
@@ -220,7 +223,7 @@ class ApplicantControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(role(Role.USER)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.USER)).description("token")
 								),
 								pathParameters(
 										parameterWithName("applicantId").attributes(type(NUMBER)).description("신청자ID")
