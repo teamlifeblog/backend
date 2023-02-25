@@ -9,6 +9,7 @@ import com.bethefirst.lifeweb.dto.member.response.MemberInfoDto;
 import com.bethefirst.lifeweb.entity.member.Member;
 import com.bethefirst.lifeweb.repository.member.MemberRepository;
 import com.bethefirst.lifeweb.service.member.interfaces.MemberService;
+import com.bethefirst.lifeweb.service.member.interfaces.MemberSnsService;
 import com.bethefirst.lifeweb.util.EmailUtil;
 import com.bethefirst.lifeweb.util.ImageUtil;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Random;
-import java.util.UUID;
-
 @Service
 @Transactional
 @Slf4j
@@ -32,6 +30,7 @@ public class MemberServiceImpl implements MemberService {
 
 	@Value("${image-folder.member}")
 	private String imageFolder;
+	private final MemberSnsService memberSnsService;
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final ImageUtil imageUtil;
@@ -61,8 +60,21 @@ public class MemberServiceImpl implements MemberService {
 		Member member = memberRepository.findById(memberId).orElseThrow(()
 				-> new IllegalArgumentException("존재하지 않는 회원입니다. " + memberId));
 
+		//이미지 파일 저장
+		if (updateMemberDto.getUploadFile() != null) {
+			//파일 저장
+			updateMemberDto.setFileName(imageUtil.store(updateMemberDto.getUploadFile(), imageFolder));
+			//파일 삭제
+			imageUtil.delete(member.getFileName(), imageFolder);
+		}
+
 		//DB에 수정 된 회원정보 저장
 		updateMemberDto.updateMember(member);
+
+		// 회원 SNS 수정
+		if (!updateMemberDto.getMemberSnsDtoList().isEmpty()) {
+			memberSnsService.updateMemberSns(member, updateMemberDto.getMemberSnsDtoList());
+		}
 
 	}
 

@@ -1,18 +1,21 @@
 package com.bethefirst.lifeweb.service.member;
 
-import com.bethefirst.lifeweb.dto.member.request.CreateMemberSnsDto;
+import com.bethefirst.lifeweb.dto.member.response.MemberSnsDto;
 import com.bethefirst.lifeweb.entity.member.Member;
 import com.bethefirst.lifeweb.entity.member.MemberSns;
 import com.bethefirst.lifeweb.entity.member.Sns;
-import com.bethefirst.lifeweb.repository.member.MemberRepository;
 import com.bethefirst.lifeweb.repository.member.MemberSnsRepository;
 import com.bethefirst.lifeweb.repository.member.SnsRepository;
 import com.bethefirst.lifeweb.service.member.interfaces.MemberSnsService;
 import com.bethefirst.lifeweb.util.UrlUtil;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -20,46 +23,63 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MemberSnsServiceImpl implements MemberSnsService {
 
-    private final MemberRepository memberRepository;
     private final MemberSnsRepository memberSnsRepository;
     private final SnsRepository snsRepository;
     private final UrlUtil urlUtil;
 
-    /** 회원 SNS 등록 **/
-    @Override
-    public void createMemberSns(CreateMemberSnsDto createMemberSnsDto) {
-        //회원 유효성 검사
-        Member member = memberRepository.findById(createMemberSnsDto.getMemberId()).orElseThrow(()
-                -> new IllegalArgumentException("존재하지 않는 회원입니다. " + createMemberSnsDto.getMemberId()));
+	/** 회원 SNS 수정 */
+	@Override
+	public void updateMemberSns(Member member, List<MemberSnsDto> memberSnsDtoList) {
 
-        //URL 유효성 검사
-        if(memberSnsRepository.existsByUrl(createMemberSnsDto.getUrl()))
-            throw new IllegalArgumentException("이미 등록되어 있는 URL 입니다. " + createMemberSnsDto.getUrl());
+		// 회원 SNS insert
+		if (!CollectionUtils.isEmpty(memberSnsDtoList)) {
+			memberSnsDtoList.stream().filter(memberSnsDto -> memberSnsDto.getMemberSnsId() == 0)
+					.forEach(memberSnsDto -> {
+						// url 검사
+						inspectionUrl(memberSnsDto.getUrl());
+						
+						Sns sns = snsRepository.findById(memberSnsDto.getSnsId())
+								.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 SNS 입니다. " + memberSnsDto.getSnsId()));
+						// insert
+						memberSnsRepository.save(memberSnsDto.createMemberSns(member, sns));
+					});
+		}
 
-        //SNS 유효성 검사
-        Sns sns = snsRepository.findById(createMemberSnsDto.getSnsId()).orElseThrow(() ->
-                new IllegalArgumentException("존재하지 않는 SNS 이름 입니다. " + createMemberSnsDto.getUrl()));
+		if (!CollectionUtils.isEmpty(member.getMemberSnsList())) {
+			for (MemberSns memberSns : member.getMemberSnsList()) {
+				boolean result = false;
+				if (!CollectionUtils.isEmpty(memberSnsDtoList)) {
+					for (MemberSnsDto memberSnsDto : memberSnsDtoList) {
+						// 회원 SNS update
+						if (memberSnsDto.getMemberSnsId().equals(memberSns.getId())) {
+							// url 검사
+							inspectionUrl(memberSnsDto.getUrl());
+							// update
+							memberSnsDto.updateMemberSns(memberSns);
+							result = true;
+							break;
+						}
+					}
+				}
+				// 회원 SNS delete
+				if (!result) {
+					memberSnsRepository.delete(memberSns);
+				}
+			}
+		}
+	}
 
-        //SNS URL 검사
-        urlUtil.inspectionUrl(createMemberSnsDto.getUrl());
+	// url 검사
+	private void inspectionUrl(String url) {
 
-        //memberSNS 생성
-        MemberSns memberSns = MemberSns.createMemberSns(member, sns, createMemberSnsDto.getUrl());
+		// url 유효성 검사
+		urlUtil.inspectionUrl(url);
 
-        //DB에 저장
-        memberSnsRepository.save(memberSns);
-
-
-    }
-
-    /** 회원 SNS 삭제 */
-    @Override
-    public void deleteMemberSns(Long memberSnsId) {
-
-        MemberSns memberSns = memberSnsRepository.findById(memberSnsId).orElseThrow(() ->
-                new IllegalArgumentException("존재하지 않는 SNS 입니다. "));
-
-        memberSnsRepository.delete(memberSns);
-    }
+		// SNS 중복 검사
+		if (memberSnsRepository.existsByUrl(url)) {
+			throw new IllegalArgumentException("이미 등록되어 있는 URL 입니다. " + url);
+		}
+		
+	}
 
 }
