@@ -17,8 +17,7 @@ import static com.bethefirst.lifeweb.util.SnippetUtil.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpHeaders.CONTENT_LOCATION;
+import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -98,9 +97,7 @@ public class MemberControllerTest extends ControllerTest {
                 .andDo(
                         restDocs.document(
                                 requestHeaders(
-                                  headerWithName(AUTHORIZATION).attributes(
-                                          role(Role.ADMIN),
-                                          role(Role.USER)).description("token")
+                                  headerWithName(AUTHORIZATION).attributes(info(Role.USER)).description("token")
                                 ),
                                 pathParameters(
                                         parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
@@ -147,6 +144,9 @@ public class MemberControllerTest extends ControllerTest {
                 .andExpect(status().isCreated())
                 .andDo(
                         restDocs.document(
+                                requestHeaders(
+                                  headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE)
+                                ),
                                 requestFields(
                                         fieldWithPath("email").attributes(type(STRING)).description("이메일"),
                                         fieldWithPath("pwd").attributes(type(STRING)).description("비밀번호"),
