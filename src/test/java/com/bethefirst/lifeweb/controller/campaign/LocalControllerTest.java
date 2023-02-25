@@ -34,11 +34,11 @@ class LocalControllerTest extends ControllerTest {
 	@Test
 	void 지역_생성() throws Exception {
 
-		willDoNothing().given(localService).createLocal("new localName");
+		willDoNothing().given(localService).createLocal("새 지역이름");
 
 		mockMvc.perform(post(urlTemplate)
 						.content(objectMapper.writeValueAsString(Map.of(
-								"localName", "new localName"
+								"localName", "새 지역이름"
 						)))
 						.contentType(APPLICATION_JSON)
 						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
@@ -79,11 +79,11 @@ class LocalControllerTest extends ControllerTest {
 	@Test
 	void 지역_수정() throws Exception {
 
-		willDoNothing().given(localService).updateLocal(1L, "updated localName");
+		willDoNothing().given(localService).updateLocal(1L, "수정된 지역이름");
 
 		mockMvc.perform(put(urlTemplate + "/{localId}", 1L)
 						.content(objectMapper.writeValueAsString(Map.of(
-								"localName", "updated localName"
+								"localName", "수정된 지역이름"
 						)))
 						.contentType(APPLICATION_JSON)
 						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
