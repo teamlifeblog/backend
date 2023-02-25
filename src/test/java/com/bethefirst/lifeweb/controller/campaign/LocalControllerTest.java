@@ -47,7 +47,8 @@ class LocalControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
+										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
 								),
 								requestFields(
 										fieldWithPath("localName").attributes(type(STRING)).description("지역이름")
@@ -92,7 +93,8 @@ class LocalControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
+										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
 								),
 								pathParameters(
 										parameterWithName("localId").attributes(type(NUMBER)).description("지역ID")
@@ -119,7 +121,7 @@ class LocalControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
 								),
 								pathParameters(
 										parameterWithName("localId").attributes(type(NUMBER)).description("지역ID")

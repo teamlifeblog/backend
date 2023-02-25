@@ -47,7 +47,8 @@ class CampaignTypeControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
+										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
 								),
 								requestFields(
 										fieldWithPath("campaignTypeName").type(STRING).description("타입이름")
@@ -92,7 +93,8 @@ class CampaignTypeControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
+										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
 								),
 								pathParameters(
 										parameterWithName("campaignTypeId").attributes(type(NUMBER)).description("타입ID")
@@ -119,7 +121,7 @@ class CampaignTypeControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
 								),
 								pathParameters(
 										parameterWithName("campaignTypeId").attributes(type(NUMBER)).description("타입ID")

@@ -57,7 +57,8 @@ class CampaignControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
+										headerWithName(CONTENT_TYPE).attributes(info(MULTIPART_FORM_DATA)).description(CONTENT_TYPE),
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
 								),
 								requestParts(
 										partWithName("categoryId").attributes(type(NUMBER)).description("카테고리ID"),
@@ -227,7 +228,8 @@ class CampaignControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
+										headerWithName(CONTENT_TYPE).attributes(info(MULTIPART_FORM_DATA)).description(CONTENT_TYPE),
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
 								),
 								pathParameters(
 									parameterWithName("campaignId").attributes(type(NUMBER)).description("캠페인ID")
@@ -283,7 +285,8 @@ class CampaignControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
+										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
 								),
 								pathParameters(
 										parameterWithName("campaignId").attributes(type(NUMBER)).description("캠페인ID")
@@ -313,7 +316,8 @@ class CampaignControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
+										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
 								),
 								requestFields(
 										fieldWithPath("newCampaignId").type(arrayType(NUMBER)).description("pick 선택할 캠페인ID"),
