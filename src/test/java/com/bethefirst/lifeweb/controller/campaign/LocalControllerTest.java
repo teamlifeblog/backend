@@ -13,7 +13,7 @@ import java.util.Map;
 import static com.bethefirst.lifeweb.util.RestdocsUtil.*;
 import static com.bethefirst.lifeweb.util.SnippetUtil.*;
 import static org.mockito.BDDMockito.*;//given,willReturn
-import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,LOCATION
+import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,CONTENT_LOCATION
 import static org.springframework.http.MediaType.*;//MULTIPART_FORM_DATA,APPLICATION_JSON
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;//get,post,multipart...
@@ -34,11 +34,11 @@ class LocalControllerTest extends ControllerTest {
 	@Test
 	void 지역_생성() throws Exception {
 
-		willDoNothing().given(localService).createLocal("new localName");
+		willDoNothing().given(localService).createLocal("새 지역이름");
 
 		mockMvc.perform(post(urlTemplate)
 						.content(objectMapper.writeValueAsString(Map.of(
-								"localName", "new localName"
+								"localName", "새 지역이름"
 						)))
 						.contentType(APPLICATION_JSON)
 						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
@@ -53,7 +53,7 @@ class LocalControllerTest extends ControllerTest {
 										fieldWithPath("localName").attributes(type(STRING)).description("지역이름")
 								),
 								responseHeaders(
-										headerWithName(LOCATION).attributes(path(urlTemplate)).description(LOCATION)
+										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate)).description(CONTENT_LOCATION)
 								)
 						)
 				);
@@ -79,11 +79,11 @@ class LocalControllerTest extends ControllerTest {
 	@Test
 	void 지역_수정() throws Exception {
 
-		willDoNothing().given(localService).updateLocal(1L, "updated localName");
+		willDoNothing().given(localService).updateLocal(1L, "수정된 지역이름");
 
 		mockMvc.perform(put(urlTemplate + "/{localId}", 1L)
 						.content(objectMapper.writeValueAsString(Map.of(
-								"localName", "updated localName"
+								"localName", "수정된 지역이름"
 						)))
 						.contentType(APPLICATION_JSON)
 						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
@@ -101,7 +101,7 @@ class LocalControllerTest extends ControllerTest {
 										fieldWithPath("localName").type(STRING).description("지역이름")
 								),
 								responseHeaders(
-										headerWithName(LOCATION).attributes(path(urlTemplate)).description(LOCATION)
+										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate)).description(CONTENT_LOCATION)
 								)
 						)
 				);

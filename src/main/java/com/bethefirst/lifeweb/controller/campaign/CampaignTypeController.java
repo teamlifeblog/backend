@@ -30,7 +30,7 @@ public class CampaignTypeController {
 
 		// Location 설정
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(URI.create("/campaign-types"));
+		headers.set(HttpHeaders.CONTENT_LOCATION, "/campaign-types");
 
 		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}
@@ -51,7 +51,7 @@ public class CampaignTypeController {
 
 		// Location 설정
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(URI.create("/campaign-types"));
+		headers.set(HttpHeaders.CONTENT_LOCATION, "/campaign-types");
 
 		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}

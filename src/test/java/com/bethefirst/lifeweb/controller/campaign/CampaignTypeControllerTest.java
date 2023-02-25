@@ -13,7 +13,7 @@ import java.util.Map;
 import static com.bethefirst.lifeweb.util.RestdocsUtil.*;
 import static com.bethefirst.lifeweb.util.SnippetUtil.*;
 import static org.mockito.BDDMockito.*;//given,willReturn
-import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,LOCATION
+import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,CONTENT_LOCATION
 import static org.springframework.http.MediaType.*;//MULTIPART_FORM_DATA,APPLICATION_JSON
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;//get,post,multipart...
@@ -34,11 +34,11 @@ class CampaignTypeControllerTest extends ControllerTest {
 	@Test
 	void 캠페인타입_생성() throws Exception {
 
-		willDoNothing().given(campaignTypeService).createCampaignType("new campaignTypeName");
+		willDoNothing().given(campaignTypeService).createCampaignType("새 타입이름");
 
 		mockMvc.perform(post(urlTemplate)
 						.content(objectMapper.writeValueAsString(Map.of(
-								"campaignTypeName", "new campaignTypeName"
+								"campaignTypeName", "새 타입이름"
 						)))
 						.contentType(APPLICATION_JSON)
 						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
@@ -53,7 +53,7 @@ class CampaignTypeControllerTest extends ControllerTest {
 										fieldWithPath("campaignTypeName").type(STRING).description("타입이름")
 								),
 								responseHeaders(
-										headerWithName(LOCATION).attributes(path(urlTemplate)).description(LOCATION)
+										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate)).description(CONTENT_LOCATION)
 								)
 						)
 				);
@@ -79,11 +79,11 @@ class CampaignTypeControllerTest extends ControllerTest {
 	@Test
 	void 캠페인타입_수정() throws Exception {
 
-		willDoNothing().given(campaignTypeService).updateCampaignType(1L, "updated campaignTypeName");
+		willDoNothing().given(campaignTypeService).updateCampaignType(1L, "수정된 타입이름");
 
 		mockMvc.perform(put(urlTemplate + "/{campaignTypeId}", 1L)
 						.content(objectMapper.writeValueAsString(Map.of(
-								"campaignTypeName", "updated campaignTypeName"
+								"campaignTypeName", "수정된 타입이름"
 						)))
 						.contentType(APPLICATION_JSON)
 						.header(AUTHORIZATION, getJwt(Role.ADMIN, 1L))
@@ -101,7 +101,7 @@ class CampaignTypeControllerTest extends ControllerTest {
 										fieldWithPath("campaignTypeName").type(STRING).description("타입이름")
 								),
 								responseHeaders(
-										headerWithName(LOCATION).attributes(path(urlTemplate)).description(LOCATION)
+										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate)).description(CONTENT_LOCATION)
 								)
 						)
 				);

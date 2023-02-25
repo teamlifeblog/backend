@@ -15,12 +15,12 @@ public class InitApplicationDto {
 	}
 
 	public CreateApplicationQuestionDto getCreateApplicationQuestionDto() {
-		return new CreateApplicationQuestionDto(Arrays.asList("question 1", "question 2"), Arrays.asList(QuestionType.TEXT, QuestionType.CHECKBOX), Arrays.asList("", "111,222,333"));
+		return new CreateApplicationQuestionDto(Arrays.asList("질문1", "질문2"), Arrays.asList(QuestionType.TEXT, QuestionType.CHECKBOX), Arrays.asList("", "아이템1,아이템2,아이템3"));
 	}
 
 	private List<ApplicationQuestionDto> applicationQuestionDtoList = Arrays.asList(
-			new ApplicationQuestionDto(1L, "TEXT question", QuestionType.TEXT, ""),
-			new ApplicationQuestionDto(2L , "CHECKBOX question", QuestionType.CHECKBOX, "items1, items2, items3")
+			new ApplicationQuestionDto(1L, "단답형", QuestionType.TEXT, ""),
+			new ApplicationQuestionDto(2L , "복수선택", QuestionType.CHECKBOX, "아이템1, 아이템2, 아이템3")
 	);
 
 }

@@ -4,6 +4,7 @@ import com.bethefirst.lifeweb.dto.campaign.response.LocalDto;
 import com.bethefirst.lifeweb.entity.campaign.Local;
 import com.bethefirst.lifeweb.repository.campaign.LocalRepository;
 import com.bethefirst.lifeweb.service.campaign.interfaces.LocalService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,13 +38,19 @@ public class LocalServiceImpl implements LocalService {
 	@Override
 	public void updateLocal(Long localId, String localName) {
 		localRepository.findById(localId)
-				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지역입니다. " + localId))
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 지역입니다. " + localId))
 				.updateLocal(localName);
 	}
 
 	/** 지역 삭제 */
 	@Override
 	public void deleteLocal(Long localId) {
+
+		// 지역 조회
+		localRepository.findById(localId)
+				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 지역입니다. " + localId));
+
+		// 지역 삭제
 		localRepository.deleteById(localId);
 	}
 

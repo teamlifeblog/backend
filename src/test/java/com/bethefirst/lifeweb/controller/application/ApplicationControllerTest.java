@@ -13,7 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import static com.bethefirst.lifeweb.util.RestdocsUtil.*;
 import static com.bethefirst.lifeweb.util.SnippetUtil.*;
 import static org.mockito.BDDMockito.*;//given,willReturn
-import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,LOCATION
+import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,CONTENT_LOCATION
 import static org.springframework.http.MediaType.*;//MULTIPART_FORM_DATA,APPLICATION_JSON
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;//get,post,multipart...
@@ -85,7 +85,7 @@ class ApplicationControllerTest extends ControllerTest {
 										fieldWithPath("items").type(arrayType(STRING)).description("항목").optional()
 								),
 								responseHeaders(
-										headerWithName(LOCATION).attributes(path(urlTemplate + "/{applicationId}")).description(LOCATION)
+										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{applicationId}")).description(CONTENT_LOCATION)
 								)
 						)
 				);

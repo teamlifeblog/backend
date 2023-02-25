@@ -17,7 +17,7 @@ import org.springframework.data.domain.Sort;
 import static com.bethefirst.lifeweb.util.RestdocsUtil.*;
 import static com.bethefirst.lifeweb.util.SnippetUtil.*;
 import static org.mockito.BDDMockito.*;//given,willReturn
-import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,LOCATION
+import static org.springframework.http.HttpHeaders.*;//AUTHORIZATION,CONTENT_LOCATION
 import static org.springframework.http.MediaType.*;//MULTIPART_FORM_DATA,APPLICATION_JSON
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;//get,post,multipart...
@@ -60,7 +60,7 @@ class ApplicantControllerTest extends ControllerTest {
 										fieldWithPath("answer").type(arrayType(STRING)).description("답변").optional()
 								),
 								responseHeaders(
-										headerWithName(LOCATION).attributes(path(urlTemplate + "/{applicantId}")).description(LOCATION)
+										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{applicantId}")).description(CONTENT_LOCATION)
 								)
 						)
 				);
@@ -173,7 +173,7 @@ class ApplicantControllerTest extends ControllerTest {
 										fieldWithPath("answer").type(arrayType(STRING)).description("답변").optional()
 								),
 								responseHeaders(
-										headerWithName(LOCATION).attributes(path(urlTemplate + "/{applicantId}")).description(LOCATION)
+										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{applicantId}")).description(CONTENT_LOCATION)
 								)
 						)
 				);
@@ -202,7 +202,7 @@ class ApplicantControllerTest extends ControllerTest {
 										fieldWithPath("unselectApplicantId").type(arrayType(NUMBER)).description("비선정할 신청자ID")
 								),
 								responseHeaders(
-										headerWithName(LOCATION).attributes(path(urlTemplate)).description(LOCATION)
+										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate)).description(CONTENT_LOCATION)
 								)
 						)
 				);
