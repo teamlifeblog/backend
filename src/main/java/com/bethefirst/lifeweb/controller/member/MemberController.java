@@ -110,7 +110,7 @@ public class MemberController {
 
     /** 회원 전체 조회 */
     @GetMapping
-    public Page<MemberInfoDto> list(@RequestBody MemberSearchRequirements requirements,
+    public Page<MemberInfoDto> list(MemberSearchRequirements requirements,
                                     @PageableDefault(sort = "id", size = 20, direction = Sort.Direction.DESC)Pageable pageable){
         return memberService.getMemberList(requirements, pageable);
     }
