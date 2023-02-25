@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 
 import java.beans.PropertyDescriptor;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -66,12 +67,14 @@ public class RestdocsUtil {
 		if (value instanceof MockMultipartFile && !((MockMultipartFile) value).isEmpty()) {
 			multipartRequest.file((MockMultipartFile) value);
 
-		} else if (value instanceof String || value instanceof Number || value instanceof Boolean || value instanceof Enum<?>) {
+		} else if (instance(value)) {
 			if (!String.valueOf(value).equals("null")) {
 				multipartRequest.part(new MockPart(name, (String.valueOf(value)).getBytes()));
 			} else {
 				multipartRequest.part(new MockPart(name, ("").getBytes()));
 			}
+		} else {
+			log.error("RestdocsUtil.fileOrPart()\nname : {}", name);
 		}
 
 		return multipartRequest;
@@ -85,11 +88,10 @@ public class RestdocsUtil {
 		for (PropertyDescriptor pd : getterDescriptors) {
 			try {
 				Object invoke = pd.getReadMethod().invoke(dto);
-				if (invoke instanceof String || invoke instanceof Number || invoke instanceof Boolean || invoke instanceof Enum<?>) {
+				if (instance(invoke)) {
 					map.put(pd.getName(), invoke);
 				} else {
-					List list = (List<?>) invoke;
-					if (list.get(0) instanceof String || list.get(0) instanceof Number || list.get(0) instanceof Boolean || list.get(0) instanceof Enum<?>) {
+					if (instance(((List<?>) invoke).get(0))) {
 						map.put(pd.getName(), invoke);
 					}
 				}
@@ -99,6 +101,10 @@ public class RestdocsUtil {
 		}
 
 		return map;
+	}
+
+	private static boolean instance(Object value) {
+		return value instanceof String || value instanceof Number || value instanceof Boolean || value instanceof LocalDate || value instanceof Enum<?>;
 	}
 
 }
