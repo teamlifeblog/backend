@@ -43,7 +43,7 @@ class ApplicationControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(role(Role.USER)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.USER)).description("token")
 								),
 								pathParameters(
 										parameterWithName("applicationId").attributes(type(NUMBER)).description("신청서ID")
@@ -74,7 +74,8 @@ class ApplicationControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(role(Role.ADMIN)).description("token")
+										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
 								),
 								pathParameters(
 										parameterWithName("applicationId").attributes(type(NUMBER)).description("신청서ID")

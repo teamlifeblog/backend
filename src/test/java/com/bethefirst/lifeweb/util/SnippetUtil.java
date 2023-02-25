@@ -2,21 +2,25 @@ package com.bethefirst.lifeweb.util;
 
 import com.bethefirst.lifeweb.entity.member.Role;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.restdocs.snippet.Attributes;
+import org.springframework.restdocs.snippet.Attributes.Attribute;
 
 @Slf4j
 public class SnippetUtil {
 
-	public static Attributes.Attribute role(Role role) {
-		return new Attributes.Attribute("role", role.getDescription());
+	public static Attribute info(Object info) {
+		if (info instanceof Role) {
+			return new Attribute("info", ((Role) info).getDescription());
+		} else {
+			return new Attribute("info", info.toString());
+		}
 	}
 
-	public static Attributes.Attribute type(Object value) {
-		return new Attributes.Attribute("type", value.toString());
+	public static Attribute type(Object value) {
+		return new Attribute("type", value.toString());
 	}
 
-	public static Attributes.Attribute path(Object value) {
-		return new Attributes.Attribute("path", value.toString());
+	public static Attribute path(String path) {
+		return new Attribute("path", path);
 	}
 
 	public static String enumType(Class<? extends Enum> anEnum) {
