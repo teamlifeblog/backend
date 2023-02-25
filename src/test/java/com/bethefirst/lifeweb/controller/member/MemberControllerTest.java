@@ -10,7 +10,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
+import static com.bethefirst.lifeweb.entity.member.Role.ADMIN;
+import static com.bethefirst.lifeweb.entity.member.Role.USER;
 import static com.bethefirst.lifeweb.util.CustomJsonFieldType.LOCAL_DATE;
 import static com.bethefirst.lifeweb.util.RestdocsUtil.getJwt;
 import static com.bethefirst.lifeweb.util.SnippetUtil.*;
@@ -22,8 +26,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
-import static org.springframework.restdocs.payload.JsonFieldType.STRING;
+import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -92,12 +95,12 @@ public class MemberControllerTest extends ControllerTest {
 
 
         mockMvc.perform(get(urlTemplate + "/{memberId}", 1L)
-                        .header(AUTHORIZATION, getJwt(Role.USER,1L)))
+                        .header(AUTHORIZATION, getJwt(USER,1L)))
                 .andExpect(status().isOk())
                 .andDo(
                         restDocs.document(
                                 requestHeaders(
-                                  headerWithName(AUTHORIZATION).attributes(info(Role.USER)).description("token")
+                                  headerWithName(AUTHORIZATION).attributes(info(USER)).description("token")
                                 ),
                                 pathParameters(
                                         parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
@@ -170,6 +173,70 @@ public class MemberControllerTest extends ControllerTest {
 
 
     }
+
+    @Test
+    void 회원_전체조회() throws Exception{
+        given(memberService.getMemberList(initMemberDto.getSearchRequirements(),initMemberDto.getPageable()))
+                .willReturn(initMemberDto.getMemberInfoDtoPage());
+
+
+        mockMvc.perform(get(urlTemplate)
+                        .header(AUTHORIZATION, getJwt(ADMIN, 1L))
+                        .param("page", "1")
+                        .param("size", "5")
+                        .param("sort", "id,desc")
+                )
+                .andExpect(status().isOk())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
+
+                                ),
+                                queryParameters(
+                                        parameterWithName("page").attributes(type(NUMBER)).description("페이지").optional(),
+                                        parameterWithName("size").attributes(type(NUMBER)).description("사이즈").optional(),
+                                        parameterWithName("sort").attributes(type(STRING)).description("정렬기준,정렬방향").optional(),
+                                        parameterWithName("email").attributes(type(STRING)).description("이메일").optional(),
+                                        parameterWithName("nickname").attributes(type(STRING)).description("닉네임").optional(),
+                                        parameterWithName("name").attributes(type(STRING)).description("회원 이름").optional()
+                                ),
+                                relaxedResponseFields(
+                                        fieldWithPath("content").type(ARRAY).description("리스트"),
+                                        fieldWithPath("content.[].memberId").type(NUMBER).description("회원ID"),
+                                        fieldWithPath("content.[].email").type(STRING).description("이메일"),
+                                        fieldWithPath("content.[].fileName").type(STRING).description("프로필이미지").optional(),
+                                        fieldWithPath("content.[].name").type(STRING).description("이름"),
+                                        fieldWithPath("content.[].nickname").type(STRING).description("닉네임"),
+                                        fieldWithPath("content.[].gender").type(STRING).description("남자"),
+                                        fieldWithPath("content.[].birth").type(LOCAL_DATE).description("생일"),
+                                        fieldWithPath("content.[].tel").type(STRING).description("휴대폰번호"),
+                                        fieldWithPath("content.[].postcode").type(STRING).description("우편번호"),
+                                        fieldWithPath("content.[].address").type(STRING).description("주소"),
+                                        fieldWithPath("content.[].detailAddress").type(STRING).description("상세주소").optional(),
+                                        fieldWithPath("content.[].extraAddress").type(STRING).description("주소 참고사항"),
+                                        fieldWithPath("content.[].point").type(NUMBER).description("포인트"),
+                                        fieldWithPath("content.[].MemberSnsDto.snsId").type(NUMBER).description("회원SNS ID").optional(),
+                                        fieldWithPath("content.[].MemberSnsDto.memberSnsId").type(NUMBER).description("회원 ID").optional(),
+                                        fieldWithPath("content.[].MemberSnsDto.name").type(STRING).description("SNS 이름").optional(),
+                                        fieldWithPath("content.[].MemberSnsDto.url").type(STRING).description("SNS주소").optional(),
+                                        fieldWithPath("pageable").type(Pageable.class.getSimpleName()).description("페이징"),
+                                        fieldWithPath("last").type(BOOLEAN).description("마지막페이지"),
+                                        fieldWithPath("totalPages").type(NUMBER).description("전체페이지"),
+                                        fieldWithPath("totalElements").type(NUMBER).description("전체엘리먼트"),
+                                        fieldWithPath("size").type(NUMBER).description("사이즈"),
+                                        fieldWithPath("number").type(NUMBER).description("페이지"),
+                                        fieldWithPath("sort").type(Sort.class.getSimpleName()).description("정렬"),
+                                        fieldWithPath("first").type(BOOLEAN).description("첫페이지"),
+                                        fieldWithPath("numberOfElements").type(NUMBER).description("엘리먼트"),
+                                        fieldWithPath("empty").type(BOOLEAN).description("empty")
+                                )
+                        )
+
+                );
+    }
+
+
 
 
 }

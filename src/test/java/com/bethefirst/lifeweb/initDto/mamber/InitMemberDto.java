@@ -2,11 +2,14 @@ package com.bethefirst.lifeweb.initDto.mamber;
 
 import com.bethefirst.lifeweb.dto.member.request.JoinDto;
 import com.bethefirst.lifeweb.dto.member.request.LoginDto;
+import com.bethefirst.lifeweb.dto.member.request.MemberSearchRequirements;
 import com.bethefirst.lifeweb.dto.member.response.MemberInfoDto;
 import com.bethefirst.lifeweb.dto.member.response.MemberSnsDto;
+import org.springframework.data.domain.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static java.time.LocalDate.now;
 
@@ -27,6 +30,29 @@ public class InitMemberDto {
         return getMemberInfoDtoList().get(0);
     }
 
+    public MemberSearchRequirements getSearchRequirements() {
+        return MemberSearchRequirements.builder().build();
+
+    }
+
+    public Pageable getPageable(){
+        return pageable;
+    }
+    public Page<MemberInfoDto> getMemberInfoDtoPage() {
+        return new PageImpl(getSubList(), pageable, getMemberInfoDtoList().size());
+    }
+
+    private List<MemberInfoDto> getSubList() {
+
+        if (getMemberInfoDtoList().size() < getPage() * getSize()) {
+            return new ArrayList<>();
+        } else if (getMemberInfoDtoList().size() - getPage() * getSize() <= getSize()) {
+            return getMemberInfoDtoList().subList(getPage() * getSize(), getMemberInfoDtoList().size());
+        } else {
+            return getMemberInfoDtoList().subList(getPage() * getSize(), getSize());
+        }
+    }
+
     public List<MemberInfoDto> getMemberInfoDtoList() {
 
         List<MemberSnsDto> memberSnsDtoList = initMemberSnsDto.getMemberSnsDtoList();
@@ -39,13 +65,12 @@ public class InitMemberDto {
                 gender = "여자";
             }
 
-            MemberInfoDto memberInfoDto = new MemberInfoDto((long) i + 1, "test" + i + "@naver.com", null, "테스트이름" + i,
+            MemberInfoDto memberInfoDto = new MemberInfoDto((long) i + 1, "test" + i + "@naver.com", UUID.randomUUID().toString() + ".jpg", "테스트이름" + i,
                     "테스트닉네임" + i, gender, now(), "0100000000" + i, "1190" + i, "경기 구리시 갈매동 215-56" + i, i + "층", "(갈매동)",
                     0, new ArrayList<>());
             memberInfoDtoList.add(memberInfoDto);
 
         }
-
 
         for (int j = 0; j < memberInfoDtoList.size(); j++) {
 
@@ -57,6 +82,18 @@ public class InitMemberDto {
         }
 
         return memberInfoDtoList;
+    }
+
+
+
+    private Pageable pageable = PageRequest.of(1, 5, Sort.by(Sort.Direction.DESC, "id"));
+
+    private int getPage() {
+        return pageable.getPageNumber();
+    }
+
+    private int getSize() {
+        return pageable.getPageSize();
     }
 }
 
