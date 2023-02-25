@@ -30,6 +30,10 @@ public class MemberInfoDto {
     private int point;//포인트
     private List<MemberSnsDto> memberSnsDtoList = new ArrayList<>();
 
+    public void addMemberSnsDto(MemberSnsDto memberSnsDto){
+        this.memberSnsDtoList.add(memberSnsDto);
+    }
+
     public MemberInfoDto(Member member) {
         this.memberId = member.getId();
         this.email = member.getEmail();

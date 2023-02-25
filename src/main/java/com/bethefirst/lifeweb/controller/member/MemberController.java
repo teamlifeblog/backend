@@ -2,6 +2,7 @@ package com.bethefirst.lifeweb.controller.member;
 
 import com.bethefirst.lifeweb.config.security.JwtFilter;
 import com.bethefirst.lifeweb.config.security.TokenProvider;
+import com.bethefirst.lifeweb.dto.CustomUser;
 import com.bethefirst.lifeweb.dto.jwt.TokenDto;
 import com.bethefirst.lifeweb.dto.member.request.*;
 import com.bethefirst.lifeweb.dto.member.response.ConfirmationEmailDto;
@@ -28,6 +29,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 
+import static org.springframework.http.HttpHeaders.CONTENT_LOCATION;
+
 @RestController
 @RequestMapping("/members")
 @RequiredArgsConstructor
@@ -45,7 +48,7 @@ public class MemberController {
         memberService.join(joinDto);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("/members/login"));
+        headers.set(CONTENT_LOCATION,"/members/login");
 
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
@@ -62,6 +65,7 @@ public class MemberController {
         headers.setLocation(URI.create("/members/" + memberId));
 
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
+
     }
 
     /** 로그인 */
@@ -74,10 +78,13 @@ public class MemberController {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.createToken(authentication);
-
+        CustomUser principal = (CustomUser) authentication.getPrincipal();
+        Long memberId = principal.getMemberId();
         HttpHeaders headers = new HttpHeaders();
         headers.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
+        headers.set(CONTENT_LOCATION,"/members/" + memberId);
         return new ResponseEntity<>(new TokenDto(jwt), headers, HttpStatus.OK);
+
     }
 
     /** 회원 탈퇴 */
