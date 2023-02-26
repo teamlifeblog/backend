@@ -3,11 +3,14 @@ package com.bethefirst.lifeweb.initDto.mamber;
 import com.bethefirst.lifeweb.dto.member.request.JoinDto;
 import com.bethefirst.lifeweb.dto.member.request.LoginDto;
 import com.bethefirst.lifeweb.dto.member.request.MemberSearchRequirements;
+import com.bethefirst.lifeweb.dto.member.request.UpdateMemberDto;
 import com.bethefirst.lifeweb.dto.member.response.MemberInfoDto;
 import com.bethefirst.lifeweb.dto.member.response.MemberSnsDto;
+import com.bethefirst.lifeweb.initDto.InitMockMultipartFile;
 import org.springframework.data.domain.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,6 +19,7 @@ import static java.time.LocalDate.now;
 public class InitMemberDto {
 
     InitMemberSnsDto initMemberSnsDto = new InitMemberSnsDto();
+    InitMockMultipartFile mockMultipartFile = new InitMockMultipartFile();
 
     public LoginDto getLoginDto() {
         return new LoginDto("test1@naver.com", "a1231231#");
@@ -84,6 +88,13 @@ public class InitMemberDto {
         return memberInfoDtoList;
     }
 
+
+    public UpdateMemberDto getUpdateMemberDto(){
+
+        return new UpdateMemberDto(mockMultipartFile.getMockMultipartFile(), "수정할 이름", "수정 닉네임", "남자", now(), "01000000001", "11901", "경기 구리시 갈매동 215-56",
+                "1층", "(갈매동)", Arrays.asList(0L), Arrays.asList(1L), Arrays.asList("blog.naver.com/myblog"));
+
+    }
 
 
     private Pageable pageable = PageRequest.of(1, 5, Sort.by(Sort.Direction.DESC, "id"));

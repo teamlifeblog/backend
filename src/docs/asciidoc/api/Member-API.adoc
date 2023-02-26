@@ -21,3 +21,11 @@ operation::member-controller-test/회원_단건조회[snippets='http-request,req
 [[Member-전체조회]]
 === Member 전체조회
 operation::member-controller-test/회원_전체조회[snippets='http-request,request-headers,query-parameters,http-response,response-fields']
+
+[[Member-수정]]
+=== Member 수정
+operation::member-controller-test/회원_수정[snippets='http-request,request-headers,path-parameters,request-parts,http-response,response-headers']
+
+[[Member-탈퇴]]
+=== Member-탈퇴
+operation::member-controller-test/회원_탈퇴[snippets='http-request,request-headers,path-parameters,http-response']

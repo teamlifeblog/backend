@@ -2,6 +2,7 @@ package com.bethefirst.lifeweb.controller.member;
 
 import com.bethefirst.lifeweb.config.security.TokenProvider;
 import com.bethefirst.lifeweb.controller.ControllerTest;
+import com.bethefirst.lifeweb.dto.member.request.UpdateMemberDto;
 import com.bethefirst.lifeweb.entity.member.Role;
 import com.bethefirst.lifeweb.initDto.mamber.InitMemberDto;
 import com.bethefirst.lifeweb.service.member.interfaces.MemberService;
@@ -16,16 +17,20 @@ import org.springframework.data.domain.Sort;
 import static com.bethefirst.lifeweb.entity.member.Role.ADMIN;
 import static com.bethefirst.lifeweb.entity.member.Role.USER;
 import static com.bethefirst.lifeweb.util.CustomJsonFieldType.LOCAL_DATE;
+import static com.bethefirst.lifeweb.util.CustomJsonFieldType.MULTIPART_FILE;
+import static com.bethefirst.lifeweb.util.CustomRestDocumentationRequestBuilders.multipart;
+import static com.bethefirst.lifeweb.util.RestdocsUtil.createMultiPartRequest;
 import static com.bethefirst.lifeweb.util.RestdocsUtil.getJwt;
 import static com.bethefirst.lifeweb.util.SnippetUtil.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.http.HttpHeaders.*;
+import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
@@ -100,7 +105,7 @@ public class MemberControllerTest extends ControllerTest {
                 .andDo(
                         restDocs.document(
                                 requestHeaders(
-                                  headerWithName(AUTHORIZATION).attributes(info(USER)).description("token")
+                                  headerWithName(AUTHORIZATION).attributes(info(USER,ADMIN)).description("token")
                                 ),
                                 pathParameters(
                                         parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
@@ -121,8 +126,7 @@ public class MemberControllerTest extends ControllerTest {
                                         fieldWithPath("point").type(NUMBER).description("포인트"),
                                         fieldWithPath("memberSnsDtoList[].snsId").type(NUMBER).description("SNS ID").optional(),
                                         fieldWithPath("memberSnsDtoList[].memberSnsId").type(NUMBER).description("회원SNS ID").optional(),
-                                        fieldWithPath("memberSnsDtoList[].memberId").type(NUMBER).description("회원 ID").optional(),
-                                        fieldWithPath("memberSnsDtoList[].name").type(STRING).description("SNS 이름").optional(),
+                                        fieldWithPath("memberSnsDtoList[].snsName").type(STRING).description("SNS 이름").optional(),
                                         fieldWithPath("memberSnsDtoList[].url").type(STRING).description("회원SNS 주소").optional()
 
                                 )
@@ -236,7 +240,72 @@ public class MemberControllerTest extends ControllerTest {
                 );
     }
 
+    @Test
+    @DisplayName("회원 수정")
+    void 회원_수정() throws Exception{
+        UpdateMemberDto dto = initMemberDto.getUpdateMemberDto();
+        willDoNothing().given(memberService).updateMemberInfo(dto,1L);
 
+        mockMvc.perform(
+                createMultiPartRequest(multipart(PUT, urlTemplate + "/{memberId}",1L),dto)
+                        .contentType(MULTIPART_FORM_DATA)
+                        .header(AUTHORIZATION, getJwt(USER,1L))
+
+                )
+                .andExpect(status().isCreated())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(CONTENT_TYPE).attributes(info(MULTIPART_FORM_DATA)).description(CONTENT_TYPE),
+                                        headerWithName(AUTHORIZATION).attributes(info(USER,ADMIN)).description(AUTHORIZATION)
+                                ),
+                                pathParameters(
+                                        parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
+                                ),
+                                requestParts(
+                                        partWithName("uploadFile").attributes(type(MULTIPART_FILE)).description("프로필 이미지").optional(),
+                                        partWithName("name").attributes(type(STRING)).description("이름"),
+                                        partWithName("nickname").attributes(type(STRING)).description("닉네임"),
+                                        partWithName("gender").attributes(type(STRING)).description("성별"),
+                                        partWithName("birth").attributes(type(STRING)).description("생일"),
+                                        partWithName("tel").attributes(type(STRING)).description("휴대폰번호"),
+                                        partWithName("postcode").attributes(type(STRING)).description("우편번호"),
+                                        partWithName("address").attributes(type(STRING)).description("주소"),
+                                        partWithName("detailAddress").attributes(type(STRING)).description("상세주소").optional(),
+                                        partWithName("extraAddress").attributes(type(STRING)).description("주소 참고사항"),
+                                        partWithName("memberSnsId").attributes(type(arrayType(NUMBER))).description("회원SNS ID").optional(),
+                                        partWithName("snsId").attributes(type(arrayType(NUMBER))).description("SNS ID").optional(),
+                                        partWithName("url").attributes(type(arrayType(STRING))).description("SNS URL").optional()
+
+                                ),
+                                responseHeaders(
+                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{memberId}")).description(CONTENT_LOCATION)
+                                )
+
+                        )
+                );
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴")
+    void 회원_탈퇴()throws Exception{
+        willDoNothing().given(memberService).withdraw(1L);
+
+        mockMvc.perform(delete(urlTemplate + "/{memberId}",1L)
+                        .header(AUTHORIZATION,getJwt(USER,1L))
+                )
+                .andExpect(status().isNoContent())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION).attributes(info(USER,ADMIN)).description("token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
+                                )
+                        )
+                );
+    }
 
 
 }
