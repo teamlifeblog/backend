@@ -134,7 +134,7 @@ public class MemberController {
 		memberService.updatePoint(memberId, updatePointDto.getPoint());
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(URI.create("/members"));
+		headers.set(CONTENT_LOCATION, "/members");
 
 		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}
