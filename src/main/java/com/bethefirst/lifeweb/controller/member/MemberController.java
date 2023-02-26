@@ -59,12 +59,12 @@ public class MemberController {
     @PutMapping("/{memberId}")
     @PreAuthorize("isAuthenticated() and (( #memberId == principal.memberId ) or hasRole('ADMIN'))")
     public ResponseEntity<?> update(@PathVariable Long memberId,
-                             		@Valid @RequestBody UpdateMemberDto updateMemberDto) {
+                             		@Valid UpdateMemberDto updateMemberDto) {
 
         memberService.updateMemberInfo(updateMemberDto, memberId);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("/members/" + memberId));
+        headers.set(CONTENT_LOCATION,"/members/" + memberId);
 
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
 
