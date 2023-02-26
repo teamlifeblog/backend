@@ -123,7 +123,7 @@ public class MemberController {
         memberService.updatePassword(updatePasswordDto, memberId);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("/members/" + memberId));
+        headers.set( CONTENT_LOCATION ,"/members/" + memberId);
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
