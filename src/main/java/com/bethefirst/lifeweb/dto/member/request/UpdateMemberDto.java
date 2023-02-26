@@ -54,6 +54,22 @@ public class UpdateMemberDto {
 	private List<Long> snsId;
 	private List<String> url;
 
+	public UpdateMemberDto(MultipartFile uploadFile, String name, String nickname, String gender, LocalDate birth, String tel, String postcode, String address, String detailAddress, String extraAddress, List<Long> memberSnsId, List<Long> snsId, List<String> url) {
+		this.uploadFile = uploadFile;
+		this.name = name;
+		this.nickname = nickname;
+		this.gender = gender;
+		this.birth = birth;
+		this.tel = tel;
+		this.postcode = postcode;
+		this.address = address;
+		this.detailAddress = detailAddress;
+		this.extraAddress = extraAddress;
+		this.memberSnsId = memberSnsId;
+		this.snsId = snsId;
+		this.url = url;
+	}
+
 	public List<MemberSnsDto> getMemberSnsDtoList() {
 		List<MemberSnsDto> list = new ArrayList<>();
 		for (int i = 0; i < memberSnsId.size(); i++) {
