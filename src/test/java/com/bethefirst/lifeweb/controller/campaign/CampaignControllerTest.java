@@ -58,7 +58,7 @@ class CampaignControllerTest extends ControllerTest {
 						restDocs.document(
 								requestHeaders(
 										headerWithName(CONTENT_TYPE).attributes(info(MULTIPART_FORM_DATA)).description(CONTENT_TYPE),
-										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("토큰")
 								),
 								requestParts(
 										partWithName("categoryId").attributes(type(NUMBER)).description("카테고리ID"),
@@ -87,7 +87,7 @@ class CampaignControllerTest extends ControllerTest {
 										partWithName("items").attributes(type(arrayType(STRING))).description("항목").optional()
 								),
 								responseHeaders(
-										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{campaignId}")).description(CONTENT_LOCATION)
+										headerWithName(CONTENT_LOCATION).description(urlTemplate + "/{캠페인ID}")
 								)
 						)
 				);
@@ -229,7 +229,7 @@ class CampaignControllerTest extends ControllerTest {
 						restDocs.document(
 								requestHeaders(
 										headerWithName(CONTENT_TYPE).attributes(info(MULTIPART_FORM_DATA)).description(CONTENT_TYPE),
-										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("토큰")
 								),
 								pathParameters(
 									parameterWithName("campaignId").attributes(type(NUMBER)).description("캠페인ID")
@@ -263,7 +263,7 @@ class CampaignControllerTest extends ControllerTest {
 										partWithName("items").attributes(type(arrayType(STRING))).description("항목").optional()
 								),
 								responseHeaders(
-										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{campaignId}")).description(CONTENT_LOCATION)
+										headerWithName(CONTENT_LOCATION).description(urlTemplate + "/{캠페인ID}")
 								)
 						)
 				);
@@ -286,7 +286,7 @@ class CampaignControllerTest extends ControllerTest {
 						restDocs.document(
 								requestHeaders(
 										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
-										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("토큰")
 								),
 								pathParameters(
 										parameterWithName("campaignId").attributes(type(NUMBER)).description("캠페인ID")
@@ -295,7 +295,7 @@ class CampaignControllerTest extends ControllerTest {
 										fieldWithPath("status").type(enumType(CampaignStatus.class)).description("캠페인상태")
 								),
 								responseHeaders(
-										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{campaignId}")).description(CONTENT_LOCATION)
+										headerWithName(CONTENT_LOCATION).description(urlTemplate + "/{캠페인ID}")
 								)
 						)
 				);
@@ -317,14 +317,14 @@ class CampaignControllerTest extends ControllerTest {
 						restDocs.document(
 								requestHeaders(
 										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
-										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("토큰")
 								),
 								requestFields(
 										fieldWithPath("newCampaignId").type(arrayType(NUMBER)).description("pick 선택할 캠페인ID"),
 										fieldWithPath("oldCampaignId").type(arrayType(NUMBER)).description("pick 해제할 캠페인ID")
 								),
 								responseHeaders(
-										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate)).description(CONTENT_LOCATION)
+										headerWithName(CONTENT_LOCATION).description(urlTemplate)
 								)
 						)
 				);

@@ -43,7 +43,7 @@ class ApplicationControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(info(Role.USER)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.USER, Role.ADMIN)).description("토큰")
 								),
 								pathParameters(
 										parameterWithName("applicationId").attributes(type(NUMBER)).description("신청서ID")
@@ -75,7 +75,7 @@ class ApplicationControllerTest extends ControllerTest {
 						restDocs.document(
 								requestHeaders(
 										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
-										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("토큰")
 								),
 								pathParameters(
 										parameterWithName("applicationId").attributes(type(NUMBER)).description("신청서ID")
@@ -86,7 +86,7 @@ class ApplicationControllerTest extends ControllerTest {
 										fieldWithPath("items").type(arrayType(STRING)).description("항목").optional()
 								),
 								responseHeaders(
-										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{applicationId}")).description(CONTENT_LOCATION)
+										headerWithName(CONTENT_LOCATION).description(urlTemplate + "/{신청서ID}")
 								)
 						)
 				);
