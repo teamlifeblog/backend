@@ -372,4 +372,34 @@ public class MemberControllerTest extends ControllerTest {
                         )
                 );
     }
+
+    @Test
+    @DisplayName("회원 인증메일전송")
+    void 회원_인증메일전송()throws Exception{
+
+        String email = "test1@nave.com";
+        given(memberService.sendConfirmationEmail(email)).willReturn(initMemberDto.getConfirmationEmailDto());
+
+        mockMvc.perform(get(urlTemplate + "/confirmation-email")
+                        .param("email",email)
+                )
+                .andExpect(status().isOk())
+                .andDo(
+                        restDocs.document(
+                                queryParameters(
+                                        parameterWithName("email").attributes(type(STRING)).description("회원 이메일")
+                                ),
+                                responseFields(
+                                        fieldWithPath("memberId").attributes(type(NUMBER)).description("회원ID"),
+                                        fieldWithPath("code").attributes(type(STRING)).description("인증번호")
+                                ),
+                                responseHeaders(
+                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{memberId}/password")).description(CONTENT_LOCATION)
+                                )
+                        )
+                );
+
+    }
+
+
 }

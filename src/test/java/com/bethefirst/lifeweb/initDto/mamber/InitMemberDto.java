@@ -1,6 +1,7 @@
 package com.bethefirst.lifeweb.initDto.mamber;
 
 import com.bethefirst.lifeweb.dto.member.request.*;
+import com.bethefirst.lifeweb.dto.member.response.ConfirmationEmailDto;
 import com.bethefirst.lifeweb.dto.member.response.MemberInfoDto;
 import com.bethefirst.lifeweb.dto.member.response.MemberSnsDto;
 import com.bethefirst.lifeweb.initDto.InitMockMultipartFile;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static java.time.LocalDate.now;
+
 
 public class InitMemberDto {
 
@@ -102,6 +104,11 @@ public class InitMemberDto {
         return new UpdatePointDto(200);
     }
 
+    public ConfirmationEmailDto getConfirmationEmailDto(){
+        String randomString = String.valueOf(Math.random()).substring(3, 12);
+        return new ConfirmationEmailDto(1L, randomString);
+    }
+
     private Pageable pageable = PageRequest.of(1, 5, Sort.by(Sort.Direction.DESC, "id"));
 
     private int getPage() {
@@ -111,5 +118,7 @@ public class InitMemberDto {
     private int getSize() {
         return pageable.getPageSize();
     }
+
+
 }
 

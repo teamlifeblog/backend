@@ -28,8 +28,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-
 import static org.springframework.http.HttpHeaders.CONTENT_LOCATION;
 
 @RestController
@@ -158,7 +156,7 @@ public class MemberController {
 		ConfirmationEmailDto confirmationEmailDto = memberService.sendConfirmationEmail(email);
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(URI.create("/members/" + confirmationEmailDto.getMemberId() + "/password"));
+		headers.set(CONTENT_LOCATION, "/members/" + confirmationEmailDto.getMemberId() + "/password");
 
 		return new ResponseEntity<>(confirmationEmailDto, headers, HttpStatus.OK);
     }

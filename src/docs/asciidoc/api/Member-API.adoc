@@ -37,3 +37,7 @@ operation::member-controller-test/회원_비밀번호_변경[snippets='http-requ
 [[Member-포인트수정]]
 === Member 포인트수정
 operation::member-controller-test/회원_포인트_수정[snippets='http-request,request-headers,path-parameters,request-fields,http-response,response-headers']
+
+[[Member-인증메일전송]]
+=== Member 인증메일전송
+operation::member-controller-test/회원_인증메일전송[snippets='http-request,query-parameters,http-response,response-headers,response-fields']
