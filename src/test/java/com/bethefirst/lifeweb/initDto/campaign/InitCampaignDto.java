@@ -29,8 +29,7 @@ public class InitCampaignDto {
 		return new CreateCampaignDto(1L, 1L, 1L,
 				true, "제목", mockMultipartFile.getMockMultipartFile(), null,
 				"제공내역", "리뷰주의사항", "가이드라인", "키워드1,키워드2,키워드3",
-				LocalDate.now().toString().substring(0, 10), LocalDate.now().plusDays(7).toString().substring(0, 10),
-				LocalDate.now().plusDays(8).toString().substring(0, 10), LocalDate.now().plusDays(14).toString().substring(0, 10),
+				LocalDate.now(), LocalDate.now().plusDays(7), LocalDate.now().plusDays(8), LocalDate.now().plusDays(14),
 				15, 1L, "서울특별시 강남구 역삼1동", "37.4954841", "127.0333574", "방문주의사항",
 				mockMultipartFile.getMultipartFileList(), Arrays.asList("테스트 질문1", "테스트 질문2"), Arrays.asList(QuestionType.TEXT, QuestionType.CHECKBOX), Arrays.asList("", "아이템1,아이템2,아이템3"));
 	}
@@ -51,7 +50,7 @@ public class InitCampaignDto {
 	private List<CampaignDto> getSubList() {
 		if (getCampaignDtoList().size() < getPage() * getSize()) {
 			return new ArrayList<>();
-		} else if (getCampaignDtoList().size() - getPage() * getSize() < getSize()) {
+		} else if (getCampaignDtoList().size() - getPage() * getSize() <= getSize()) {
 			return getCampaignDtoList().subList(getPage() * getSize(), getCampaignDtoList().size());
 		} else {
 			return getCampaignDtoList().subList(getPage() * getSize(), getSize());
@@ -66,10 +65,8 @@ public class InitCampaignDto {
 			list.add(new CampaignDto((long) i, campaignCategoryDto.getCampaignCategoryDto(), campaignTypeDto.getCampaignTypeDto(), snsDto.getSnsDto(),
 					true, false, "캠페인 제목", "대표이미지.jpg", "제공내역",
 					LocalDateTime.now(), "리뷰주의사항", "가이드라인", "키워드1,키워드2,키워드3",
-					LocalDate.now(), LocalDate.now().plusDays(7),
-					LocalDate.now().plusDays(8), LocalDate.now().plusDays(14),
-					15, CampaignStatus.STAND,
-					campaignLocalDto, imageList));
+					LocalDate.now(), LocalDate.now().plusDays(7), LocalDate.now().plusDays(8), LocalDate.now().plusDays(14),
+					15, CampaignStatus.STAND, campaignLocalDto, imageList));
 		}
 
 		return list;
@@ -79,8 +76,7 @@ public class InitCampaignDto {
 		return new UpdateCampaignDto(1L, 1L, 1L,
 				true, "수정된 제목", mockMultipartFile.getMockMultipartFile(), null,
 				"수정된 제공내역", "수정된 리뷰주의사항", "수정된 가이드라인", "수정된 키워드1,수정된 키워드2,수정된 키워드3",
-				LocalDate.now().toString().substring(0, 10), LocalDate.now().plusDays(7).toString().substring(0, 10),
-				LocalDate.now().plusDays(8).toString().substring(0, 10), LocalDate.now().plusDays(14).toString().substring(0, 10),
+				LocalDate.now(), LocalDate.now().plusDays(7), LocalDate.now().plusDays(8), LocalDate.now().plusDays(14),
 				15, 1L, "서울특별시 강남구 역삼2동", "37.4954841", "127.0333574", "수정된 방문주의사항",
 				Arrays.asList(1L, 2L), mockMultipartFile.getMultipartFileList(),
 				Arrays.asList(1L, 2L), Arrays.asList("수정된 테스트 질문1", "수정된 테스트 질문2"), Arrays.asList(QuestionType.TEXT, QuestionType.CHECKBOX), Arrays.asList("", "수정된 아이템1,수정된 아이템2,수정된 아이템3"));
