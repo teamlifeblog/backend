@@ -1,23 +1,56 @@
 [[Member-API]]
 == Member API
 
-[[Member-닉네임-중복체크]]
-=== Member 닉네임 중복체크
-operation::member-controller-test/회원_닉네임_중복체크[snippets='http-request,query-parameters,http-response']
-
-[[Member-이메일-중복체크]]
-=== Member 이메일 중복체크
-operation::member-controller-test/회원_이메일_중복체크[snippets='http-request,query-parameters,http-response']
-
 [[Member-회원-가입]]
 === Member 회원 가입
 operation::member-controller-test/회원_가입[snippets='http-request,request-headers,request-fields,http-response']
+
+
+[[Member-로그인]]
+=== Member 로그인
+operation::member-controller-test/회원_로그인[snippets='http-request,request-headers,request-fields,http-response,response-headers,response-fields']
 
 
 [[Member-단건조회]]
 === Member 단건조회
 operation::member-controller-test/회원_단건조회[snippets='http-request,request-headers,path-parameters,http-response,response-fields']
 
+
 [[Member-전체조회]]
 === Member 전체조회
 operation::member-controller-test/회원_전체조회[snippets='http-request,request-headers,query-parameters,http-response,response-fields']
+
+
+[[Member-수정]]
+=== Member 수정
+operation::member-controller-test/회원_수정[snippets='http-request,request-headers,path-parameters,request-parts,http-response,response-headers']
+
+
+[[Member-비밀번호변경]]
+=== Member 비밀번호변경
+operation::member-controller-test/회원_비밀번호_변경[snippets='http-request,request-headers,path-parameters,request-fields,http-response,response-headers']
+
+
+[[Member-포인트수정]]
+=== Member 포인트수정
+operation::member-controller-test/회원_포인트_수정[snippets='http-request,request-headers,path-parameters,request-fields,http-response,response-headers']
+
+
+[[Member-탈퇴]]
+=== Member 탈퇴
+operation::member-controller-test/회원_탈퇴[snippets='http-request,request-headers,path-parameters,http-response']
+
+
+[[Member-인증메일전송]]
+=== Member 인증메일전송
+operation::member-controller-test/회원_인증메일전송[snippets='http-request,query-parameters,http-response,response-headers,response-fields']
+
+
+[[Member-닉네임-중복체크]]
+=== Member 닉네임 중복체크
+operation::member-controller-test/회원_닉네임_중복체크[snippets='http-request,query-parameters,http-response']
+
+
+[[Member-이메일-중복체크]]
+=== Member 이메일 중복체크
+operation::member-controller-test/회원_이메일_중복체크[snippets='http-request,query-parameters,http-response']

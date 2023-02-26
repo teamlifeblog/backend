@@ -1,12 +1,12 @@
 package com.bethefirst.lifeweb.dto.member.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode
 public class ConfirmationEmailDto {
 
 	private Long memberId;

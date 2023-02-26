@@ -2,10 +2,13 @@ package com.bethefirst.lifeweb.controller.member;
 
 import com.bethefirst.lifeweb.config.security.TokenProvider;
 import com.bethefirst.lifeweb.controller.ControllerTest;
+import com.bethefirst.lifeweb.dto.member.request.LoginDto;
+import com.bethefirst.lifeweb.dto.member.request.UpdateMemberDto;
 import com.bethefirst.lifeweb.entity.member.Role;
 import com.bethefirst.lifeweb.initDto.mamber.InitMemberDto;
 import com.bethefirst.lifeweb.service.member.interfaces.MemberService;
 import com.bethefirst.lifeweb.service.member.interfaces.MemberSnsService;
+import com.bethefirst.lifeweb.service.security.CustomUserDetailsService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -16,16 +19,19 @@ import org.springframework.data.domain.Sort;
 import static com.bethefirst.lifeweb.entity.member.Role.ADMIN;
 import static com.bethefirst.lifeweb.entity.member.Role.USER;
 import static com.bethefirst.lifeweb.util.CustomJsonFieldType.LOCAL_DATE;
+import static com.bethefirst.lifeweb.util.CustomJsonFieldType.MULTIPART_FILE;
+import static com.bethefirst.lifeweb.util.CustomRestDocumentationRequestBuilders.multipart;
+import static com.bethefirst.lifeweb.util.RestdocsUtil.createMultiPartRequest;
 import static com.bethefirst.lifeweb.util.RestdocsUtil.getJwt;
 import static com.bethefirst.lifeweb.util.SnippetUtil.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.http.HttpHeaders.*;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.http.MediaType.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
@@ -48,6 +54,7 @@ public class MemberControllerTest extends ControllerTest {
 
     @MockBean MemberService memberService;
 
+    @MockBean CustomUserDetailsService userDetailsService;
 
     @Test
     @DisplayName("회원 닉네임 중복체크")
@@ -100,7 +107,7 @@ public class MemberControllerTest extends ControllerTest {
                 .andDo(
                         restDocs.document(
                                 requestHeaders(
-                                  headerWithName(AUTHORIZATION).attributes(info(USER)).description("token")
+                                  headerWithName(AUTHORIZATION).attributes(info(USER,ADMIN)).description("token")
                                 ),
                                 pathParameters(
                                         parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
@@ -121,8 +128,7 @@ public class MemberControllerTest extends ControllerTest {
                                         fieldWithPath("point").type(NUMBER).description("포인트"),
                                         fieldWithPath("memberSnsDtoList[].snsId").type(NUMBER).description("SNS ID").optional(),
                                         fieldWithPath("memberSnsDtoList[].memberSnsId").type(NUMBER).description("회원SNS ID").optional(),
-                                        fieldWithPath("memberSnsDtoList[].memberId").type(NUMBER).description("회원 ID").optional(),
-                                        fieldWithPath("memberSnsDtoList[].name").type(STRING).description("SNS 이름").optional(),
+                                        fieldWithPath("memberSnsDtoList[].snsName").type(STRING).description("SNS 이름").optional(),
                                         fieldWithPath("memberSnsDtoList[].url").type(STRING).description("회원SNS 주소").optional()
 
                                 )
@@ -151,17 +157,17 @@ public class MemberControllerTest extends ControllerTest {
                                   headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE)
                                 ),
                                 requestFields(
-                                        fieldWithPath("email").attributes(type(STRING)).description("이메일"),
-                                        fieldWithPath("pwd").attributes(type(STRING)).description("비밀번호"),
-                                        fieldWithPath("nickname").attributes(type(STRING)).description("닉네임"),
-                                        fieldWithPath("name").attributes(type(STRING)).description("이름"),
-                                        fieldWithPath("gender").attributes(type(STRING)).description("성별"),
-                                        fieldWithPath("birth").attributes(type(LOCAL_DATE)).description("생일"),
-                                        fieldWithPath("tel").attributes(type(STRING)).description("휴대폰번호"),
-                                        fieldWithPath("postcode").attributes(type(STRING)).description("우편번호"),
-                                        fieldWithPath("address").attributes(type(STRING)).description("주소"),
-                                        fieldWithPath("detailAddress").attributes(type(STRING)).description("상세주소").optional(),
-                                        fieldWithPath("extraAddress").attributes(type(STRING)).description("참고사항")
+                                        fieldWithPath("email").type(STRING).description("이메일"),
+                                        fieldWithPath("pwd").type(STRING).description("비밀번호"),
+                                        fieldWithPath("nickname").type(STRING).description("닉네임"),
+                                        fieldWithPath("name").type(STRING).description("이름"),
+                                        fieldWithPath("gender").type(STRING).description("성별"),
+                                        fieldWithPath("birth").type(LOCAL_DATE).description("생일"),
+                                        fieldWithPath("tel").type(STRING).description("휴대폰번호"),
+                                        fieldWithPath("postcode").type(STRING).description("우편번호"),
+                                        fieldWithPath("address").type(STRING).description("주소"),
+                                        fieldWithPath("detailAddress").type(STRING).description("상세주소").optional(),
+                                        fieldWithPath("extraAddress").type(STRING).description("참고사항")
 
                                 ),
                                 responseHeaders(
@@ -236,7 +242,207 @@ public class MemberControllerTest extends ControllerTest {
                 );
     }
 
+    @Test
+    @DisplayName("회원 수정")
+    void 회원_수정() throws Exception{
+        UpdateMemberDto dto = initMemberDto.getUpdateMemberDto();
+        willDoNothing().given(memberService).updateMemberInfo(dto,1L);
 
+        mockMvc.perform(
+                createMultiPartRequest(multipart(PUT, urlTemplate + "/{memberId}",1L),dto)
+                        .contentType(MULTIPART_FORM_DATA)
+                        .header(AUTHORIZATION, getJwt(USER,1L))
+
+                )
+                .andExpect(status().isCreated())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(CONTENT_TYPE).attributes(info(MULTIPART_FORM_DATA)).description(CONTENT_TYPE),
+                                        headerWithName(AUTHORIZATION).attributes(info(USER,ADMIN)).description(AUTHORIZATION)
+                                ),
+                                pathParameters(
+                                        parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
+                                ),
+                                requestParts(
+                                        partWithName("uploadFile").attributes(type(MULTIPART_FILE)).description("프로필 이미지").optional(),
+                                        partWithName("name").attributes(type(STRING)).description("이름"),
+                                        partWithName("nickname").attributes(type(STRING)).description("닉네임"),
+                                        partWithName("gender").attributes(type(STRING)).description("성별"),
+                                        partWithName("birth").attributes(type(STRING)).description("생일"),
+                                        partWithName("tel").attributes(type(STRING)).description("휴대폰번호"),
+                                        partWithName("postcode").attributes(type(STRING)).description("우편번호"),
+                                        partWithName("address").attributes(type(STRING)).description("주소"),
+                                        partWithName("detailAddress").attributes(type(STRING)).description("상세주소").optional(),
+                                        partWithName("extraAddress").attributes(type(STRING)).description("주소 참고사항"),
+                                        partWithName("memberSnsId").attributes(type(arrayType(NUMBER))).description("회원SNS ID").optional(),
+                                        partWithName("snsId").attributes(type(arrayType(NUMBER))).description("SNS ID").optional(),
+                                        partWithName("url").attributes(type(arrayType(STRING))).description("SNS URL").optional()
+
+                                ),
+                                responseHeaders(
+                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{memberId}")).description(CONTENT_LOCATION)
+                                )
+
+                        )
+                );
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴")
+    void 회원_탈퇴()throws Exception{
+        willDoNothing().given(memberService).withdraw(1L);
+
+        mockMvc.perform(delete(urlTemplate + "/{memberId}",1L)
+                        .header(AUTHORIZATION,getJwt(USER,1L))
+                )
+                .andExpect(status().isNoContent())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION).attributes(info(USER,ADMIN)).description("token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
+                                )
+                        )
+                );
+    }
+
+
+
+    @Test
+    @DisplayName("비밀번호 변경")
+    void 회원_비밀번호_변경()throws Exception{
+
+        willDoNothing().given(memberService).updatePassword(initMemberDto.getUpdatePsswodDto(),1L);
+
+        String json = objectMapper.writeValueAsString(initMemberDto.getUpdatePsswodDto());
+
+        mockMvc.perform(put(urlTemplate + "/{memberId}/password",1L)
+                        .header(AUTHORIZATION,getJwt(USER,1L))
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
+
+                )
+                .andExpect(status().isCreated())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION).attributes(info(USER,ADMIN)).description("token"),
+                                        headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(APPLICATION_JSON)
+                                ),
+                                pathParameters(
+                                        parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
+                                ),
+                                requestFields(
+                                        fieldWithPath("newPassword").type(STRING).description("새 비밀번호"),
+                                        fieldWithPath("confirmPassword").type(STRING).description("새 비밀번호 확인")
+                                ),
+                                responseHeaders(
+                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{memberId}")).description(CONTENT_LOCATION)
+                                )
+                        )
+                );
+    }
+
+    @Test
+    @DisplayName("회원 포인트 수정")
+    void 회원_포인트_수정() throws Exception{
+        willDoNothing().given(memberService).updatePoint(1L,initMemberDto.getUpdatePointDto().getPoint());
+        String json = objectMapper.writeValueAsString(initMemberDto.getUpdatePointDto());
+
+        mockMvc.perform(put(urlTemplate + "/{memberId}/point",1L)
+                        .header(AUTHORIZATION, getJwt(ADMIN,1L))
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(status().isCreated())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION).attributes(info(ADMIN)).description("token"),
+                                        headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(APPLICATION_JSON)
+                                ),
+                                pathParameters(
+                                        parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
+                                ),
+                                requestFields(
+                                        fieldWithPath("point").type(NUMBER).description("포인트")
+                                ),
+                                responseHeaders(
+                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate)).description(CONTENT_LOCATION)
+                                )
+                        )
+                );
+    }
+
+    @Test
+    @DisplayName("회원 인증메일전송")
+    void 회원_인증메일전송()throws Exception{
+
+        String email = "test1@nave.com";
+        given(memberService.sendConfirmationEmail(email)).willReturn(initMemberDto.getConfirmationEmailDto());
+
+        mockMvc.perform(get(urlTemplate + "/confirmation-email")
+                        .param("email",email)
+                )
+                .andExpect(status().isOk())
+                .andDo(
+                        restDocs.document(
+                                queryParameters(
+                                        parameterWithName("email").attributes(type(STRING)).description("회원 이메일")
+                                ),
+                                responseFields(
+                                        fieldWithPath("memberId").type(NUMBER).description("회원ID"),
+                                        fieldWithPath("code").type(STRING).description("인증번호")
+                                ),
+                                responseHeaders(
+                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{memberId}/password")).description(CONTENT_LOCATION)
+                                )
+                        )
+                );
+
+    }
+
+    @Test
+    @DisplayName("회원 로그인")
+    void 회원_로그인() throws Exception{
+        LoginDto loginDto = initMemberDto.getLoginDto();
+
+        String jwt = getJwt(USER, 1L);
+        given(userDetailsService.login(loginDto)).willReturn(jwt);
+        String json = objectMapper.writeValueAsString(loginDto);
+
+        mockMvc.perform(post(urlTemplate + "/login")
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(status().isOk())
+
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE)
+                                ),
+                                requestFields(
+                                        fieldWithPath("email").attributes(type(STRING)).description("이메일"),
+                                        fieldWithPath("pwd").attributes(type(STRING)).description("비밀번호")
+                                ),
+                                responseFields(
+                                        fieldWithPath("token").type(STRING).description("토큰")
+                                ),
+
+                                responseHeaders(
+                                        headerWithName(AUTHORIZATION).attributes(path(jwt)).description("token"),
+                                        headerWithName(CONTENT_TYPE).attributes(path(APPLICATION_JSON_VALUE)).description(CONTENT_TYPE),
+                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{memberId}")).description(CONTENT_LOCATION)
+                                )
+
+                        )
+                );
+
+    }
 
 
 }

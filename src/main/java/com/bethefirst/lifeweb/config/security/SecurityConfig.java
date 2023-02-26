@@ -1,40 +1,20 @@
 package com.bethefirst.lifeweb.config.security;
 
-import com.bethefirst.lifeweb.dto.CustomUser;
-import com.bethefirst.lifeweb.entity.member.Role;
-import com.bethefirst.lifeweb.exception.UnauthorizedException;
 import com.bethefirst.lifeweb.repository.campaign.LocalRepository;
-import com.bethefirst.lifeweb.util.security.SecurityUtil;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.Part;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authorization.AuthenticatedAuthorizationManager;
-import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.servlet.configuration.WebMvcSecurityConfiguration;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
-import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
-
-import java.io.IOException;
-import java.util.Map;
-import java.util.Spliterator;
-import java.util.function.Supplier;
 
 @Configuration
 @EnableWebSecurity
@@ -97,7 +77,7 @@ public class SecurityConfig {
 						.requestMatchers("/sns/**", "/campaign-categories/**", "/campaign-types/**", "/locals/**").hasRole("ADMIN")
 						// members 회원
 						.requestMatchers(HttpMethod.POST,"/members/**").anonymous()//회원가입,로그인
-						.requestMatchers(HttpMethod.GET,"/members/nickname", "/members/email").anonymous()//중복체크
+						.requestMatchers(HttpMethod.GET,"/members/nickname", "/members/email", "/members/confirmation-email").anonymous()//중복체크 / 인증메일발송
 						.requestMatchers(HttpMethod.GET,"/members/**").hasRole("ADMIN")//전체조회
 						.requestMatchers(HttpMethod.PUT,"/members/{memberId}/point").hasRole("ADMIN")//포인트수정
 						.requestMatchers("/members/**").authenticated()
