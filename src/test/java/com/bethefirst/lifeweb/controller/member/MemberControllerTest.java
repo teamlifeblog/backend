@@ -2,11 +2,13 @@ package com.bethefirst.lifeweb.controller.member;
 
 import com.bethefirst.lifeweb.config.security.TokenProvider;
 import com.bethefirst.lifeweb.controller.ControllerTest;
+import com.bethefirst.lifeweb.dto.member.request.LoginDto;
 import com.bethefirst.lifeweb.dto.member.request.UpdateMemberDto;
 import com.bethefirst.lifeweb.entity.member.Role;
 import com.bethefirst.lifeweb.initDto.mamber.InitMemberDto;
 import com.bethefirst.lifeweb.service.member.interfaces.MemberService;
 import com.bethefirst.lifeweb.service.member.interfaces.MemberSnsService;
+import com.bethefirst.lifeweb.service.security.CustomUserDetailsService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -27,8 +29,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.HttpMethod.PUT;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
+import static org.springframework.http.MediaType.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
@@ -53,6 +54,7 @@ public class MemberControllerTest extends ControllerTest {
 
     @MockBean MemberService memberService;
 
+    @MockBean CustomUserDetailsService userDetailsService;
 
     @Test
     @DisplayName("회원 닉네임 중복체크")
@@ -155,17 +157,17 @@ public class MemberControllerTest extends ControllerTest {
                                   headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE)
                                 ),
                                 requestFields(
-                                        fieldWithPath("email").attributes(type(STRING)).description("이메일"),
-                                        fieldWithPath("pwd").attributes(type(STRING)).description("비밀번호"),
-                                        fieldWithPath("nickname").attributes(type(STRING)).description("닉네임"),
-                                        fieldWithPath("name").attributes(type(STRING)).description("이름"),
-                                        fieldWithPath("gender").attributes(type(STRING)).description("성별"),
-                                        fieldWithPath("birth").attributes(type(LOCAL_DATE)).description("생일"),
-                                        fieldWithPath("tel").attributes(type(STRING)).description("휴대폰번호"),
-                                        fieldWithPath("postcode").attributes(type(STRING)).description("우편번호"),
-                                        fieldWithPath("address").attributes(type(STRING)).description("주소"),
-                                        fieldWithPath("detailAddress").attributes(type(STRING)).description("상세주소").optional(),
-                                        fieldWithPath("extraAddress").attributes(type(STRING)).description("참고사항")
+                                        fieldWithPath("email").type(STRING).description("이메일"),
+                                        fieldWithPath("pwd").type(STRING).description("비밀번호"),
+                                        fieldWithPath("nickname").type(STRING).description("닉네임"),
+                                        fieldWithPath("name").type(STRING).description("이름"),
+                                        fieldWithPath("gender").type(STRING).description("성별"),
+                                        fieldWithPath("birth").type(LOCAL_DATE).description("생일"),
+                                        fieldWithPath("tel").type(STRING).description("휴대폰번호"),
+                                        fieldWithPath("postcode").type(STRING).description("우편번호"),
+                                        fieldWithPath("address").type(STRING).description("주소"),
+                                        fieldWithPath("detailAddress").type(STRING).description("상세주소").optional(),
+                                        fieldWithPath("extraAddress").type(STRING).description("참고사항")
 
                                 ),
                                 responseHeaders(
@@ -307,6 +309,8 @@ public class MemberControllerTest extends ControllerTest {
                 );
     }
 
+
+
     @Test
     @DisplayName("비밀번호 변경")
     void 회원_비밀번호_변경()throws Exception{
@@ -332,8 +336,8 @@ public class MemberControllerTest extends ControllerTest {
                                         parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
                                 ),
                                 requestFields(
-                                        fieldWithPath("newPassword").attributes(type(STRING)).description("새 비밀번호"),
-                                        fieldWithPath("confirmPassword").attributes(type(STRING)).description("새 비밀번호 확인")
+                                        fieldWithPath("newPassword").type(STRING).description("새 비밀번호"),
+                                        fieldWithPath("confirmPassword").type(STRING).description("새 비밀번호 확인")
                                 ),
                                 responseHeaders(
                                         headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{memberId}")).description(CONTENT_LOCATION)
@@ -364,7 +368,7 @@ public class MemberControllerTest extends ControllerTest {
                                         parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
                                 ),
                                 requestFields(
-                                        fieldWithPath("point").attributes(type(NUMBER)).description("포인트")
+                                        fieldWithPath("point").type(NUMBER).description("포인트")
                                 ),
                                 responseHeaders(
                                         headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate)).description(CONTENT_LOCATION)
@@ -390,12 +394,51 @@ public class MemberControllerTest extends ControllerTest {
                                         parameterWithName("email").attributes(type(STRING)).description("회원 이메일")
                                 ),
                                 responseFields(
-                                        fieldWithPath("memberId").attributes(type(NUMBER)).description("회원ID"),
-                                        fieldWithPath("code").attributes(type(STRING)).description("인증번호")
+                                        fieldWithPath("memberId").type(NUMBER).description("회원ID"),
+                                        fieldWithPath("code").type(STRING).description("인증번호")
                                 ),
                                 responseHeaders(
                                         headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{memberId}/password")).description(CONTENT_LOCATION)
                                 )
+                        )
+                );
+
+    }
+
+    @Test
+    @DisplayName("회원 로그인")
+    void 회원_로그인() throws Exception{
+        LoginDto loginDto = initMemberDto.getLoginDto();
+
+        String jwt = getJwt(USER, 1L);
+        given(userDetailsService.login(loginDto)).willReturn(jwt);
+        String json = objectMapper.writeValueAsString(loginDto);
+
+        mockMvc.perform(post(urlTemplate + "/login")
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(status().isOk())
+
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE)
+                                ),
+                                requestFields(
+                                        fieldWithPath("email").attributes(type(STRING)).description("이메일"),
+                                        fieldWithPath("pwd").attributes(type(STRING)).description("비밀번호")
+                                ),
+                                responseFields(
+                                        fieldWithPath("token").type(STRING).description("토큰")
+                                ),
+
+                                responseHeaders(
+                                        headerWithName(AUTHORIZATION).attributes(path(jwt)).description("token"),
+                                        headerWithName(CONTENT_TYPE).attributes(path(APPLICATION_JSON_VALUE)).description(CONTENT_TYPE),
+                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{memberId}")).description(CONTENT_LOCATION)
+                                )
+
                         )
                 );
 
