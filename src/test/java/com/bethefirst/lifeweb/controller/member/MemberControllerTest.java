@@ -30,6 +30,7 @@ import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.MediaType.*;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
@@ -57,40 +58,86 @@ public class MemberControllerTest extends ControllerTest {
     @MockBean CustomUserDetailsService userDetailsService;
 
     @Test
-    @DisplayName("회원 닉네임 중복체크")
-    void 회원_닉네임_중복체크() throws Exception{
-        //given
-        String nickname = "테스트닉네임1";
-        willDoNothing().given(memberService).existsNickname(nickname);
+    @DisplayName("회원 가입")
+    void 회원_가입() throws Exception{
 
-        mockMvc.perform(get(urlTemplate + "/nickname")
-                    .param("nickname",nickname)
-                )
-                .andExpect(status().isOk())
-                .andDo(restDocs.document(
-                        queryParameters(
-                                parameterWithName("nickname").attributes(type(STRING)).description("회원 닉네임")
+        willDoNothing().given(memberService).join(initMemberDto.getJoinDto());
+
+        String json = objectMapper.writeValueAsString(initMemberDto.getJoinDto());
+
+        mockMvc.perform(post(urlTemplate)
+                        .contentType(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON)
+                        .content(json)
+                        .characterEncoding(UTF_8))
+                .andExpect(status().isCreated())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE)
+                                ),
+                                requestFields(
+                                        fieldWithPath("email").type(STRING).description("이메일"),
+                                        fieldWithPath("pwd").type(STRING).description("비밀번호"),
+                                        fieldWithPath("nickname").type(STRING).description("닉네임"),
+                                        fieldWithPath("name").type(STRING).description("이름"),
+                                        fieldWithPath("gender").type(STRING).description("성별"),
+                                        fieldWithPath("birth").type(LOCAL_DATE).description("생일"),
+                                        fieldWithPath("tel").type(STRING).description("휴대폰번호"),
+                                        fieldWithPath("postcode").type(STRING).description("우편번호"),
+                                        fieldWithPath("address").type(STRING).description("주소"),
+                                        fieldWithPath("detailAddress").type(STRING).description("상세주소").optional(),
+                                        fieldWithPath("extraAddress").type(STRING).description("참고사항")
+
+                                ),
+                                responseHeaders(
+                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/login")).description(CONTENT_LOCATION)
+                                )
                         )
-                ));
+                );
+
+
+
     }
 
 
     @Test
-    @DisplayName("회원 이메일 중복체크")
-    void 회원_이메일_중복체크() throws Exception{
-        //given
-        String email = "test1@naver.com";
-        willDoNothing().given(memberService).existsEmail(email);
+    @DisplayName("회원 로그인")
+    void 회원_로그인() throws Exception{
+        LoginDto loginDto = initMemberDto.getLoginDto();
 
-        mockMvc.perform(get(urlTemplate + "/email")
-                        .param("email",email)
+        String jwt = getJwt(USER, 1L);
+        given(userDetailsService.login(loginDto)).willReturn(jwt);
+        String json = objectMapper.writeValueAsString(loginDto);
+
+        mockMvc.perform(post(urlTemplate + "/login")
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
                 )
                 .andExpect(status().isOk())
-                .andDo(restDocs.document(
-                        queryParameters(
-                                parameterWithName("email").attributes(type(STRING)).description("회원 이메일")
+
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE)
+                                ),
+                                requestFields(
+                                        fieldWithPath("email").attributes(type(STRING)).description("이메일"),
+                                        fieldWithPath("pwd").attributes(type(STRING)).description("비밀번호")
+                                ),
+                                responseFields(
+                                        fieldWithPath("token").type(STRING).description("토큰")
+                                ),
+
+                                responseHeaders(
+                                        headerWithName(AUTHORIZATION).attributes(path(jwt)).description("token"),
+                                        headerWithName(CONTENT_TYPE).attributes(path(APPLICATION_JSON_VALUE)).description(CONTENT_TYPE),
+                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{memberId}")).description(CONTENT_LOCATION)
+                                )
+
                         )
-                ));
+                );
+
     }
 
 
@@ -107,7 +154,7 @@ public class MemberControllerTest extends ControllerTest {
                 .andDo(
                         restDocs.document(
                                 requestHeaders(
-                                  headerWithName(AUTHORIZATION).attributes(info(USER,ADMIN)).description("token")
+                                        headerWithName(AUTHORIZATION).attributes(info(USER,ADMIN)).description("token")
                                 ),
                                 pathParameters(
                                         parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
@@ -137,48 +184,6 @@ public class MemberControllerTest extends ControllerTest {
 
     }
 
-    @Test
-    @DisplayName("회원 가입")
-    void 회원_가입() throws Exception{
-
-        willDoNothing().given(memberService).join(initMemberDto.getJoinDto());
-
-        String json = objectMapper.writeValueAsString(initMemberDto.getJoinDto());
-
-        mockMvc.perform(post(urlTemplate)
-                        .contentType(APPLICATION_JSON)
-                        .accept(APPLICATION_JSON)
-                        .content(json)
-                        .characterEncoding(UTF_8))
-                .andExpect(status().isCreated())
-                .andDo(
-                        restDocs.document(
-                                requestHeaders(
-                                  headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE)
-                                ),
-                                requestFields(
-                                        fieldWithPath("email").type(STRING).description("이메일"),
-                                        fieldWithPath("pwd").type(STRING).description("비밀번호"),
-                                        fieldWithPath("nickname").type(STRING).description("닉네임"),
-                                        fieldWithPath("name").type(STRING).description("이름"),
-                                        fieldWithPath("gender").type(STRING).description("성별"),
-                                        fieldWithPath("birth").type(LOCAL_DATE).description("생일"),
-                                        fieldWithPath("tel").type(STRING).description("휴대폰번호"),
-                                        fieldWithPath("postcode").type(STRING).description("우편번호"),
-                                        fieldWithPath("address").type(STRING).description("주소"),
-                                        fieldWithPath("detailAddress").type(STRING).description("상세주소").optional(),
-                                        fieldWithPath("extraAddress").type(STRING).description("참고사항")
-
-                                ),
-                                responseHeaders(
-                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/login")).description(CONTENT_LOCATION)
-                                )
-                        )
-                );
-
-
-
-    }
 
     @Test
     void 회원_전체조회() throws Exception{
@@ -249,9 +254,9 @@ public class MemberControllerTest extends ControllerTest {
         willDoNothing().given(memberService).updateMemberInfo(dto,1L);
 
         mockMvc.perform(
-                createMultiPartRequest(multipart(PUT, urlTemplate + "/{memberId}",1L),dto)
-                        .contentType(MULTIPART_FORM_DATA)
-                        .header(AUTHORIZATION, getJwt(USER,1L))
+                        createMultiPartRequest(multipart(PUT, urlTemplate + "/{memberId}",1L),dto)
+                                .contentType(MULTIPART_FORM_DATA)
+                                .header(AUTHORIZATION, getJwt(USER,1L))
 
                 )
                 .andExpect(status().isCreated())
@@ -287,28 +292,6 @@ public class MemberControllerTest extends ControllerTest {
                         )
                 );
     }
-
-    @Test
-    @DisplayName("회원 탈퇴")
-    void 회원_탈퇴()throws Exception{
-        willDoNothing().given(memberService).withdraw(1L);
-
-        mockMvc.perform(delete(urlTemplate + "/{memberId}",1L)
-                        .header(AUTHORIZATION,getJwt(USER,1L))
-                )
-                .andExpect(status().isNoContent())
-                .andDo(
-                        restDocs.document(
-                                requestHeaders(
-                                        headerWithName(AUTHORIZATION).attributes(info(USER,ADMIN)).description("token")
-                                ),
-                                pathParameters(
-                                        parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
-                                )
-                        )
-                );
-    }
-
 
 
     @Test
@@ -378,6 +361,27 @@ public class MemberControllerTest extends ControllerTest {
     }
 
     @Test
+    @DisplayName("회원 탈퇴")
+    void 회원_탈퇴()throws Exception{
+        willDoNothing().given(memberService).withdraw(1L);
+
+        mockMvc.perform(delete(urlTemplate + "/{memberId}",1L)
+                        .header(AUTHORIZATION,getJwt(USER,1L))
+                )
+                .andExpect(status().isNoContent())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION).attributes(info(USER,ADMIN)).description("token")
+                                ),
+                                pathParameters(
+                                        parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
+                                )
+                        )
+                );
+    }
+
+    @Test
     @DisplayName("회원 인증메일전송")
     void 회원_인증메일전송()throws Exception{
 
@@ -406,43 +410,43 @@ public class MemberControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("회원 로그인")
-    void 회원_로그인() throws Exception{
-        LoginDto loginDto = initMemberDto.getLoginDto();
+    @DisplayName("회원 닉네임 중복체크")
+    void 회원_닉네임_중복체크() throws Exception{
+        //given
+        String nickname = "테스트닉네임1";
+        willDoNothing().given(memberService).existsNickname(nickname);
 
-        String jwt = getJwt(USER, 1L);
-        given(userDetailsService.login(loginDto)).willReturn(jwt);
-        String json = objectMapper.writeValueAsString(loginDto);
-
-        mockMvc.perform(post(urlTemplate + "/login")
-                        .contentType(APPLICATION_JSON)
-                        .content(json)
+        mockMvc.perform(get(urlTemplate + "/nickname")
+                    .param("nickname",nickname)
                 )
                 .andExpect(status().isOk())
-
-                .andDo(
-                        restDocs.document(
-                                requestHeaders(
-                                        headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE)
-                                ),
-                                requestFields(
-                                        fieldWithPath("email").attributes(type(STRING)).description("이메일"),
-                                        fieldWithPath("pwd").attributes(type(STRING)).description("비밀번호")
-                                ),
-                                responseFields(
-                                        fieldWithPath("token").type(STRING).description("토큰")
-                                ),
-
-                                responseHeaders(
-                                        headerWithName(AUTHORIZATION).attributes(path(jwt)).description("token"),
-                                        headerWithName(CONTENT_TYPE).attributes(path(APPLICATION_JSON_VALUE)).description(CONTENT_TYPE),
-                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{memberId}")).description(CONTENT_LOCATION)
-                                )
-
+                .andDo(restDocs.document(
+                        queryParameters(
+                                parameterWithName("nickname").attributes(type(STRING)).description("회원 닉네임")
                         )
-                );
-
+                ));
     }
+
+
+    @Test
+    @DisplayName("회원 이메일 중복체크")
+    void 회원_이메일_중복체크() throws Exception{
+        //given
+        String email = "test1@naver.com";
+        willDoNothing().given(memberService).existsEmail(email);
+
+        mockMvc.perform(get(urlTemplate + "/email")
+                        .param("email",email)
+                )
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        queryParameters(
+                                parameterWithName("email").attributes(type(STRING)).description("회원 이메일")
+                        )
+                ));
+    }
+
+
 
 
 }
