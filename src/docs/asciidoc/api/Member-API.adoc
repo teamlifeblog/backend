@@ -27,9 +27,13 @@ operation::member-controller-test/회원_전체조회[snippets='http-request,req
 operation::member-controller-test/회원_수정[snippets='http-request,request-headers,path-parameters,request-parts,http-response,response-headers']
 
 [[Member-탈퇴]]
-=== Member-탈퇴
+=== Member 탈퇴
 operation::member-controller-test/회원_탈퇴[snippets='http-request,request-headers,path-parameters,http-response']
 
 [[Member-비밀번호변경]]
-=== Member-비밀번호변경
+=== Member 비밀번호변경
 operation::member-controller-test/회원_비밀번호_변경[snippets='http-request,request-headers,path-parameters,request-fields,http-response,response-headers']
+
+[[Member-포인트수정]]
+=== Member 포인트수정
+operation::member-controller-test/회원_포인트_수정[snippets='http-request,request-headers,path-parameters,request-fields,http-response,response-headers']

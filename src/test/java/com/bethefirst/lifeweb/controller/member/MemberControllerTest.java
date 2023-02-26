@@ -342,4 +342,34 @@ public class MemberControllerTest extends ControllerTest {
                 );
     }
 
+    @Test
+    @DisplayName("회원 포인트 수정")
+    void 회원_포인트_수정() throws Exception{
+        willDoNothing().given(memberService).updatePoint(1L,initMemberDto.getUpdatePointDto().getPoint());
+        String json = objectMapper.writeValueAsString(initMemberDto.getUpdatePointDto());
+
+        mockMvc.perform(put(urlTemplate + "/{memberId}/point",1L)
+                        .header(AUTHORIZATION, getJwt(ADMIN,1L))
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(status().isCreated())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION).attributes(info(ADMIN)).description("token"),
+                                        headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(APPLICATION_JSON)
+                                ),
+                                pathParameters(
+                                        parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
+                                ),
+                                requestFields(
+                                        fieldWithPath("point").attributes(type(NUMBER)).description("포인트")
+                                ),
+                                responseHeaders(
+                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate)).description(CONTENT_LOCATION)
+                                )
+                        )
+                );
+    }
 }

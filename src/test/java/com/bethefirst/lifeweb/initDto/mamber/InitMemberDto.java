@@ -98,6 +98,10 @@ public class InitMemberDto {
         return new UpdatePasswordDto("a123123a#","a123123a#");
     }
 
+    public UpdatePointDto getUpdatePointDto(){
+        return new UpdatePointDto(200);
+    }
+
     private Pageable pageable = PageRequest.of(1, 5, Sort.by(Sort.Direction.DESC, "id"));
 
     private int getPage() {
