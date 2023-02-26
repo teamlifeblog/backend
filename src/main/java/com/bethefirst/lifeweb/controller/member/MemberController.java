@@ -1,12 +1,9 @@
 package com.bethefirst.lifeweb.controller.member;
 
-import com.bethefirst.lifeweb.config.security.TokenProvider;
-import com.bethefirst.lifeweb.dto.jwt.TokenDto;
 import com.bethefirst.lifeweb.dto.member.request.*;
 import com.bethefirst.lifeweb.dto.member.response.ConfirmationEmailDto;
 import com.bethefirst.lifeweb.dto.member.response.MemberInfoDto;
 import com.bethefirst.lifeweb.service.member.interfaces.MemberService;
-import com.bethefirst.lifeweb.service.member.interfaces.MemberSnsService;
 import com.bethefirst.lifeweb.service.security.CustomUserDetailsService;
 import com.bethefirst.lifeweb.util.security.SecurityUtil;
 import jakarta.validation.Valid;
@@ -21,12 +18,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpHeaders.CONTENT_LOCATION;
+import static org.springframework.http.HttpHeaders.*;
 
 @RestController
 @RequestMapping("/members")
@@ -34,10 +29,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_LOCATION;
 @Slf4j
 @Validated
 public class MemberController {
-    private final TokenProvider tokenProvider;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final MemberService memberService;
-    private final MemberSnsService memberSnsService;
     private final CustomUserDetailsService userDetailsService;
 
     /** 회원 가입 */
@@ -58,18 +50,18 @@ public class MemberController {
 
         String jwt = userDetailsService.login(loginDto);
         Long memberId = SecurityUtil.getCurrentMemberId();
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION , "Bearer " + jwt);
-        headers.set(CONTENT_LOCATION,"/members/" + memberId);
-        return new ResponseEntity<>(new TokenDto(jwt), headers, HttpStatus.OK);
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION , jwt);
+        headers.set(CONTENT_LOCATION,"/members/" + memberId);
+
+        return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 
     /** 회원 단건 조회 */
     @GetMapping("/{memberId}")
     @PreAuthorize("isAuthenticated() and (( #memberId == principal.memberId ) or hasRole('ADMIN'))")
     public MemberInfoDto read(@PathVariable Long memberId) {
-
         return memberService.getMember(memberId);
     }
 
@@ -92,19 +84,19 @@ public class MemberController {
         headers.set(CONTENT_LOCATION,"/members/" + memberId);
 
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
-
     }
 
     /** 비밀번호 변경 */
     @PutMapping("/{memberId}/password")
     @PreAuthorize("!isAuthenticated() or (isAuthenticated() and (( #memberId == principal.memberId ) or hasRole('ADMIN')))")
     public ResponseEntity<?> updatePassword(@PathVariable Long memberId,
-                                            @RequestBody UpdatePasswordDto updatePasswordDto){
+                                            @RequestBody UpdatePasswordDto updatePasswordDto) {
 
         memberService.updatePassword(updatePasswordDto, memberId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set( CONTENT_LOCATION ,"/members/" + memberId);
+
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
@@ -112,6 +104,7 @@ public class MemberController {
     @PutMapping("/{memberId}/point")
     public ResponseEntity<?> updatePoint(@PathVariable Long memberId,
                                          @RequestBody UpdatePointDto updatePointDto) {
+
         memberService.updatePoint(memberId, updatePointDto.getPoint());
 
         HttpHeaders headers = new HttpHeaders();
@@ -120,17 +113,13 @@ public class MemberController {
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
-
     /** 회원 탈퇴 */
+	@ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{memberId}")
     @PreAuthorize("isAuthenticated() and (( #memberId == principal.memberId ) or hasRole('ADMIN'))")
-    public ResponseEntity<?> withdraw(@PathVariable Long memberId){
-
+    public void withdraw(@PathVariable Long memberId){
         memberService.withdraw(memberId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-
     }
-
 
     /** 인증 메일 전송 */
     @GetMapping("/confirmation-email")
@@ -143,8 +132,6 @@ public class MemberController {
 
         return new ResponseEntity<>(confirmationEmailDto, headers, HttpStatus.OK);
     }
-
-
 
     /** 닉네임 중복 체크 */
     @GetMapping("/nickname")

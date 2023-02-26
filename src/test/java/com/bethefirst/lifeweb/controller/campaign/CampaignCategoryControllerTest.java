@@ -48,13 +48,13 @@ class CampaignCategoryControllerTest extends ControllerTest {
 						restDocs.document(
 								requestHeaders(
 										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
-										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("토큰")
 								),
 								requestFields(
 										fieldWithPath("campaignCategoryName").attributes(type(STRING)).description("카테고리이름")
 								),
 								responseHeaders(
-										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate)).description(CONTENT_LOCATION)
+										headerWithName(CONTENT_LOCATION).description(urlTemplate)
 								)
 						)
 				);
@@ -94,7 +94,7 @@ class CampaignCategoryControllerTest extends ControllerTest {
 						restDocs.document(
 								requestHeaders(
 										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
-										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("토큰")
 								),
 								pathParameters(
 										parameterWithName("campaignCategoryId").attributes(type(NUMBER)).description("카테고리ID")
@@ -103,7 +103,7 @@ class CampaignCategoryControllerTest extends ControllerTest {
 										fieldWithPath("campaignCategoryName").type(STRING).description("카테고리이름")
 								),
 								responseHeaders(
-										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate)).description(CONTENT_LOCATION)
+										headerWithName(CONTENT_LOCATION).description(urlTemplate)
 								)
 						)
 				);
@@ -121,7 +121,7 @@ class CampaignCategoryControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("토큰")
 								),
 								pathParameters(
 										parameterWithName("campaignCategoryId").attributes(type(NUMBER)).description("카테고리ID")

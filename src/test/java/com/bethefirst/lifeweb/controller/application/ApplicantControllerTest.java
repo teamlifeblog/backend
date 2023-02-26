@@ -52,7 +52,7 @@ class ApplicantControllerTest extends ControllerTest {
 						restDocs.document(
 								requestHeaders(
 										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
-										headerWithName(AUTHORIZATION).attributes(info(Role.USER)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.USER)).description("토큰")
 								),
 								requestFields(
 										fieldWithPath("applicationId").type(NUMBER).description("신청서ID"),
@@ -61,7 +61,7 @@ class ApplicantControllerTest extends ControllerTest {
 										fieldWithPath("answer").type(arrayType(STRING)).description("답변").optional()
 								),
 								responseHeaders(
-										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{applicantId}")).description(CONTENT_LOCATION)
+										headerWithName(CONTENT_LOCATION).description(urlTemplate + "/{신청자ID}")
 								)
 						)
 				);
@@ -79,7 +79,7 @@ class ApplicantControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(info(Role.USER)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.USER, Role.ADMIN)).description("토큰")
 								),
 								pathParameters(
 										parameterWithName("applicantId").attributes(type(NUMBER)).description("신청자ID")
@@ -112,7 +112,7 @@ class ApplicantControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(info(Role.USER)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.USER, Role.ADMIN)).description("토큰")
 								),
 								queryParameters(
 										parameterWithName("page").attributes(type(NUMBER)).description("페이지").optional(),
@@ -162,7 +162,7 @@ class ApplicantControllerTest extends ControllerTest {
 						restDocs.document(
 								requestHeaders(
 										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
-										headerWithName(AUTHORIZATION).attributes(info(Role.USER)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.USER)).description("토큰")
 								),
 								pathParameters(
 										parameterWithName("applicantId").attributes(type(NUMBER)).description("신청자ID")
@@ -175,7 +175,7 @@ class ApplicantControllerTest extends ControllerTest {
 										fieldWithPath("answer").type(arrayType(STRING)).description("답변").optional()
 								),
 								responseHeaders(
-										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{applicantId}")).description(CONTENT_LOCATION)
+										headerWithName(CONTENT_LOCATION).description(urlTemplate + "/{신청자ID}")
 								)
 						)
 				);
@@ -197,7 +197,7 @@ class ApplicantControllerTest extends ControllerTest {
 						restDocs.document(
 								requestHeaders(
 										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
-										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("토큰")
 								),
 								requestFields(
 										fieldWithPath("campaignId").type(NUMBER).description("캠페인ID"),
@@ -205,7 +205,7 @@ class ApplicantControllerTest extends ControllerTest {
 										fieldWithPath("unselectApplicantId").type(arrayType(NUMBER)).description("비선정할 신청자ID")
 								),
 								responseHeaders(
-										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate)).description(CONTENT_LOCATION)
+										headerWithName(CONTENT_LOCATION).description(urlTemplate)
 								)
 						)
 				);
@@ -223,7 +223,7 @@ class ApplicantControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(info(Role.USER)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.USER, Role.ADMIN)).description("토큰")
 								),
 								pathParameters(
 										parameterWithName("applicantId").attributes(type(NUMBER)).description("신청자ID")
