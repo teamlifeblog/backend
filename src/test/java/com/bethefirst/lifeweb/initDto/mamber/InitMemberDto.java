@@ -1,9 +1,6 @@
 package com.bethefirst.lifeweb.initDto.mamber;
 
-import com.bethefirst.lifeweb.dto.member.request.JoinDto;
-import com.bethefirst.lifeweb.dto.member.request.LoginDto;
-import com.bethefirst.lifeweb.dto.member.request.MemberSearchRequirements;
-import com.bethefirst.lifeweb.dto.member.request.UpdateMemberDto;
+import com.bethefirst.lifeweb.dto.member.request.*;
 import com.bethefirst.lifeweb.dto.member.response.MemberInfoDto;
 import com.bethefirst.lifeweb.dto.member.response.MemberSnsDto;
 import com.bethefirst.lifeweb.initDto.InitMockMultipartFile;
@@ -96,6 +93,10 @@ public class InitMemberDto {
 
     }
 
+
+    public UpdatePasswordDto getUpdatePsswodDto(){
+        return new UpdatePasswordDto("a123123a#","a123123a#");
+    }
 
     private Pageable pageable = PageRequest.of(1, 5, Sort.by(Sort.Direction.DESC, "id"));
 

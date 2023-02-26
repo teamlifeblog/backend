@@ -307,5 +307,39 @@ public class MemberControllerTest extends ControllerTest {
                 );
     }
 
+    @Test
+    @DisplayName("비밀번호 변경")
+    void 회원_비밀번호_변경()throws Exception{
+
+        willDoNothing().given(memberService).updatePassword(initMemberDto.getUpdatePsswodDto(),1L);
+
+        String json = objectMapper.writeValueAsString(initMemberDto.getUpdatePsswodDto());
+
+        mockMvc.perform(put(urlTemplate + "/{memberId}/password",1L)
+                        .header(AUTHORIZATION,getJwt(USER,1L))
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
+
+                )
+                .andExpect(status().isCreated())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION).attributes(info(USER,ADMIN)).description("token"),
+                                        headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(APPLICATION_JSON)
+                                ),
+                                pathParameters(
+                                        parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
+                                ),
+                                requestFields(
+                                        fieldWithPath("newPassword").attributes(type(STRING)).description("새 비밀번호"),
+                                        fieldWithPath("confirmPassword").attributes(type(STRING)).description("새 비밀번호 확인")
+                                ),
+                                responseHeaders(
+                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{memberId}")).description(CONTENT_LOCATION)
+                                )
+                        )
+                );
+    }
 
 }
