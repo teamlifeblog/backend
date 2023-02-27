@@ -68,13 +68,18 @@ public class MemberServiceImpl implements MemberService {
 		return allBySearchRequirements.map(MemberInfoDto::new);
 	}
 
-	/** 회원 수정 */
+	/** 회원정보 수정  */
 	@Override
 	public void updateMemberInfo(UpdateMemberDto updateMemberDto, Long memberId) {
 
 		//회원 유효성 검사
-		Member member = memberRepository.findById(memberId).orElseThrow(()
+		Member member = memberRepository.findOneWithMemberSnsListById(memberId).orElseThrow(()
 				-> new IllegalArgumentException("존재하지 않는 회원입니다. " + memberId));
+
+		//닉네임 중복 검사
+		if (!updateMemberDto.getNickname().equals(member.getNickname())) {
+			existsNickname(updateMemberDto.getNickname());
+		}
 
 		//이미지 파일 저장
 		if (updateMemberDto.getUploadFile() != null) {
@@ -93,7 +98,6 @@ public class MemberServiceImpl implements MemberService {
 		}
 
 	}
-
 
 
 	/** 회원 비밀번호 변경 */
@@ -174,8 +178,4 @@ public class MemberServiceImpl implements MemberService {
 			throw new IllegalArgumentException("이미 존재하는 이메일 입니다.");
 	}
 
-
-
-
 }
-
