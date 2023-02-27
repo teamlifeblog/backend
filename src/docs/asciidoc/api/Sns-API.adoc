@@ -9,3 +9,6 @@ operation::sns-controller-test/sns_등록[snippets='http-request,request-headers
 === SNS 단건조회
 operation::sns-controller-test/sns_단건조회[snippets='http-request,request-headers,path-parameters,http-response,response-fields']
 
+[[SNS-전체조회]]
+=== SNS 전체조회
+operation::sns-controller-test/sns_전체조회[snippets='http-request,http-response,response-fields']

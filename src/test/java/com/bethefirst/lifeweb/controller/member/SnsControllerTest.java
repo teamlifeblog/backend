@@ -11,10 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.List;
+
 import static com.bethefirst.lifeweb.entity.member.Role.ADMIN;
 import static com.bethefirst.lifeweb.util.RestdocsUtil.getJwt;
-import static com.bethefirst.lifeweb.util.SnippetUtil.info;
-import static com.bethefirst.lifeweb.util.SnippetUtil.type;
+import static com.bethefirst.lifeweb.util.SnippetUtil.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -95,5 +96,22 @@ public class SnsControllerTest extends ControllerTest {
                 );
     }
 
+    @Test
+    @DisplayName("SNS 전체조회")
+    void SNS_전체조회() throws Exception{
+        List<SnsDto> dto = initSnsDto.getSnsDtoList();
+        given(snsService.getSnsList()).willReturn(dto);
+
+        mockMvc.perform(get(urlTemplate))
+                .andExpect(status().isOk())
+                .andDo(
+                        restDocs.document(
+                                responseFields(
+                                    fieldWithPath("[].id").type(NUMBER).description("SNS ID"),
+                                    fieldWithPath("[].name").type(STRING).description("SNS 이름")
+                                )
+                        )
+                );
+    }
 
 }
