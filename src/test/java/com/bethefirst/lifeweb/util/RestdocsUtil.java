@@ -29,7 +29,7 @@ public class RestdocsUtil {
 		PreAuthenticatedAuthenticationToken auth = new PreAuthenticatedAuthenticationToken(user, null, user.getAuthorities());
 
 		SecurityContextHolder.getContext().setAuthentication(auth);
-		return Jwts.builder()
+		return "Bearer " + Jwts.builder()
 				.setSubject(user.getUsername())
 				.claim("memberId", user.getMemberId())
 				.claim("role", user.getAuthorities())
