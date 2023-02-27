@@ -25,7 +25,7 @@ public class InitMemberDto {
     }
 
     public JoinDto getJoinDto() {
-        return new JoinDto("test1@naver.com", "a1231231#", "닉네임", "이름", "남자", now(), "01000000001", "11901", "경기 구리시 갈매동 215-56", "1층", "(갈매동))");
+        return new JoinDto("test1@naver.com", "a1231231#","a1231231#", "닉네임", "이름", "남자", now(), "01000000001", "11901", "경기 구리시 갈매동 215-56", "1층", "(갈매동))");
     }
 
     public MemberInfoDto getMemberInfoDto() {

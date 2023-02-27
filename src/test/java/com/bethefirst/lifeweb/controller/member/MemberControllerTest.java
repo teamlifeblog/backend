@@ -60,6 +60,7 @@ public class MemberControllerTest extends ControllerTest {
                                 requestFields(
                                         fieldWithPath("email").type(STRING).description("이메일"),
                                         fieldWithPath("pwd").type(STRING).description("비밀번호"),
+                                        fieldWithPath("confirmPwd").type(STRING).description("비밀번호 확인"),
                                         fieldWithPath("nickname").type(STRING).description("닉네임"),
                                         fieldWithPath("name").type(STRING).description("이름"),
                                         fieldWithPath("gender").type(STRING).description("성별"),

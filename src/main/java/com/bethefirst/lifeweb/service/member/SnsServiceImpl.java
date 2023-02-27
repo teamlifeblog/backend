@@ -32,6 +32,22 @@ public class SnsServiceImpl implements SnsService {
 
     }
 
+    /** SNS 단건조회 */
+    @Override
+    public SnsDto getSns(Long snsId) {
+        Sns sns = snsRepository.findById(snsId).orElseThrow(() ->
+                new IllegalArgumentException("존재하지 않는 snsId 입니다. " + String.valueOf(snsId)));
+
+        return new SnsDto(sns);
+
+    }
+
+    /** SNS 전체조회 */
+    @Override
+    public List<SnsDto> getSnsList() {
+        return snsRepository.findAll().stream().map(SnsDto::new).collect(Collectors.toList());
+    }
+
     /** SNS 수정 */
     @Override
     public void updateSns(UpdateSnsDto updateSnsDto, Long snsId) {
@@ -49,23 +65,5 @@ public class SnsServiceImpl implements SnsService {
 
         snsRepository.delete(sns);
     }
-
-
-    /** SNS 단건조회 */
-    @Override
-    public SnsDto getSns(Long snsId) {
-        Sns sns = snsRepository.findById(snsId).orElseThrow(() ->
-                new IllegalArgumentException("존재하지 않는 snsId 입니다. " + String.valueOf(snsId)));
-
-        return new SnsDto(sns);
-
-    }
-
-    /** SNS 전체조회 */
-    @Override
-    public List<SnsDto> getSnsList() {
-        return snsRepository.findAll().stream().map(SnsDto::new).collect(Collectors.toList());
-    }
-
 
 }
