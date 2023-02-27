@@ -1,0 +1,23 @@
+[[SNS-API]]
+== SNS API
+
+[[SNS-등록]]
+=== SNS 등록
+operation::sns-controller-test/sns_등록[snippets='http-request,request-headers,request-fields,http-response,response-headers']
+
+[[SNS-단건조회]]
+=== SNS 단건조회
+operation::sns-controller-test/sns_단건조회[snippets='http-request,request-headers,path-parameters,http-response,response-fields']
+
+[[SNS-전체조회]]
+=== SNS 전체조회
+operation::sns-controller-test/sns_전체조회[snippets='http-request,http-response,response-fields']
+
+[[SNS-수정]]
+=== SNS 수정
+operation::sns-controller-test/sns_수정[snippets='http-request,request-headers,path-parameters,http-response,response-headers']
+
+[[SNS-삭제]]
+=== SNS 삭제
+operation::sns-controller-test/sns_삭제[snippets='http-request,request-headers,path-parameters,http-response']
+

@@ -8,7 +8,7 @@ operation::member-controller-test/회원_가입[snippets='http-request,request-h
 
 [[Member-로그인]]
 === Member 로그인
-operation::member-controller-test/회원_로그인[snippets='http-request,request-headers,request-fields,http-response,response-headers,response-fields']
+operation::member-controller-test/회원_로그인[snippets='http-request,request-headers,request-fields,http-response,response-headers']
 
 
 [[Member-단건조회]]

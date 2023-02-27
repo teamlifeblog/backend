@@ -36,6 +36,11 @@ public class MemberController {
     @PostMapping
     public ResponseEntity<?> join(@Valid @RequestBody JoinDto joinDto) {
 
+        //입력 비밀번호와 확인용 비밀번호가 일치하는지 검사
+        if(!joinDto.getPwd().equals(joinDto.getConfirmPwd())){
+            throw new IllegalArgumentException("비밀번호와 비밀번호확인이 일치하지 않습니다");
+        }
+
         memberService.join(joinDto);
 
         HttpHeaders headers = new HttpHeaders();
