@@ -37,7 +37,7 @@ public class ImageUtil {
 		}
 
 		do {
-			storeFileName = UUID.randomUUID().toString() + ext;
+			storeFileName = UUID.randomUUID() + ext;
 			log.info(storeFileName);
 			file = new File(path, storeFileName);
 		} while (file.exists());
@@ -47,7 +47,7 @@ public class ImageUtil {
 		} catch (IOException e) {
 			throw new RuntimeException("이미지 저장에 실패했습니다.");
 		}
-		log.info("이미지 저장 완료");
+		log.info("이미지 저장 완료, storeFileName : {}", storeFileName);
 
 		return storeFileName;
 	}
@@ -75,6 +75,7 @@ public class ImageUtil {
 
 		if (file.exists()) {
 			file.delete();
+			log.info("이미지 삭제 완료, imageName : {}", imageName);
 		}
 	}
 
