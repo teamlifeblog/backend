@@ -48,13 +48,13 @@ class LocalControllerTest extends ControllerTest {
 						restDocs.document(
 								requestHeaders(
 										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
-										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("토큰")
 								),
 								requestFields(
 										fieldWithPath("localName").attributes(type(STRING)).description("지역이름")
 								),
 								responseHeaders(
-										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate)).description(CONTENT_LOCATION)
+										headerWithName(CONTENT_LOCATION).description(urlTemplate)
 								)
 						)
 				);
@@ -94,7 +94,7 @@ class LocalControllerTest extends ControllerTest {
 						restDocs.document(
 								requestHeaders(
 										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
-										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("토큰")
 								),
 								pathParameters(
 										parameterWithName("localId").attributes(type(NUMBER)).description("지역ID")
@@ -103,7 +103,7 @@ class LocalControllerTest extends ControllerTest {
 										fieldWithPath("localName").type(STRING).description("지역이름")
 								),
 								responseHeaders(
-										headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate)).description(CONTENT_LOCATION)
+										headerWithName(CONTENT_LOCATION).description(urlTemplate)
 								)
 						)
 				);
@@ -121,7 +121,7 @@ class LocalControllerTest extends ControllerTest {
 				.andDo(
 						restDocs.document(
 								requestHeaders(
-										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
+										headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("토큰")
 								),
 								pathParameters(
 										parameterWithName("localId").attributes(type(NUMBER)).description("지역ID")

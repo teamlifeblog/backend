@@ -52,11 +52,13 @@ public class MemberSnsServiceImpl implements MemberSnsService {
 					for (MemberSnsDto memberSnsDto : memberSnsDtoList) {
 						// 회원 SNS update
 						if (memberSnsDto.getMemberSnsId().equals(memberSns.getId())) {
-							// url 검사
-							inspectionUrl(memberSnsDto.getUrl());
-							// update
-							memberSnsDto.updateMemberSns(memberSns);
 							result = true;
+							if (!memberSnsDto.getUrl().equals(memberSns.getUrl())) {
+								// url 검사
+								inspectionUrl(memberSnsDto.getUrl());
+								// update
+								memberSnsDto.updateMemberSns(memberSns);
+							}
 							break;
 						}
 					}

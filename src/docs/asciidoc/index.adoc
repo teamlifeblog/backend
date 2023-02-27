@@ -7,15 +7,7 @@
 :sectlinks:
 :docinfo: shared-head
 
-include::api/Sns-API.adoc[]
-
 include::api/Member-API.adoc[]
-
-include::api/Local-API.adoc[]
-
-include::api/CampaignCategory-API.adoc[]
-
-include::api/CampaignType-API.adoc[]
 
 include::api/Campaign-API.adoc[]
 
@@ -24,3 +16,11 @@ include::api/Application-API.adoc[]
 include::api/Applicant-API.adoc[]
 
 include::api/Review-API.adoc[]
+
+include::api/Sns-API.adoc[]
+
+include::api/Local-API.adoc[]
+
+include::api/CampaignCategory-API.adoc[]
+
+include::api/CampaignType-API.adoc[]

@@ -1,13 +1,11 @@
 package com.bethefirst.lifeweb.controller.member;
 
-import com.bethefirst.lifeweb.config.security.TokenProvider;
 import com.bethefirst.lifeweb.controller.ControllerTest;
 import com.bethefirst.lifeweb.dto.member.request.LoginDto;
 import com.bethefirst.lifeweb.dto.member.request.UpdateMemberDto;
 import com.bethefirst.lifeweb.entity.member.Role;
 import com.bethefirst.lifeweb.initDto.mamber.InitMemberDto;
 import com.bethefirst.lifeweb.service.member.interfaces.MemberService;
-import com.bethefirst.lifeweb.service.member.interfaces.MemberSnsService;
 import com.bethefirst.lifeweb.service.security.CustomUserDetailsService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,21 +14,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import static com.bethefirst.lifeweb.entity.member.Role.ADMIN;
-import static com.bethefirst.lifeweb.entity.member.Role.USER;
-import static com.bethefirst.lifeweb.util.CustomJsonFieldType.LOCAL_DATE;
-import static com.bethefirst.lifeweb.util.CustomJsonFieldType.MULTIPART_FILE;
+import static com.bethefirst.lifeweb.entity.member.Role.*;
+import static com.bethefirst.lifeweb.util.CustomJsonFieldType.*;
 import static com.bethefirst.lifeweb.util.CustomRestDocumentationRequestBuilders.multipart;
-import static com.bethefirst.lifeweb.util.RestdocsUtil.createMultiPartRequest;
-import static com.bethefirst.lifeweb.util.RestdocsUtil.getJwt;
+import static com.bethefirst.lifeweb.util.RestdocsUtil.*;
 import static com.bethefirst.lifeweb.util.SnippetUtil.*;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.MediaType.*;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
@@ -38,20 +30,11 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
-
 @WebMvcTest(value = MemberController.class)
 public class MemberControllerTest extends ControllerTest {
 
-
     private String urlTemplate = "/members";
     InitMemberDto initMemberDto = new InitMemberDto();
-
-    @MockBean
-    TokenProvider tokenProvider;
-
-    @MockBean
-    MemberSnsService memberSnsService;
 
     @MockBean MemberService memberService;
 
@@ -67,9 +50,7 @@ public class MemberControllerTest extends ControllerTest {
 
         mockMvc.perform(post(urlTemplate)
                         .contentType(APPLICATION_JSON)
-                        .accept(APPLICATION_JSON)
-                        .content(json)
-                        .characterEncoding(UTF_8))
+                        .content(json))
                 .andExpect(status().isCreated())
                 .andDo(
                         restDocs.document(
@@ -88,18 +69,13 @@ public class MemberControllerTest extends ControllerTest {
                                         fieldWithPath("address").type(STRING).description("주소"),
                                         fieldWithPath("detailAddress").type(STRING).description("상세주소").optional(),
                                         fieldWithPath("extraAddress").type(STRING).description("참고사항")
-
                                 ),
                                 responseHeaders(
-                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/login")).description(CONTENT_LOCATION)
+                                        headerWithName(CONTENT_LOCATION).description(urlTemplate + "/login")
                                 )
                         )
                 );
-
-
-
     }
-
 
     @Test
     @DisplayName("회원 로그인")
@@ -115,7 +91,6 @@ public class MemberControllerTest extends ControllerTest {
                         .content(json)
                 )
                 .andExpect(status().isOk())
-
                 .andDo(
                         restDocs.document(
                                 requestHeaders(
@@ -125,21 +100,13 @@ public class MemberControllerTest extends ControllerTest {
                                         fieldWithPath("email").attributes(type(STRING)).description("이메일"),
                                         fieldWithPath("pwd").attributes(type(STRING)).description("비밀번호")
                                 ),
-                                responseFields(
-                                        fieldWithPath("token").type(STRING).description("토큰")
-                                ),
-
                                 responseHeaders(
-                                        headerWithName(AUTHORIZATION).attributes(path(jwt)).description("token"),
-                                        headerWithName(CONTENT_TYPE).attributes(path(APPLICATION_JSON_VALUE)).description(CONTENT_TYPE),
-                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{memberId}")).description(CONTENT_LOCATION)
+                                        headerWithName(AUTHORIZATION).description("토큰"),
+                                        headerWithName(CONTENT_LOCATION).description(urlTemplate + "/{회원ID}")
                                 )
-
                         )
                 );
-
     }
-
 
     @Test
     @DisplayName("회원 단건조회")
@@ -147,14 +114,13 @@ public class MemberControllerTest extends ControllerTest {
         //given
         given(memberService.getMember(1L)).willReturn(initMemberDto.getMemberInfoDto());
 
-
         mockMvc.perform(get(urlTemplate + "/{memberId}", 1L)
                         .header(AUTHORIZATION, getJwt(USER,1L)))
                 .andExpect(status().isOk())
                 .andDo(
                         restDocs.document(
                                 requestHeaders(
-                                        headerWithName(AUTHORIZATION).attributes(info(USER,ADMIN)).description("token")
+                                        headerWithName(AUTHORIZATION).attributes(info(USER,ADMIN)).description("토큰")
                                 ),
                                 pathParameters(
                                         parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
@@ -177,19 +143,15 @@ public class MemberControllerTest extends ControllerTest {
                                         fieldWithPath("memberSnsDtoList[].memberSnsId").type(NUMBER).description("회원SNS ID").optional(),
                                         fieldWithPath("memberSnsDtoList[].snsName").type(STRING).description("SNS 이름").optional(),
                                         fieldWithPath("memberSnsDtoList[].url").type(STRING).description("회원SNS 주소").optional()
-
                                 )
                         )
                 );
-
     }
-
 
     @Test
     void 회원_전체조회() throws Exception{
         given(memberService.getMemberList(initMemberDto.getSearchRequirements(),initMemberDto.getPageable()))
                 .willReturn(initMemberDto.getMemberInfoDtoPage());
-
 
         mockMvc.perform(get(urlTemplate)
                         .header(AUTHORIZATION, getJwt(ADMIN, 1L))
@@ -201,8 +163,7 @@ public class MemberControllerTest extends ControllerTest {
                 .andDo(
                         restDocs.document(
                                 requestHeaders(
-                                        headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("token")
-
+                                        headerWithName(AUTHORIZATION).attributes(info(Role.ADMIN)).description("토큰")
                                 ),
                                 queryParameters(
                                         parameterWithName("page").attributes(type(NUMBER)).description("페이지").optional(),
@@ -243,7 +204,6 @@ public class MemberControllerTest extends ControllerTest {
                                         fieldWithPath("empty").type(BOOLEAN).description("empty")
                                 )
                         )
-
                 );
     }
 
@@ -254,17 +214,16 @@ public class MemberControllerTest extends ControllerTest {
         willDoNothing().given(memberService).updateMemberInfo(dto,1L);
 
         mockMvc.perform(
-                        createMultiPartRequest(multipart(PUT, urlTemplate + "/{memberId}",1L),dto)
-                                .contentType(MULTIPART_FORM_DATA)
-                                .header(AUTHORIZATION, getJwt(USER,1L))
-
+                createMultiPartRequest(multipart(PUT, urlTemplate + "/{memberId}",1L),dto)
+                        .contentType(MULTIPART_FORM_DATA)
+                        .header(AUTHORIZATION, getJwt(USER,1L))
                 )
                 .andExpect(status().isCreated())
                 .andDo(
                         restDocs.document(
                                 requestHeaders(
                                         headerWithName(CONTENT_TYPE).attributes(info(MULTIPART_FORM_DATA)).description(CONTENT_TYPE),
-                                        headerWithName(AUTHORIZATION).attributes(info(USER,ADMIN)).description(AUTHORIZATION)
+                                        headerWithName(AUTHORIZATION).attributes(info(USER,ADMIN)).description("토큰")
                                 ),
                                 pathParameters(
                                         parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
@@ -283,16 +242,13 @@ public class MemberControllerTest extends ControllerTest {
                                         partWithName("memberSnsId").attributes(type(arrayType(NUMBER))).description("회원SNS ID").optional(),
                                         partWithName("snsId").attributes(type(arrayType(NUMBER))).description("SNS ID").optional(),
                                         partWithName("url").attributes(type(arrayType(STRING))).description("SNS URL").optional()
-
                                 ),
                                 responseHeaders(
-                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{memberId}")).description(CONTENT_LOCATION)
+                                        headerWithName(CONTENT_LOCATION).description(urlTemplate + "/{회원ID}")
                                 )
-
                         )
                 );
     }
-
 
     @Test
     @DisplayName("비밀번호 변경")
@@ -303,17 +259,16 @@ public class MemberControllerTest extends ControllerTest {
         String json = objectMapper.writeValueAsString(initMemberDto.getUpdatePsswodDto());
 
         mockMvc.perform(put(urlTemplate + "/{memberId}/password",1L)
-                        .header(AUTHORIZATION,getJwt(USER,1L))
+                        .header(AUTHORIZATION, getJwt(USER,1L))
                         .contentType(APPLICATION_JSON)
                         .content(json)
-
                 )
                 .andExpect(status().isCreated())
                 .andDo(
                         restDocs.document(
                                 requestHeaders(
-                                        headerWithName(AUTHORIZATION).attributes(info(USER,ADMIN)).description("token"),
-                                        headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(APPLICATION_JSON)
+										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
+                                        headerWithName(AUTHORIZATION).attributes(info(USER,ADMIN)).description("토큰")
                                 ),
                                 pathParameters(
                                         parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
@@ -323,7 +278,7 @@ public class MemberControllerTest extends ControllerTest {
                                         fieldWithPath("confirmPassword").type(STRING).description("새 비밀번호 확인")
                                 ),
                                 responseHeaders(
-                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{memberId}")).description(CONTENT_LOCATION)
+                                        headerWithName(CONTENT_LOCATION).description(urlTemplate + "/{회원ID}")
                                 )
                         )
                 );
@@ -344,8 +299,8 @@ public class MemberControllerTest extends ControllerTest {
                 .andDo(
                         restDocs.document(
                                 requestHeaders(
-                                        headerWithName(AUTHORIZATION).attributes(info(ADMIN)).description("token"),
-                                        headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(APPLICATION_JSON)
+										headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE),
+                                        headerWithName(AUTHORIZATION).attributes(info(ADMIN)).description("토큰")
                                 ),
                                 pathParameters(
                                         parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
@@ -354,7 +309,7 @@ public class MemberControllerTest extends ControllerTest {
                                         fieldWithPath("point").type(NUMBER).description("포인트")
                                 ),
                                 responseHeaders(
-                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate)).description(CONTENT_LOCATION)
+                                        headerWithName(CONTENT_LOCATION).description(urlTemplate)
                                 )
                         )
                 );
@@ -366,13 +321,13 @@ public class MemberControllerTest extends ControllerTest {
         willDoNothing().given(memberService).withdraw(1L);
 
         mockMvc.perform(delete(urlTemplate + "/{memberId}",1L)
-                        .header(AUTHORIZATION,getJwt(USER,1L))
+                        .header(AUTHORIZATION, getJwt(USER,1L))
                 )
                 .andExpect(status().isNoContent())
                 .andDo(
                         restDocs.document(
                                 requestHeaders(
-                                        headerWithName(AUTHORIZATION).attributes(info(USER,ADMIN)).description("token")
+                                        headerWithName(AUTHORIZATION).attributes(info(USER,ADMIN)).description("토큰")
                                 ),
                                 pathParameters(
                                         parameterWithName("memberId").attributes(type(NUMBER)).description("회원ID")
@@ -402,11 +357,10 @@ public class MemberControllerTest extends ControllerTest {
                                         fieldWithPath("code").type(STRING).description("인증번호")
                                 ),
                                 responseHeaders(
-                                        headerWithName(CONTENT_LOCATION).attributes(path(urlTemplate + "/{memberId}/password")).description(CONTENT_LOCATION)
+                                        headerWithName(CONTENT_LOCATION).description(urlTemplate + "/{회원ID}/password")
                                 )
                         )
                 );
-
     }
 
     @Test
@@ -427,7 +381,6 @@ public class MemberControllerTest extends ControllerTest {
                 ));
     }
 
-
     @Test
     @DisplayName("회원 이메일 중복체크")
     void 회원_이메일_중복체크() throws Exception{
@@ -445,8 +398,5 @@ public class MemberControllerTest extends ControllerTest {
                         )
                 ));
     }
-
-
-
 
 }

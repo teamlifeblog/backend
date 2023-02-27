@@ -28,10 +28,6 @@ public class SnippetUtil {
 		return new Attribute("type", value.toString());
 	}
 
-	public static Attribute path(String path) {
-		return new Attribute("path", path);
-	}
-
 	public static String enumType(Class<? extends Enum> anEnum) {
 		String simpleName = anEnum.getSimpleName();
 		String kebab = StringUtil.convertPascalToKebab(simpleName);
