@@ -25,6 +25,9 @@ public class JoinDto {
 //            message = "비밀번호는 영문 대,소문자와 숫자, 특수기호가 적어도 1개 이상씩 포함된 8자 ~ 20자의 비밀번호여야 합니다.")
 	private String pwd;//비밀번호
 
+	@NotBlank(message = "비밀번호 확인은 필수 입력 값입니다.")
+	private String confirmPwd;
+
     @NotBlank(message = "닉네임은 필수 입력 값입니다.")
 //    @Pattern(regexp = "/^[\\w\\Wㄱ-ㅎㅏ-ㅣ가-힣]{2,15}$/",
 //            message = "닉네임은 특수문자를 제외한 2자 ~ 15자여야 합니다. ")
