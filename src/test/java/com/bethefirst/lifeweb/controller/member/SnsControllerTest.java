@@ -2,6 +2,7 @@ package com.bethefirst.lifeweb.controller.member;
 
 import com.bethefirst.lifeweb.controller.ControllerTest;
 import com.bethefirst.lifeweb.dto.member.request.CreateSnsDto;
+import com.bethefirst.lifeweb.dto.member.response.SnsDto;
 import com.bethefirst.lifeweb.entity.member.Role;
 import com.bethefirst.lifeweb.initDto.mamber.InitSnsDto;
 import com.bethefirst.lifeweb.service.member.interfaces.SnsService;
@@ -13,14 +14,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import static com.bethefirst.lifeweb.entity.member.Role.ADMIN;
 import static com.bethefirst.lifeweb.util.RestdocsUtil.getJwt;
 import static com.bethefirst.lifeweb.util.SnippetUtil.info;
+import static com.bethefirst.lifeweb.util.SnippetUtil.type;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = SnsController.class)
@@ -62,6 +67,32 @@ public class SnsControllerTest extends ControllerTest {
                         )
                 );
 
+    }
+
+    @Test
+    @DisplayName("SNS 단건조회")
+    void SNS_단건조회() throws Exception{
+        SnsDto dto = initSnsDto.getSnsDto();
+        given(snsService.getSns(1L)).willReturn(dto);
+
+        mockMvc.perform(get(urlTemplate + "/{snsId}",1L)
+                        .header(AUTHORIZATION,getJwt(ADMIN,1L))
+                )
+                .andExpect(status().isOk())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION).attributes(info(ADMIN)).description("토큰")
+                                ),
+                                pathParameters(
+                                        parameterWithName("snsId").attributes(type(NUMBER)).description("SNS ID")
+                                ),
+                                responseFields(
+                                        fieldWithPath("id").attributes(type(NUMBER)).description("SNS ID"),
+                                        fieldWithPath("name").attributes(type(STRING)).description("SNS 이름")
+                                )
+                        )
+                );
     }
 
 

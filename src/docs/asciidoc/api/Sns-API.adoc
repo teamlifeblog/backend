@@ -5,4 +5,7 @@
 === SNS 등록
 operation::sns-controller-test/sns_등록[snippets='http-request,request-headers,request-fields,http-response,response-headers']
 
+[[SNS-단건조회]]
+=== SNS 단건조회
+operation::sns-controller-test/sns_단건조회[snippets='http-request,request-headers,path-parameters,http-response,response-fields']
 
