@@ -2,6 +2,7 @@ package com.bethefirst.lifeweb.controller.member;
 
 import com.bethefirst.lifeweb.controller.ControllerTest;
 import com.bethefirst.lifeweb.dto.member.request.CreateSnsDto;
+import com.bethefirst.lifeweb.dto.member.request.UpdateSnsDto;
 import com.bethefirst.lifeweb.dto.member.response.SnsDto;
 import com.bethefirst.lifeweb.entity.member.Role;
 import com.bethefirst.lifeweb.initDto.mamber.InitSnsDto;
@@ -17,11 +18,11 @@ import static com.bethefirst.lifeweb.entity.member.Role.ADMIN;
 import static com.bethefirst.lifeweb.util.RestdocsUtil.getJwt;
 import static com.bethefirst.lifeweb.util.SnippetUtil.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -41,7 +42,7 @@ public class SnsControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("SNS 등록")
-    void SNS_등록()throws Exception{
+    void SNS_등록()throws Exception {
         CreateSnsDto dto = initSnsDto.getCreateSnsDto();
 
         given(snsService.createSns(dto)).willReturn(1L);
@@ -72,7 +73,7 @@ public class SnsControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("SNS 단건조회")
-    void SNS_단건조회() throws Exception{
+    void SNS_단건조회() throws Exception {
         SnsDto dto = initSnsDto.getSnsDto();
         given(snsService.getSns(1L)).willReturn(dto);
 
@@ -98,7 +99,7 @@ public class SnsControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("SNS 전체조회")
-    void SNS_전체조회() throws Exception{
+    void SNS_전체조회() throws Exception {
         List<SnsDto> dto = initSnsDto.getSnsDtoList();
         given(snsService.getSnsList()).willReturn(dto);
 
@@ -112,6 +113,40 @@ public class SnsControllerTest extends ControllerTest {
                                 )
                         )
                 );
+    }
+
+    @Test
+    @DisplayName("SNS 수정")
+    void SNS_수정() throws Exception {
+        UpdateSnsDto dto = initSnsDto.getUpdateSnsDto();
+
+        willDoNothing().given(snsService).updateSns(dto, 2L);
+
+        String json = objectMapper.writeValueAsString(dto);
+
+        mockMvc.perform(put(urlTemplate + "/{snsId}",2L)
+                        .header(AUTHORIZATION, getJwt(ADMIN, 1L))
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
+                ).andExpect(status().isCreated())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION).attributes(info(ADMIN)).description("토큰"),
+                                        headerWithName(CONTENT_TYPE).attributes(info(APPLICATION_JSON)).description(CONTENT_TYPE)
+                                ),
+                                pathParameters(
+                                        parameterWithName("snsId").attributes(type(NUMBER)).description("SNS ID")
+                                ),
+                                requestFields(
+                                        fieldWithPath("name").type(STRING).description("SNS 이름")
+                                ),responseHeaders(
+                                        headerWithName(CONTENT_LOCATION).description(urlTemplate + "/{SNS ID}")
+                                )
+                        )
+                );
+
+
     }
 
 }

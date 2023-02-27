@@ -12,3 +12,7 @@ operation::sns-controller-test/sns_단건조회[snippets='http-request,request-h
 [[SNS-전체조회]]
 === SNS 전체조회
 operation::sns-controller-test/sns_전체조회[snippets='http-request,http-response,response-fields']
+
+[[SNS-수정]]
+=== SNS 수정
+operation::sns-controller-test/sns_수정[snippets='http-request,request-headers,path-parameters,http-response,response-headers']
