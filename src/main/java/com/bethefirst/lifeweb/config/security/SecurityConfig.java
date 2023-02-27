@@ -76,23 +76,24 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.GET,"/sns", "/campaign-categories", "/campaign-types", "/locals").permitAll()//전체조회
 						.requestMatchers("/sns/**", "/campaign-categories/**", "/campaign-types/**", "/locals/**").hasRole("ADMIN")
 						// members 회원
-						.requestMatchers(HttpMethod.POST,"/members/**").anonymous()//회원가입,로그인
-						.requestMatchers(HttpMethod.GET,"/members/nickname", "/members/email", "/members/confirmation-email").anonymous()//중복체크 / 인증메일발송
-						.requestMatchers(HttpMethod.GET,"/members/**").hasRole("ADMIN")//전체조회
-						.requestMatchers(HttpMethod.PUT,"/members/{memberId}/point").hasRole("ADMIN")//포인트수정
-						.requestMatchers("/members/**").authenticated()
+						.requestMatchers(HttpMethod.POST, "/members/**").anonymous()//회원가입,로그인
+						.requestMatchers(HttpMethod.GET, "/members").hasRole("ADMIN")//전체조회
+						.requestMatchers(HttpMethod.PUT, "/members/{memberId}/password").permitAll()//비밀번호변경
+						.requestMatchers(HttpMethod.PUT, "/members/{memberId}/point").hasRole("ADMIN")//포인트수정
+						.requestMatchers(HttpMethod.GET, "/members/confirmation-email", "/members/nickname", "/members/email").anonymous()//인증메일발송, 중복체크
+						.requestMatchers("/members/**").authenticated()//members 기본 인증완료
 						// campaigns 캠페인
 						.requestMatchers(HttpMethod.GET,"/campaigns/**").permitAll()//조회
-						.requestMatchers("/campaigns/**").hasRole("ADMIN")
+						.requestMatchers("/campaigns/**").hasRole("ADMIN")//campaigns 기본 관리자
 						// applications 신청서
 						.requestMatchers(HttpMethod.GET, "/applications/**").authenticated()//조회
-						.requestMatchers("/applications/**").hasRole("ADMIN")
+						.requestMatchers("/applications/**").hasRole("ADMIN")//applications 기본 관리자
 						// applicants 신청자
 						.requestMatchers("/applicants/status").hasRole("ADMIN")//신청자 상태 수정
-						.requestMatchers("/applicants/**").authenticated()
+						.requestMatchers("/applicants/**").authenticated()//applicants 기본 인증완료
 						// reviews 리뷰
 						.requestMatchers(HttpMethod.GET, "/reviews").permitAll()//전체조회
-						.requestMatchers("/reviews/**").authenticated()
+						.requestMatchers("/reviews/**").authenticated()//reviews 기본 인증완료
 
 						.anyRequest().permitAll()
 //						.anyRequest().denyAll()
