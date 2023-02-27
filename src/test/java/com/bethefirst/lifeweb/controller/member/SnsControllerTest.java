@@ -149,4 +149,25 @@ public class SnsControllerTest extends ControllerTest {
 
     }
 
+    @Test
+    @DisplayName("SNS 삭제")
+    void SNS_삭제() throws Exception {
+        willDoNothing().given(snsService).deleteSns(1L);
+
+        mockMvc.perform(delete(urlTemplate + "/{snsId}",1L)
+                        .header(AUTHORIZATION, getJwt(ADMIN, 1L))
+                )
+                .andExpect(status().isNoContent())
+                .andDo(
+                        restDocs.document(
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION).attributes(info(ADMIN)).description("토큰")
+                                ),
+                                pathParameters(
+                                        parameterWithName("snsId").attributes(type(NUMBER)).description("SNS ID")
+                                )
+                        )
+                );
+    }
+
 }
