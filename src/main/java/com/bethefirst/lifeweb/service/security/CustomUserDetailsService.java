@@ -56,7 +56,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return tokenProvider.createToken(authentication);
+        return "Bearer " + tokenProvider.createToken(authentication);
 
     }
 }
