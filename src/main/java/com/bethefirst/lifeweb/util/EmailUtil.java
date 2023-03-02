@@ -2,6 +2,7 @@ package com.bethefirst.lifeweb.util;
 
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -14,12 +15,16 @@ public class EmailUtil {
 
 
     // Mail Server 설정
-    private static String UTF_8 = "utf-8";
-    private static String HOST_SMTP = "smtp.naver.com";
-    private static String HOST_SMTP_ID = "네이버계정";
-    private static String HOST_SMTP_PWD = "계정비밀번호";
-    private static int PORT = 465; // 네이버 메일 이용시 포트는 465
-    private static String FROMEMAIL = HOST_SMTP_ID + "@naver.com";
+    private final String UTF_8 = "utf-8";
+    private final String HOST_SMTP = "smtp.naver.com";
+
+    @Value("${email.host-id}")
+    private String HOST_SMTP_ID;
+    @Value("${email.host-pwd}")
+    private String HOST_SMTP_PWD;
+
+    private final int PORT = 465; // 네이버 메일 이용시 포트는 465
+    private final String FROMEMAIL = HOST_SMTP_ID + "@naver.com";
 
     // 보내는 사람 EMail
 
