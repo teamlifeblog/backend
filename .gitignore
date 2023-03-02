@@ -42,8 +42,5 @@ img/
 ### docs html ###
 src/main/resources/static/docs
 
-### EmailUtil ###
-src/main/java/com/bethefirst/lifeweb/util/EmailUtil.java
-
 ### yml
 src/main/resources/application.yml
