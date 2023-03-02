@@ -95,6 +95,7 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.GET, "/reviews").permitAll()//전체조회
 						.requestMatchers("/reviews/**").authenticated()//reviews 기본 인증완료
 
+						.requestMatchers("/restdocs/**").denyAll()//restdocs 문서 작성
 						.anyRequest().permitAll()
 //						.anyRequest().denyAll()
 				)

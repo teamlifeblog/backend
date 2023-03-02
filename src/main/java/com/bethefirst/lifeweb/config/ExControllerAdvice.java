@@ -1,79 +1,70 @@
 package com.bethefirst.lifeweb.config;
 
-import com.bethefirst.lifeweb.dto.ErrorResult;
-import com.bethefirst.lifeweb.exception.ConflictException;
-import com.bethefirst.lifeweb.exception.ForbiddenException;
-import com.bethefirst.lifeweb.exception.UnauthorizedException;
-import com.bethefirst.lifeweb.exception.UnprocessableEntityException;
+import com.bethefirst.lifeweb.dto.error.ErrorResult;
+import com.bethefirst.lifeweb.dto.error.ErrorsResult;
+import com.bethefirst.lifeweb.exception.*;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@Slf4j
+import static org.springframework.http.HttpStatus.*;
+
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class ExControllerAdvice {
 
-	@ExceptionHandler
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ErrorResult illegalExHandler(IllegalArgumentException e){
-		return new ErrorResult("IllegalArgumentException" , e.getMessage());
-	}
+	private final HttpServletRequest request;
 
 	@ExceptionHandler
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ErrorResult bindExHandler(BindException e) {
-		StringBuilder message = new StringBuilder();
-		e.getBindingResult().getFieldErrors().forEach(fieldError -> message.append(fieldError.getDefaultMessage()));
-		return new ErrorResult("BindException" , message.toString());
-	}
-
-	@ExceptionHandler
-	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	@ResponseStatus(UNAUTHORIZED)//401
 	public ErrorResult unauthorizedExHandler(UnauthorizedException e) {
-		return new ErrorResult("UnauthorizedException" , e.getMessage());
+		return new ErrorResult(UNAUTHORIZED, e.getMessage(), request.getRequestURI());
 	}
 
-	@ResponseStatus(HttpStatus.FORBIDDEN)
 	@ExceptionHandler
+	@ResponseStatus(FORBIDDEN)//403
 	public ErrorResult forbiddenExHandler(ForbiddenException e) {
-		return new ErrorResult("ForbiddenException" , e.getMessage());
+		return new ErrorResult(FORBIDDEN, e.getMessage(), request.getRequestURI());
 	}
 
 	@ExceptionHandler
-	@ResponseStatus(HttpStatus.NOT_FOUND)
+	@ResponseStatus(NOT_FOUND)//404
 	public ErrorResult entityNotFoundExHandler(EntityNotFoundException e) {
-		return new ErrorResult("EntityNotFoundException" , e.getMessage());
+		return new ErrorResult(NOT_FOUND, e.getMessage(), request.getRequestURI());
 	}
 
 	@ExceptionHandler
-	@ResponseStatus(HttpStatus.CONFLICT)
+	@ResponseStatus(CONFLICT)//409
 	public ErrorResult conflictExHandler(ConflictException e) {
-		return new ErrorResult("ConflictException" , e.getMessage());
+		return new ErrorResult(CONFLICT, e.getMessage(), request.getRequestURI());
 	}
 
 	@ExceptionHandler
-	@ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+	@ResponseStatus(UNPROCESSABLE_ENTITY)//422
 	public ErrorResult unprocessableEntityExHandler(UnprocessableEntityException e) {
-		return new ErrorResult("UnprocessableEntityException" , e.getMessage());
+		return ErrorsResult.ErrorResult(UNPROCESSABLE_ENTITY, e, request.getRequestURI());
 	}
 
+	@ExceptionHandler
+	@ResponseStatus(UNPROCESSABLE_ENTITY)//422
+	public ErrorResult bindExHandler(BindException e) {
+		return ErrorsResult.ErrorResult(UNPROCESSABLE_ENTITY, e, request.getRequestURI());
+	}
 
 	@ExceptionHandler
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	@ResponseStatus(INTERNAL_SERVER_ERROR)//500
 	public ErrorResult runtimeExHandler(RuntimeException e) {
-		return new ErrorResult("RuntimeException" , e.getMessage());
+		return new ErrorResult(INTERNAL_SERVER_ERROR, e.getMessage(), request.getRequestURI());
 	}
 
 	@ExceptionHandler
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	@ResponseStatus(INTERNAL_SERVER_ERROR)//500
 	public ErrorResult exceptionHandler(Exception e) {
-		return new ErrorResult("Exception" , e.getMessage());
+		return new ErrorResult(INTERNAL_SERVER_ERROR, e.getMessage(), request.getRequestURI());
 	}
 
 }
-
-

@@ -5,6 +5,7 @@ import com.bethefirst.lifeweb.entity.application.ApplicantStatus;
 import com.bethefirst.lifeweb.entity.application.QuestionType;
 import com.bethefirst.lifeweb.entity.campaign.CampaignStatus;
 import com.bethefirst.lifeweb.entity.member.Role;
+import com.bethefirst.lifeweb.exception.UnprocessableEntityException;
 import com.bethefirst.lifeweb.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,11 @@ public class RestdocsController {
 	public Map<String, Map<String, String>> readAll() {
 		log.info("/enums");
 		return toMap(Role.class, CampaignStatus.class, ApplicantStatus.class, QuestionType.class);
+	}
+
+	@GetMapping("/errors")
+	public void error() {
+		throw new UnprocessableEntityException("필드명", "필드값", "에러 메세지");
 	}
 
 	private Map<String, Map<String, String>> toMap(Class<? extends EnumType>... enumList) {
