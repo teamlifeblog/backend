@@ -1,0 +1,43 @@
+[[overview]]
+== Overview
+
+[[overview-http-status-codes]]
+=== HTTP Status Codes
+
+|===
+| 상태 코드 | 설명
+
+| `200 OK`
+| 성공
+
+| `201 Created`
+| 성공(리소스 생성, 수정)
+
+| `204 No Content`
+| 성공(리소스 삭제)
+
+| `400 Bad Request`
+| 잘못된 요청
+
+| `401 Unauthorized`
+| 비인증 상태
+
+| `403 Forbidden`
+| 권한 거부
+
+| `404 Not Found`
+| 존재하지 않는 요청 리소스
+
+| `409 Conflict`
+| 수행 불가
+
+| `422 Unprocessable Entity`
+| 필드 오류
+
+| `500 Internal Server Error`
+| 서버 에러
+|===
+
+[[overview-http-error-response]]
+=== HTTP Error Response
+operation::restdocs-controller-test/에러[snippets='http-response,response-fields']
