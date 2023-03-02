@@ -39,10 +39,16 @@ jwt:
   token-validity-in-seconds: 86400
 
 
-basic:
-  image: basicimage.jpg
+aws-s3:
+  access-key: AKIATVLN3GUCEPUGHXH7
+  secret-key: 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
+  bucket: lifeblog-bucket
+
 
 image-folder:
   member: member
   campaign: campaign
 
+email:
+  host-id: halmaetour
+  host-pwd: ehdxodi12
