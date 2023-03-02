@@ -61,6 +61,13 @@ dependencies {
 
 	// email
 	implementation 'org.apache.commons:commons-email:1.5'
+
+	// aws s3
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.415'
+
+	//jaxb awsS3가 사용하는거같음 (자바 객체와 xml을 자동맵핑) 자바 9버젼이상에서 사용 요구
+	implementation 'javax.xml.bind:jaxb-api:2.3.1'
+
 }
 
 tasks.named('test') {
