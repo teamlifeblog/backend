@@ -11,6 +11,7 @@ import com.bethefirst.lifeweb.entity.application.ApplicationQuestion;
 import com.bethefirst.lifeweb.entity.campaign.Campaign;
 import com.bethefirst.lifeweb.entity.campaign.CampaignStatus;
 import com.bethefirst.lifeweb.entity.member.Member;
+import com.bethefirst.lifeweb.exception.ConflictException;
 import com.bethefirst.lifeweb.exception.UnprocessableEntityException;
 import com.bethefirst.lifeweb.repository.application.ApplicantAnswerRepository;
 import com.bethefirst.lifeweb.repository.application.ApplicantRepository;
@@ -60,10 +61,13 @@ public class ApplicantServiceImpl implements ApplicantService {
 
 		if (!CollectionUtils.isEmpty(applicationQuestionList)) {
 			// 신청자답변의 입력값이 부족한 경우
-			if (applicationQuestionList.size() > createApplicationDto.getApplicationQuestionId().size()) {
-				throw new IllegalArgumentException("신청서질문ID는 필수 입력 값입니다.");
-			} else if (applicationQuestionList.size() > createApplicationDto.getAnswer().size()) {
-				throw new IllegalArgumentException("답변은 필수 입력 값입니다.");
+			int size = applicationQuestionList.size();
+			if (size > createApplicationDto.getApplicationQuestionId().size()) {
+				throw new UnprocessableEntityException("applicationQuestionId", createApplicationDto.getApplicationQuestionId(),
+						"신청서질문ID값을 " + size + "개 입력해주세요");
+			} else if (size > createApplicationDto.getAnswer().size()) {
+				throw new UnprocessableEntityException("answer", createApplicationDto.getAnswer(),
+						"답변을 " + size + "개 입력해주세요");
 			}
 
 			for (ApplicationQuestion applicationQuestion : applicationQuestionList) {
@@ -103,9 +107,9 @@ public class ApplicantServiceImpl implements ApplicantService {
 
 		//  캠페인 상태 != 신청 || 신청서 상태 == 선정 일 떄 수정 불가
 		if (!application.getApplication().getCampaign().getStatus().equals(CampaignStatus.APPLICATION)) {
-			throw new UnprocessableEntityException("캠페인 신청기간에만 수정할 수 있습니다");
+			throw new ConflictException("캠페인 신청기간에만 수정할 수 있습니다");
 		} else if (application.getStatus().equals(ApplicantStatus.SELECT)) {
-			throw new UnprocessableEntityException("선정된 신청자는 수정할 수 없습니다.");
+			throw new ConflictException("선정된 신청자는 수정할 수 없습니다.");
 		}
 
 		// 신청자 수정
@@ -117,10 +121,13 @@ public class ApplicantServiceImpl implements ApplicantService {
 
 		if (!CollectionUtils.isEmpty(applicantAnswerList)) {
 			// 신청자답변의 입력값이 부족한 경우
-			if (applicantAnswerList.size() > updateApplicantDto.getApplicationQuestionId().size()) {
-				throw new IllegalArgumentException("신청서질문ID는 필수 입력 값입니다.");
-			} else if (applicantAnswerList.size() > updateApplicantDto.getAnswer().size()) {
-				throw new IllegalArgumentException("답변은 필수 입력 값입니다.");
+			int size = applicantAnswerList.size();
+			if (size > updateApplicantDto.getApplicationQuestionId().size()) {
+				throw new UnprocessableEntityException("applicationQuestionId", updateApplicantDto.getApplicationQuestionId(),
+						"신청서질문ID값을 " + size + "개 입력해주세요");
+			} else if (size > updateApplicantDto.getAnswer().size()) {
+				throw new UnprocessableEntityException("answer", updateApplicantDto.getAnswer(),
+						"답변을 " + size + "개 입력해주세요");
 			}
 
 			for (ApplicantAnswer applicantAnswer : applicantAnswerList) {
@@ -146,7 +153,7 @@ public class ApplicantServiceImpl implements ApplicantService {
 				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 캠페인입니다. " + updateApplicantStatusDto.getCampaignId()));
 
 		if (campaign.getHeadcount() < campaign.getApplication().getApplicantList().size()) {
-			throw new UnprocessableEntityException("신청자 선정은 " + campaign.getHeadcount() + "명까지만 가능합니다.");
+			throw new ConflictException("신청자 선정은 " + campaign.getHeadcount() + "명까지만 가능합니다.");
 		}
 
 	}
