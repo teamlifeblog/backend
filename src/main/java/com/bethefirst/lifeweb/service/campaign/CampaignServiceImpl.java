@@ -7,7 +7,7 @@ import com.bethefirst.lifeweb.dto.campaign.request.UpdateCampaignPickDto;
 import com.bethefirst.lifeweb.dto.campaign.response.CampaignDto;
 import com.bethefirst.lifeweb.entity.campaign.*;
 import com.bethefirst.lifeweb.entity.member.Sns;
-import com.bethefirst.lifeweb.exception.UnprocessableEntityException;
+import com.bethefirst.lifeweb.exception.ConflictException;
 import com.bethefirst.lifeweb.repository.campaign.*;
 import com.bethefirst.lifeweb.repository.member.SnsRepository;
 import com.bethefirst.lifeweb.service.application.interfaces.ApplicationService;
@@ -108,7 +108,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 		// 상태가 대기 일때만 수정 가능
 		if(!campaign.getStatus().equals(CampaignStatus.STAND)) {
-			throw new UnprocessableEntityException("대기상태에서만 캠페인 수정이 가능합니다.");
+			throw new ConflictException("대기상태에서만 캠페인 수정이 가능합니다.");
 		}
 
 		CampaignCategory campaignCategory = campaignCategoryRepository.findById(updateCampaignDto.getCategoryId())
@@ -171,7 +171,7 @@ public class CampaignServiceImpl implements CampaignService {
 		campaignRepository.updatePick(false, updateCampaignPickDto.getOldCampaignId());
 
 		if (campaignRepository.countByPick(true) > 10) {
-			throw new UnprocessableEntityException("PICK은 10개까지만 선택가능합니다.");
+			throw new ConflictException("PICK은 10개까지만 선택가능합니다.");
 		}
 
 	}

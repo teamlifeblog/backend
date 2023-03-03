@@ -39,6 +39,28 @@ class RestdocsControllerTest extends ControllerTest {
 
 	}
 
+	@Test
+	void 에러() throws Exception {
+
+		mockMvc.perform(get(urlTemplate + "/errors"))
+				.andExpect(status().is4xxClientError())
+				.andDo(
+						restDocs.document(
+								responseFields(
+										fieldWithPath("status").description("HttpStatus 코드"),
+										fieldWithPath("error").description("HttpStatus 이름"),
+										fieldWithPath("message").description("에러 메세지"),
+										fieldWithPath("path").description("요청 경로"),
+										fieldWithPath("errors").description("에러 필드").optional(),
+										fieldWithPath("errors.[].field").description("필드명").optional(),
+										fieldWithPath("errors.[].value").description("필드값").optional(),
+										fieldWithPath("errors.[].message").description("에러 메세지").optional()
+								)
+						)
+				)
+		;
+	}
+
 	private EnumResponseFieldsSnippet[] enumResponseFields(Map<String, Map<String, String>> mvcResult) {
 		return mvcResult.entrySet().stream()
 				.map(entry -> new EnumResponseFieldsSnippet("enum-response",

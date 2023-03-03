@@ -2,6 +2,8 @@ package com.bethefirst.lifeweb.controller.campaign;
 
 import com.bethefirst.lifeweb.dto.campaign.request.*;
 import com.bethefirst.lifeweb.dto.campaign.response.CampaignDto;
+
+import com.bethefirst.lifeweb.exception.UnprocessableEntityException;
 import com.bethefirst.lifeweb.service.campaign.interfaces.CampaignService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("campaigns")
 @RequiredArgsConstructor
@@ -28,6 +32,10 @@ public class CampaignController {
 	@PostMapping
 	public ResponseEntity<?> create(@Valid CreateCampaignDto createCampaignDto) {
 
+		// 날짜 검증
+		dateVerification(createCampaignDto.getApplicationStartDate(), createCampaignDto.getApplicationEndDate(),
+				createCampaignDto.getFilingStartDate(), createCampaignDto.getFilingEndDate());
+
 		// 캠페인 생성
 		Long campaignId = campaignService.createCampaign(createCampaignDto);
 
@@ -36,6 +44,21 @@ public class CampaignController {
 		headers.set(HttpHeaders.CONTENT_LOCATION, "/campaigns/" + campaignId);
 
 		return new ResponseEntity<>(headers, HttpStatus.CREATED);
+	}
+
+	// 날짜 검증
+	private void dateVerification(LocalDate applicationStartDate, LocalDate applicationEndDate,
+								  LocalDate filingStartDate, LocalDate filingEndDate) {
+		if (applicationStartDate.isAfter(applicationEndDate)) {
+			throw new UnprocessableEntityException("applicationEndDate", applicationEndDate,
+					"신청종료일은 신청시작일 이후 날짜여야 합니다.");
+		} else if (applicationEndDate.isAfter(filingStartDate)) {
+			throw new UnprocessableEntityException("filingStartDate", filingStartDate,
+					"등록시작일은 신청종료일 이후 날짜여야 합니다.");
+		} else if (filingStartDate.isAfter(filingEndDate)) {
+			throw new UnprocessableEntityException("filingEndDate", filingEndDate,
+					"등록종료일은 등록시작일 이후 날짜여야 합니다.");
+		}
 	}
 
 	/** 캠페인 조회 */
@@ -60,6 +83,10 @@ public class CampaignController {
 	public ResponseEntity<?> update(@PathVariable Long campaignId,
 									@Valid UpdateCampaignDto updateCampaignDto) {
 
+		// 날짜 검증
+		dateVerification(updateCampaignDto.getApplicationStartDate(), updateCampaignDto.getApplicationEndDate(),
+				updateCampaignDto.getFilingStartDate(), updateCampaignDto.getFilingEndDate());
+
 		// 캠페인 수정
 		campaignService.updateCampaign(campaignId, updateCampaignDto);
 
@@ -69,7 +96,7 @@ public class CampaignController {
 
 		return new ResponseEntity<>(headers, HttpStatus.CREATED);
 	}
-	
+
 	/** 캠페인 상태 변경 */
 	@PutMapping("/{campaignId}/status")
 	public ResponseEntity<?> updateStatus(@PathVariable Long campaignId,
