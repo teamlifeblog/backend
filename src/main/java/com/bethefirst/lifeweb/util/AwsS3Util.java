@@ -12,18 +12,20 @@ import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.bethefirst.lifeweb.dto.UploadFile;
 import jakarta.annotation.PostConstruct;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.InputStream;
-import java.util.UUID;
+import java.io.IOException;
+import java.util.List;
 
 @Component
 @NoArgsConstructor
+@Slf4j
 public class AwsS3Util {
 
     //Amazon-s3-sdk
@@ -36,21 +38,9 @@ public class AwsS3Util {
     @Value("${aws-s3.bucket}")
     private String bucket;
 
-//    //singleton pattern
-//    static private Aws3Util instance = null;
-//
-//    public static Aws3Util getInstance() {
-//        if (instance == null) {
-//            return new Aws3Util();
-//        } else {
-//            return instance;
-//        }
-//    }
-
     //aws S3 client 생성
     @PostConstruct
     private void createS3Client() {
-
         AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
         this.s3Client = AmazonS3ClientBuilder
                 .standard()
@@ -59,17 +49,25 @@ public class AwsS3Util {
                 .build();
     }
 
-    public void upload(File file, String key) {
-        uploadToS3(new PutObjectRequest(this.bucket, key, file));
-    }
+	public void upload(UploadFile uploadFile) {
+		MultipartFile multipartFile = uploadFile.getMultipartFile();
 
-    public void upload(InputStream is, String fileName, String contentType, long contentLength) {
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentType(contentType);
-        objectMetadata.setContentLength(contentLength);
+		ObjectMetadata objectMetadata = new ObjectMetadata();
+		objectMetadata.setContentType(multipartFile.getContentType());
+		objectMetadata.setContentLength(multipartFile.getSize());
 
-        uploadToS3(new PutObjectRequest(this.bucket, fileName, is, objectMetadata));
-    }
+		try {
+			uploadToS3(new PutObjectRequest(this.bucket, uploadFile.getKey(), multipartFile.getInputStream(), objectMetadata));
+		} catch (IOException e) {
+			log.error("getInputStream() 오류");
+			log.error("AwsS3Util.upload(), fileName : {}, IOException : {}", multipartFile.getOriginalFilename(), e);
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void upload(List<UploadFile> uploadFileList) {
+		uploadFileList.forEach(this::upload);
+	}
 
     //PutObjectRequest는 Aws S3 버킷에 업로드할 객체 메타 데이터와 파일 데이터로 이루어져있다.
     private void uploadToS3(PutObjectRequest putObjectRequest) {
@@ -91,10 +89,8 @@ public class AwsS3Util {
         try {
             //Copy 객체 생성
             CopyObjectRequest copyObjRequest = new CopyObjectRequest(
-                    this.bucket,
-                    orgKey,
-                    this.bucket,
-                    copyKey
+                    this.bucket, orgKey,
+                    this.bucket, copyKey
             );
             //Copy
             this.s3Client.copyObject(copyObjRequest);
@@ -123,10 +119,8 @@ public class AwsS3Util {
         }
     }
 
-    public String getFileNameWithPath(MultipartFile multipartFile, String imageFolder){
-        String originalFilename = multipartFile.getOriginalFilename();
-        String ext = originalFilename.substring(originalFilename.lastIndexOf("."));
-        return imageFolder + "/" + UUID.randomUUID() + ext;
-        
-    }
+	public void delete(List<String> keyList) {
+		keyList.forEach(this::delete);
+	}
+
 }
