@@ -1,13 +1,14 @@
 package com.bethefirst.lifeweb.util;
 
+import jakarta.annotation.PostConstruct;
+import lombok.NoArgsConstructor;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
-@Scope("prototype")
+@NoArgsConstructor
 public class EmailUtil {
 
     //참고문서 : https://commons.apache.org/proper/commons-email/apidocs/org/apache/commons/mail/
@@ -24,7 +25,15 @@ public class EmailUtil {
     private String HOST_SMTP_PWD;
 
     private final int PORT = 465; // 네이버 메일 이용시 포트는 465
-    private final String FROMEMAIL = HOST_SMTP_ID + "@naver.com";
+
+    private String FROMEMAIL;
+
+    @PostConstruct
+    private void setFromEmail(){
+        FROMEMAIL = HOST_SMTP_ID + "@naver.com";
+    }
+
+
 
     // 보내는 사람 EMail
 
