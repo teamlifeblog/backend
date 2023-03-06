@@ -1,5 +1,6 @@
 package com.bethefirst.lifeweb.service.campaign;
 
+import com.bethefirst.lifeweb.dto.UploadFile;
 import com.bethefirst.lifeweb.dto.campaign.request.CampaignSearchRequirements;
 import com.bethefirst.lifeweb.dto.campaign.request.CreateCampaignDto;
 import com.bethefirst.lifeweb.dto.campaign.request.UpdateCampaignDto;
@@ -12,7 +13,7 @@ import com.bethefirst.lifeweb.repository.campaign.*;
 import com.bethefirst.lifeweb.repository.member.SnsRepository;
 import com.bethefirst.lifeweb.service.application.interfaces.ApplicationService;
 import com.bethefirst.lifeweb.service.campaign.interfaces.CampaignService;
-import com.bethefirst.lifeweb.util.ImageUtil;
+import com.bethefirst.lifeweb.util.AwsS3Util;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -38,7 +40,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private final LocalRepository localRepository;
 	private final CampaignImageRepository campaignImageRepository;
 	private final SnsRepository snsRepository;
-	private final ImageUtil imageUtil;
+	private final AwsS3Util awsS3Util;
 
 	@Value("${image-folder.campaign}")
 	private String imageFolder;
@@ -55,7 +57,9 @@ public class CampaignServiceImpl implements CampaignService {
 		Sns sns = snsRepository.findById(createCampaignDto.getSnsId())
 				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 SNS입니다. " + createCampaignDto.getSnsId()));
 
-		createCampaignDto.setFileName(imageUtil.store(createCampaignDto.getUploadFile(), imageFolder));//이미지 파일 저장
+		// 대표이미지 파일 이름 설정
+		UploadFile uploadFile = new UploadFile(createCampaignDto.getUploadFile(), imageFolder);
+		createCampaignDto.setFileName(uploadFile.getKey());
 
 		Campaign campaign = createCampaignDto.createCampaign(campaignCategory, campaignType, sns);
 
@@ -69,16 +73,19 @@ public class CampaignServiceImpl implements CampaignService {
 			campaignLocalRepository.save(createCampaignDto.getCampaignLocalDto().createCampaignLocal(campaign, local));
 		}
 
+		// 캠페인이미지 파일 리스트 이름 설정
+		List<UploadFile> uploadFileList = UploadFile.list(createCampaignDto.getUploadFileList(), imageFolder);
 		// 캠페인이미지 저장
-		//이미지 파일 저장
-		List<String> fileNameList = imageUtil.store(createCampaignDto.getUploadFileList(), imageFolder);
-		//DB에 이미지이름 저장
-		fileNameList.forEach(fileName -> campaignImageRepository.save(new CampaignImage(campaign, fileName)));
+		uploadFileList.forEach(uf -> campaignImageRepository.save(new CampaignImage(campaign, uf.getKey())));
 
 		// 신청서, 신청서질문 저장
 		if (!createCampaignDto.getApplicationQuestionDtoList().isEmpty()) {
 			applicationService.createApplication(campaign, createCampaignDto.getApplicationQuestionDtoList());
 		}
+
+		// 이미지 파일 저장
+		uploadFileList.add(uploadFile);
+		awsS3Util.upload(uploadFileList);
 
 		return campaignId;
 	}
@@ -118,7 +125,16 @@ public class CampaignServiceImpl implements CampaignService {
 		Sns sns = snsRepository.findById(updateCampaignDto.getSnsId())
 				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 SNS입니다. " + updateCampaignDto.getSnsId()));
 
-		updateCampaignDto.setFileName(imageUtil.store(updateCampaignDto.getUploadFile(), imageFolder));// 이미지 파일 저장
+		//대표이미지 파일 이름 설정
+		UploadFile uploadFile = null;
+		String oldFileName = null;
+		if (updateCampaignDto.getUploadFile() != null) {
+			//저장할 이미지
+			uploadFile = new UploadFile(updateCampaignDto.getUploadFile(), imageFolder);
+			updateCampaignDto.setFileName(uploadFile.getKey());
+			//삭제할 이미지
+			oldFileName = updateCampaignDto.getFileName();
+		}
 
 		updateCampaignDto.updateCampaign(campaign, campaignCategory, campaignType, sns);
 
@@ -137,21 +153,42 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 
 		// 캠페인이미지 수정
+
+		//캠페인이미지 저장
+		//이미지 파일 리스트 이름 설정
+		List<UploadFile> uploadFileList = UploadFile.list(updateCampaignDto.getUploadFileList(), imageFolder);
 		//캠페인이미지 insert
-		imageUtil.store(updateCampaignDto.getUploadFileList(), imageFolder)
-				.forEach(fileName -> campaignImageRepository.save(new CampaignImage(campaign, fileName)));
-		//캠페인이미지 delete
+		uploadFileList.forEach(uf -> campaignImageRepository.save(new CampaignImage(campaign, uf.getKey())));
+
+		//캠페인이미지 삭제
+		List<String> deleteFileList = new ArrayList<>();
 		if (!CollectionUtils.isEmpty(campaign.getCampaignImageList())) {
 			campaign.getCampaignImageList().stream().filter(campaignImage -> {
 				for (Long campaignImageId : updateCampaignDto.getCampaignImageId()) {
 					if (campaignImage.getId().equals(campaignImageId)) return false;
 				}
 				return true;
-			}).forEach(campaignImageId -> campaignImageRepository.deleteById(campaignId));
+			}).forEach(campaignImage -> {
+				//삭제할 이미지 리스트
+				deleteFileList.add(campaignImage.getFileName());
+				//캠페인이미지 delete
+				campaignImageRepository.delete(campaignImage);
+			});
 		}
 
 		// 신청서질문 수정
 		applicationService.updateApplication(campaign.getApplication(), updateCampaignDto.getApplicationQuestionDtoList());
+
+
+		//이미지 파일 저장, 삭제
+		if (uploadFile != null) {
+			uploadFileList.add(uploadFile);
+			deleteFileList.add(oldFileName);
+		}
+		// 이미지 파일 저장
+		awsS3Util.upload(uploadFileList);
+		// 이미지 파일 삭제
+		awsS3Util.delete(deleteFileList);
 
 	}
 

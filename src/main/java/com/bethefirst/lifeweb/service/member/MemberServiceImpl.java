@@ -1,5 +1,6 @@
 package com.bethefirst.lifeweb.service.member;
 
+import com.bethefirst.lifeweb.dto.UploadFile;
 import com.bethefirst.lifeweb.dto.member.request.JoinDto;
 import com.bethefirst.lifeweb.dto.member.request.MemberSearchRequirements;
 import com.bethefirst.lifeweb.dto.member.request.UpdateMemberDto;
@@ -10,8 +11,8 @@ import com.bethefirst.lifeweb.entity.member.Member;
 import com.bethefirst.lifeweb.repository.member.MemberRepository;
 import com.bethefirst.lifeweb.service.member.interfaces.MemberService;
 import com.bethefirst.lifeweb.service.member.interfaces.MemberSnsService;
+import com.bethefirst.lifeweb.util.AwsS3Util;
 import com.bethefirst.lifeweb.util.EmailUtil;
-import com.bethefirst.lifeweb.util.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +33,7 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberSnsService memberSnsService;
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
-	private final ImageUtil imageUtil;
+	private final AwsS3Util awsS3Util;
 	private final EmailUtil emailUtil;
 
 
@@ -81,12 +82,15 @@ public class MemberServiceImpl implements MemberService {
 			existsNickname(updateMemberDto.getNickname());
 		}
 
-		//이미지 파일 저장
+		//이미지 파일 이름 설정
+		UploadFile uploadFile = null;
+		String oldFileName = null;
 		if (updateMemberDto.getUploadFile() != null) {
-			//파일 저장
-			updateMemberDto.setFileName(imageUtil.store(updateMemberDto.getUploadFile(), imageFolder));
-			//파일 삭제
-			imageUtil.delete(member.getFileName(), imageFolder);
+			//저장할 이미지
+			uploadFile = new UploadFile(updateMemberDto.getUploadFile(), imageFolder);
+			updateMemberDto.setFileName(uploadFile.getKey());
+			//삭제할 이미지
+			oldFileName = member.getFileName();
 		}
 
 		//DB에 수정 된 회원정보 저장
@@ -95,6 +99,16 @@ public class MemberServiceImpl implements MemberService {
 		// 회원 SNS 수정
 		if (!updateMemberDto.getMemberSnsDtoList().isEmpty()) {
 			memberSnsService.updateMemberSns(member, updateMemberDto.getMemberSnsDtoList());
+		}
+
+		//이미지 파일 저장, 삭제
+		if (uploadFile != null) {
+			//이미지 파일 저장
+			awsS3Util.upload(uploadFile);
+			//이미지 파일 삭제
+			if (oldFileName != null) {
+				awsS3Util.delete(oldFileName);
+			}
 		}
 
 	}
