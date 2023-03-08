@@ -8,8 +8,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ApplicationRepository extends JpaRepository<Application, Long> {
+public interface ApplicationRepository extends JpaRepository<Application, Long>, ApplicationRepositoryQueryDsl {
 
+	/** 신청서 조회 */
 	@Override
 	@EntityGraph(attributePaths = { "applicationQuestionList" })
 	Optional<Application> findById(Long applicationId);

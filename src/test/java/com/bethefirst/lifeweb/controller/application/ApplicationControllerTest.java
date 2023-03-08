@@ -5,6 +5,7 @@ import com.bethefirst.lifeweb.dto.application.request.CreateApplicationQuestionD
 import com.bethefirst.lifeweb.entity.application.QuestionType;
 import com.bethefirst.lifeweb.entity.member.Role;
 import com.bethefirst.lifeweb.initDto.application.InitApplicationDto;
+import com.bethefirst.lifeweb.service.application.interfaces.ApplicationQuestionService;
 import com.bethefirst.lifeweb.service.application.interfaces.ApplicationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -27,6 +28,8 @@ class ApplicationControllerTest extends ControllerTest {
 
 	@MockBean
 	ApplicationService applicationService;
+	@MockBean
+	ApplicationQuestionService applicationQuestionService;
 
 	String urlTemplate = "/applications";
 	InitApplicationDto applicationDto = new InitApplicationDto();
@@ -63,7 +66,7 @@ class ApplicationControllerTest extends ControllerTest {
 	void 신청서_질문_추가() throws Exception {
 
 		CreateApplicationQuestionDto dto = applicationDto.getCreateApplicationQuestionDto();
-		willDoNothing().given(applicationService).createApplicationQuestion(1L, dto);
+		willDoNothing().given(applicationQuestionService).addApplicationQuestion(1L, dto);
 
 		mockMvc.perform(post(urlTemplate + "/{applicationId}/question", 1L)
 						.content(objectMapper.writeValueAsString(toMap(dto)))
