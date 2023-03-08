@@ -90,7 +90,7 @@ class ApplicantControllerTest extends ControllerTest {
 										fieldWithPath("created").type(LOCAL_DATE_TIME).description("신청일"),
 										fieldWithPath("status").type(enumType(ApplicantStatus.class)).description("상태"),
 										fieldWithPath("applicantAnswerDtoList[].id").type(NUMBER).description("신청자답변ID").optional(),
-										fieldWithPath("applicantAnswerDtoList[].applicationQuestionId").type(NUMBER).description("질문ID").optional(),
+										fieldWithPath("applicantAnswerDtoList[].applicationQuestionId").type(NUMBER).description("신청서질문ID").optional(),
 										fieldWithPath("applicantAnswerDtoList[].answer").type(STRING).description("답변").optional()
 								)
 						)
@@ -168,10 +168,8 @@ class ApplicantControllerTest extends ControllerTest {
 										parameterWithName("applicantId").attributes(type(NUMBER)).description("신청자ID")
 								),
 								requestFields(
-										fieldWithPath("applicantId").type(NUMBER).description("신청자ID"),
 										fieldWithPath("memo").type(STRING).description("메모"),
-										fieldWithPath("applicantAnswerId").type(arrayType(NUMBER)).description("신청서질문ID").optional(),
-										fieldWithPath("applicationQuestionId").type(arrayType(NUMBER)).description("신청서질문ID").optional(),
+										fieldWithPath("applicantAnswerId").type(arrayType(NUMBER)).description("신청자답변ID").optional(),
 										fieldWithPath("answer").type(arrayType(STRING)).description("답변").optional()
 								),
 								responseHeaders(

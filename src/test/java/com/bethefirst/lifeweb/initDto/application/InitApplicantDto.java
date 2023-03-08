@@ -56,7 +56,7 @@ public class InitApplicantDto {
 	}
 
 	public UpdateApplicantDto getUpdateApplicantDto() {
-		return new UpdateApplicantDto(1L, "수정된 메모", Arrays.asList(1L, 2L), Arrays.asList(1L, 2L), Arrays.asList("수정된 대답1", "수정된 대답2"));
+		return new UpdateApplicantDto("수정된 메모", Arrays.asList(1L, 2L), Arrays.asList("수정된 대답1", "수정된 대답2"));
 	}
 
 	public UpdateApplicantStatusDto getUpdateApplicantStatusDto() {
@@ -64,8 +64,8 @@ public class InitApplicantDto {
 	}
 
 	private List<ApplicantAnswerDto> applicantAnswerDtoList = Arrays.asList(
-			new ApplicantAnswerDto(1L, 1L, "대답1"),
-			new ApplicantAnswerDto(2L, 2L, "대답2")
+			new ApplicantAnswerDto(1L, "대답1"),
+			new ApplicantAnswerDto(2L, "대답2")
 	);
 
 	private Pageable pageable = PageRequest.of(1, 10, Sort.by(Sort.Direction.DESC, "created"));

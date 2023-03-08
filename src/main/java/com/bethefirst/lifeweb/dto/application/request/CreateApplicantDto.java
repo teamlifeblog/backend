@@ -28,7 +28,7 @@ public class CreateApplicantDto {
 	public List<ApplicantAnswerDto> getApplicantAnswerDtoList() {
 		List<ApplicantAnswerDto> list = new ArrayList<>();
 		for (int i = 0; i < answer.size(); i++) {
-			list.add(new ApplicantAnswerDto(applicationQuestionId.get(i), answer.get(i)));
+			list.add(new ApplicantAnswerDto(answer.get(i), applicationQuestionId.get(i)));
 		}
 		return list;
 	}
