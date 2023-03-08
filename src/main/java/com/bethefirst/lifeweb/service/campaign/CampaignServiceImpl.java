@@ -74,7 +74,7 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 
 		// 캠페인이미지 파일 리스트 이름 설정
-		List<UploadFile> uploadFileList = UploadFile.list(createCampaignDto.getUploadFileList(), imageFolder);
+		List<UploadFile> uploadFileList = UploadFile.getList(createCampaignDto.getUploadFileList(), imageFolder);
 		// 캠페인이미지 저장
 		uploadFileList.forEach(uf -> campaignImageRepository.save(new CampaignImage(campaign, uf.getKey())));
 
@@ -133,7 +133,7 @@ public class CampaignServiceImpl implements CampaignService {
 			uploadFile = new UploadFile(updateCampaignDto.getUploadFile(), imageFolder);
 			updateCampaignDto.setFileName(uploadFile.getKey());
 			//삭제할 이미지
-			oldFileName = updateCampaignDto.getFileName();
+			oldFileName = campaign.getFileName();
 		}
 
 		updateCampaignDto.updateCampaign(campaign, campaignCategory, campaignType, sns);
@@ -156,7 +156,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 		//캠페인이미지 저장
 		//이미지 파일 리스트 이름 설정
-		List<UploadFile> uploadFileList = UploadFile.list(updateCampaignDto.getUploadFileList(), imageFolder);
+		List<UploadFile> uploadFileList = UploadFile.getList(updateCampaignDto.getUploadFileList(), imageFolder);
 		//캠페인이미지 insert
 		uploadFileList.forEach(uf -> campaignImageRepository.save(new CampaignImage(campaign, uf.getKey())));
 
