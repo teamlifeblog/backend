@@ -49,7 +49,7 @@ public class Member {//회원
 	private List<Review> reviewList = new ArrayList<>(); //회원 리뷰
 
 	@OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
-	private List<Applicant> applicationList = new ArrayList<>(); //회원 신청서
+	private List<Applicant> applicantList = new ArrayList<>(); //회원 신청서
 
 	public Member(String email, String pwd, String name, String nickname, String gender, LocalDate birth,
 					 String tel, String postcode, String address, String detailAddress, String extraAddress) {

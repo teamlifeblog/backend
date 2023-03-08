@@ -17,7 +17,7 @@ public class UploadFile {
 		this.key = getFileNameWithPath(multipartFile.getOriginalFilename(), imageFolder);
 	}
 
-	public static List<UploadFile> list(List<MultipartFile> multipartFileList, String imageFolder) {
+	public static List<UploadFile> getList(List<MultipartFile> multipartFileList, String imageFolder) {
 		return multipartFileList
 				.stream().map(multipartFile -> new UploadFile(multipartFile, imageFolder))
 				.collect(Collectors.toList());
@@ -25,7 +25,7 @@ public class UploadFile {
 
 	private String getFileNameWithPath(String filename, String imageFolder) {
 		String ext = filename.substring(filename.lastIndexOf("."));
-		return "/" + imageFolder + "/" + UUID.randomUUID() + ext;
+		return imageFolder + "/" + UUID.randomUUID() + ext;
 	}
 
 }

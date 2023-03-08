@@ -26,7 +26,7 @@ public class Applicant {//신청자
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "application_id")
-	private Application application;//캠페인 FK
+	private Application application;//신청서 FK
 
 	private String memo;//메모
 	private LocalDateTime created;//신청일

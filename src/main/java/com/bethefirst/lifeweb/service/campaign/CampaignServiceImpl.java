@@ -33,6 +33,7 @@ import java.util.List;
 public class CampaignServiceImpl implements CampaignService {
 
 	private final ApplicationService applicationService;
+
 	private final CampaignRepository campaignRepository;
 	private final CampaignLocalRepository campaignLocalRepository;
 	private final CampaignCategoryRepository campaignCategoryRepository;
@@ -40,6 +41,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private final LocalRepository localRepository;
 	private final CampaignImageRepository campaignImageRepository;
 	private final SnsRepository snsRepository;
+
 	private final AwsS3Util awsS3Util;
 
 	@Value("${image-folder.campaign}")
@@ -74,14 +76,12 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 
 		// 캠페인이미지 파일 리스트 이름 설정
-		List<UploadFile> uploadFileList = UploadFile.list(createCampaignDto.getUploadFileList(), imageFolder);
+		List<UploadFile> uploadFileList = UploadFile.getList(createCampaignDto.getUploadFileList(), imageFolder);
 		// 캠페인이미지 저장
 		uploadFileList.forEach(uf -> campaignImageRepository.save(new CampaignImage(campaign, uf.getKey())));
 
-		// 신청서, 신청서질문 저장
-		if (!createCampaignDto.getApplicationQuestionDtoList().isEmpty()) {
-			applicationService.createApplication(campaign, createCampaignDto.getApplicationQuestionDtoList());
-		}
+		// 신청서, 질문 생성
+		applicationService.createApplication(campaign, createCampaignDto.getApplicationQuestionDtoList());
 
 		// 이미지 파일 저장
 		uploadFileList.add(uploadFile);
@@ -133,7 +133,7 @@ public class CampaignServiceImpl implements CampaignService {
 			uploadFile = new UploadFile(updateCampaignDto.getUploadFile(), imageFolder);
 			updateCampaignDto.setFileName(uploadFile.getKey());
 			//삭제할 이미지
-			oldFileName = updateCampaignDto.getFileName();
+			oldFileName = campaign.getFileName();
 		}
 
 		updateCampaignDto.updateCampaign(campaign, campaignCategory, campaignType, sns);
@@ -156,7 +156,7 @@ public class CampaignServiceImpl implements CampaignService {
 
 		//캠페인이미지 저장
 		//이미지 파일 리스트 이름 설정
-		List<UploadFile> uploadFileList = UploadFile.list(updateCampaignDto.getUploadFileList(), imageFolder);
+		List<UploadFile> uploadFileList = UploadFile.getList(updateCampaignDto.getUploadFileList(), imageFolder);
 		//캠페인이미지 insert
 		uploadFileList.forEach(uf -> campaignImageRepository.save(new CampaignImage(campaign, uf.getKey())));
 

@@ -1,6 +1,7 @@
 package com.bethefirst.lifeweb.repository.campaign;
 
 import com.bethefirst.lifeweb.entity.campaign.Campaign;
+import com.bethefirst.lifeweb.repository.campaign.querydsl.CampaignRepositoryQueryDsl;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -18,7 +19,11 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long>, Campa
 	@Override
 	@EntityGraph(attributePaths = { "campaignCategory", "campaignType", "sns", "campaignLocal.local", "campaignImageList", "application" })
 	Optional<Campaign> findById(Long campaignId);
-	
+
+	/** 캠페인, 신청자 조회 */
+	@EntityGraph(attributePaths = { "application.applicantList" })
+	Optional<Campaign> findWithApplicantById(Long campaignId);
+
 	/** 캠페인 PICK 수정 */
 	@Modifying
 	@Query("update Campaign c " +

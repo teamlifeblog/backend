@@ -1,4 +1,4 @@
-package com.bethefirst.lifeweb.repository.campaign;
+package com.bethefirst.lifeweb.repository.campaign.querydsl;
 
 import com.bethefirst.lifeweb.dto.campaign.request.CampaignSearchRequirements;
 import com.bethefirst.lifeweb.entity.campaign.Campaign;

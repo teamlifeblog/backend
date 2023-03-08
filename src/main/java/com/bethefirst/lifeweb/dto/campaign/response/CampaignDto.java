@@ -45,6 +45,8 @@ public class CampaignDto {
 	private CampaignLocalDto campaignLocalDto;//캠페인지역
 	private List<String> imageList;//이미지
 
+	private Long applicationId;//신청서ID
+
 	public CampaignDto(Campaign campaign) {
 
 		id = campaign.getId();
@@ -73,6 +75,8 @@ public class CampaignDto {
 		imageList = campaign.getCampaignImageList()
 				.stream().map(CampaignImage::getFileName)
 				.collect(Collectors.toList());
+
+		applicationId = campaign.getApplication().getId();
 
 	}
 

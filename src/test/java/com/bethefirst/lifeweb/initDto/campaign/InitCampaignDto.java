@@ -66,7 +66,7 @@ public class InitCampaignDto {
 					true, false, "캠페인 제목", "대표이미지.jpg", "제공내역",
 					LocalDateTime.now(), "리뷰주의사항", "가이드라인", "키워드1,키워드2,키워드3",
 					LocalDate.now(), LocalDate.now().plusDays(7), LocalDate.now().plusDays(8), LocalDate.now().plusDays(14),
-					15, CampaignStatus.STAND, campaignLocalDto, imageList));
+					15, CampaignStatus.STAND, campaignLocalDto, imageList, 1L));
 		}
 
 		return list;

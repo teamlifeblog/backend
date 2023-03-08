@@ -24,13 +24,14 @@ public interface ApplicantRepository extends JpaRepository<Applicant, Long>, App
 	Optional<Applicant> findByMemberIdAndApplicationCampaignId(Long memberId, Long campaignId);
 
 	/** 신청자 상태 수정 */
-	@Modifying
+	@Modifying(clearAutomatically = true)
 	@Query("update Applicant a " +
 			"set a.status = :status " +
-			"where a.id in :applicantIdList " +
-			"and a.application.campaign.id = :campaignId")
+			"where a.id in :applicantIdList ")
 	void updateStatus(@Param("status") ApplicantStatus status,
-					  @Param("applicantIdList") List<Long> applicantIdList,
-					  @Param("campaignId") Long campaignId);
+					  @Param("applicantIdList") List<Long> applicantIdList);
 
+	/** 선정된 신청자 수 */
+	long countByApplicationCampaignIdAndStatus(Long campaignId, ApplicantStatus status);
+	
 }

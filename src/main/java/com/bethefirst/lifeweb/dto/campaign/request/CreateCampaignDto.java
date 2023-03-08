@@ -86,12 +86,7 @@ public class CreateCampaignDto {
 	}
 
 	public List<ApplicationQuestionDto> getApplicationQuestionDtoList() {
-		List<ApplicationQuestionDto> list = new ArrayList<>();
-		for (int i = 0; i < question.size(); i++) {
-			list.add(new ApplicationQuestionDto(question.get(i), type.get(i),
-					type.get(i) == QuestionType.RADIO || type.get(i) == QuestionType.CHECKBOX ? items.get(i) : null));
-		}
-		return list;
+		return new ApplicationQuestionDto().getApplicationQuestionDtoList(question, type, items);
 	}
 
 	/** 캠페인 생성 */

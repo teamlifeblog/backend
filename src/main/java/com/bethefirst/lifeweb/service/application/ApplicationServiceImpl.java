@@ -1,6 +1,5 @@
 package com.bethefirst.lifeweb.service.application;
 
-import com.bethefirst.lifeweb.dto.application.request.CreateApplicationQuestionDto;
 import com.bethefirst.lifeweb.dto.application.response.ApplicationDto;
 import com.bethefirst.lifeweb.dto.application.response.ApplicationQuestionDto;
 import com.bethefirst.lifeweb.entity.application.Application;
@@ -27,8 +26,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	private final ApplicationRepository applicationRepository;
 	private final ApplicationQuestionRepository applicationQuestionRepository;
 
-
-	/** 신청서 저장 */
+	/** 신청서 생성 */
 	@Override
 	public void createApplication(Campaign campaign, List<ApplicationQuestionDto> applicationQuestionDtoList) {
 
@@ -36,8 +34,10 @@ public class ApplicationServiceImpl implements ApplicationService {
 		Application application = applicationRepository.save(new Application(campaign));
 
 		// 신청서질문 저장
-		applicationQuestionDtoList
-				.forEach(applicationQuestionDto -> applicationQuestionRepository.save(applicationQuestionDto.createApplicationQuestion(application)));
+		if (!applicationQuestionDtoList.isEmpty()) {
+			applicationQuestionDtoList
+					.forEach(applicationQuestionDto -> applicationQuestionRepository.save(applicationQuestionDto.createApplicationQuestion(application)));
+		}
 
 	}
 
@@ -78,19 +78,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 				}
 			}
 		}
-
-	}
-
-	/** 신청서 질문 추가 */
-	@Override
-	public void createApplicationQuestion(Long applicationId, CreateApplicationQuestionDto createApplicationQuestionDto) {
-
-		Application application = applicationRepository.findById(applicationId)
-				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 신청서입니다. " + applicationId));
-
-		// 신청서질문 저장
-		createApplicationQuestionDto.getApplicationQuestionDtoList()
-				.forEach(applicationQuestionDto -> applicationQuestionRepository.save(applicationQuestionDto.createApplicationQuestion(application)));
 
 	}
 

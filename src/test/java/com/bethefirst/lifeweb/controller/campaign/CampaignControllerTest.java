@@ -134,7 +134,8 @@ class CampaignControllerTest extends ControllerTest {
 										fieldWithPath("campaignLocalDto.latitude").type(STRING).description("위도").optional(),
 										fieldWithPath("campaignLocalDto.longitude").type(STRING).description("경도").optional(),
 										fieldWithPath("campaignLocalDto.visitNotice").type(STRING).description("방문주의사항").optional(),
-										fieldWithPath("imageList").type(arrayType(STRING)).description("이미지").optional()
+										fieldWithPath("imageList").type(arrayType(STRING)).description("이미지").optional(),
+										fieldWithPath("applicationId").type(NUMBER).description("신청서ID")
 								)
 						)
 				);
@@ -198,6 +199,7 @@ class CampaignControllerTest extends ControllerTest {
 										fieldWithPath("content.[].campaignLocalDto.longitude").type(STRING).description("경도").optional(),
 										fieldWithPath("content.[].campaignLocalDto.visitNotice").type(STRING).description("방문주의사항").optional(),
 										fieldWithPath("content.[].imageList").type(arrayType(STRING)).description("이미지").optional(),
+										fieldWithPath("content.[].applicationId").type(NUMBER).description("신청서ID"),
 										fieldWithPath("pageable").type(Pageable.class.getSimpleName()).description("페이징"),
 										fieldWithPath("last").type(BOOLEAN).description("마지막페이지"),
 										fieldWithPath("totalPages").type(NUMBER).description("전체페이지"),
