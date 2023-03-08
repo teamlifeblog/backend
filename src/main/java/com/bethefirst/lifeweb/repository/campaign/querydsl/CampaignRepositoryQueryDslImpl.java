@@ -1,4 +1,4 @@
-package com.bethefirst.lifeweb.repository.campaign;
+package com.bethefirst.lifeweb.repository.campaign.querydsl;
 
 import com.bethefirst.lifeweb.dto.campaign.request.CampaignSearchRequirements;
 import com.bethefirst.lifeweb.entity.application.ApplicantStatus;
@@ -20,9 +20,10 @@ import java.util.List;
 import static com.bethefirst.lifeweb.entity.campaign.QCampaign.campaign;
 import static com.bethefirst.lifeweb.entity.campaign.QCampaignCategory.campaignCategory;
 import static com.bethefirst.lifeweb.entity.campaign.QCampaignType.campaignType;
-import static com.bethefirst.lifeweb.entity.member.QSns.sns;
 import static com.bethefirst.lifeweb.entity.campaign.QCampaignLocal.campaignLocal;
 import static com.bethefirst.lifeweb.entity.campaign.QLocal.local;
+import static com.bethefirst.lifeweb.entity.application.QApplication.application;
+import static com.bethefirst.lifeweb.entity.member.QSns.sns;
 
 @RequiredArgsConstructor
 public class CampaignRepositoryQueryDslImpl implements CampaignRepositoryQueryDsl {
@@ -42,6 +43,7 @@ public class CampaignRepositoryQueryDslImpl implements CampaignRepositoryQueryDs
 				.join(campaign.sns, sns).fetchJoin()
 				.leftJoin(campaign.campaignLocal, campaignLocal).fetchJoin()
 				.leftJoin(campaignLocal.local, local).fetchJoin()
+				.join(campaign.application, application).fetchJoin()
 				.where(
 						categoryIdEq(searchRequirements.getCategoryId()),
 						typeIdEq(searchRequirements.getTypeId()),
