@@ -26,8 +26,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	private final ApplicationRepository applicationRepository;
 	private final ApplicationQuestionRepository applicationQuestionRepository;
 
-
-	/** 신청서 저장 */
+	/** 신청서 생성 */
 	@Override
 	public void createApplication(Campaign campaign, List<ApplicationQuestionDto> applicationQuestionDtoList) {
 
@@ -35,8 +34,10 @@ public class ApplicationServiceImpl implements ApplicationService {
 		Application application = applicationRepository.save(new Application(campaign));
 
 		// 신청서질문 저장
-		applicationQuestionDtoList
-				.forEach(applicationQuestionDto -> applicationQuestionRepository.save(applicationQuestionDto.createApplicationQuestion(application)));
+		if (!applicationQuestionDtoList.isEmpty()) {
+			applicationQuestionDtoList
+					.forEach(applicationQuestionDto -> applicationQuestionRepository.save(applicationQuestionDto.createApplicationQuestion(application)));
+		}
 
 	}
 

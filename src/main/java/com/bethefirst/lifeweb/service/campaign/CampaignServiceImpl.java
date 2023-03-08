@@ -33,6 +33,7 @@ import java.util.List;
 public class CampaignServiceImpl implements CampaignService {
 
 	private final ApplicationService applicationService;
+
 	private final CampaignRepository campaignRepository;
 	private final CampaignLocalRepository campaignLocalRepository;
 	private final CampaignCategoryRepository campaignCategoryRepository;
@@ -40,6 +41,7 @@ public class CampaignServiceImpl implements CampaignService {
 	private final LocalRepository localRepository;
 	private final CampaignImageRepository campaignImageRepository;
 	private final SnsRepository snsRepository;
+
 	private final AwsS3Util awsS3Util;
 
 	@Value("${image-folder.campaign}")
@@ -78,10 +80,8 @@ public class CampaignServiceImpl implements CampaignService {
 		// 캠페인이미지 저장
 		uploadFileList.forEach(uf -> campaignImageRepository.save(new CampaignImage(campaign, uf.getKey())));
 
-		// 신청서, 신청서질문 저장
-		if (!createCampaignDto.getApplicationQuestionDtoList().isEmpty()) {
-			applicationService.createApplication(campaign, createCampaignDto.getApplicationQuestionDtoList());
-		}
+		// 신청서, 질문 생성
+		applicationService.createApplication(campaign, createCampaignDto.getApplicationQuestionDtoList());
 
 		// 이미지 파일 저장
 		uploadFileList.add(uploadFile);
