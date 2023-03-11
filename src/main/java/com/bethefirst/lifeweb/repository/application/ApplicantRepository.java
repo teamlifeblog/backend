@@ -17,7 +17,7 @@ public interface ApplicantRepository extends JpaRepository<Applicant, Long>, App
 
 	/** 신청자 조회 */
 	@Override
-	@EntityGraph(attributePaths = { "applicantAnswerList" })
+	@EntityGraph(attributePaths = { "member", "applicantAnswerList" })
 	Optional<Applicant> findById(Long applicantId);
 
 	/** 회원ID와 캠페인ID가 같은 신청서를 조회 */

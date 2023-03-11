@@ -16,10 +16,7 @@ import java.util.stream.Collectors;
 public class ApplicantDto {
 
 	private Long id;//신청자ID
-
-//	private MemberDto memberDto;//회원
-//	private ApplicationDto applicationDto;//신청서
-
+	private Long memberId;//회원ID
 	private String memo;//메모
 	private LocalDateTime created;//신청일
 	private ApplicantStatus status;//상태
@@ -29,10 +26,7 @@ public class ApplicantDto {
 	public ApplicantDto(Applicant applicant) {
 
 		id = applicant.getId();
-
-//		memberDto = new MemberDto(applicant.getMember());
-//		applicationDto = new ApplicationDto(applicant.getApplication());
-
+		memberId = applicant.getMember().getId();
 		memo = applicant.getMemo();
 		created = applicant.getCreated();
 		status = applicant.getStatus();

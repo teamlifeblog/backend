@@ -6,6 +6,7 @@ import com.bethefirst.lifeweb.exception.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -15,6 +16,7 @@ import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
 @RequiredArgsConstructor
+@Slf4j
 public class ExControllerAdvice {
 
 	private final HttpServletRequest request;
@@ -28,7 +30,7 @@ public class ExControllerAdvice {
 	@ExceptionHandler
 	@ResponseStatus(FORBIDDEN)//403
 	public ErrorResult forbiddenExHandler(ForbiddenException e) {
-		return new ErrorResult(FORBIDDEN, e.getMessage(), request.getRequestURI());
+			return new ErrorResult(FORBIDDEN, e.getMessage(), request.getRequestURI());
 	}
 
 	@ExceptionHandler
@@ -58,12 +60,16 @@ public class ExControllerAdvice {
 	@ExceptionHandler
 	@ResponseStatus(INTERNAL_SERVER_ERROR)//500
 	public ErrorResult runtimeExHandler(RuntimeException e) {
+		log.error("ExControllerAdvice.runtimeExHandler()");
+		e.printStackTrace();
 		return new ErrorResult(INTERNAL_SERVER_ERROR, e.getMessage(), request.getRequestURI());
 	}
 
 	@ExceptionHandler
 	@ResponseStatus(INTERNAL_SERVER_ERROR)//500
 	public ErrorResult exceptionHandler(Exception e) {
+		log.error("ExControllerAdvice.exceptionHandler()");
+		e.printStackTrace();
 		return new ErrorResult(INTERNAL_SERVER_ERROR, e.getMessage(), request.getRequestURI());
 	}
 

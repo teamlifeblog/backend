@@ -1,9 +1,11 @@
 package com.bethefirst.lifeweb.exception;
 
-public class UnauthorizedException extends RuntimeException{
+import org.springframework.security.core.AuthenticationException;
+
+public class UnauthorizedException extends AuthenticationException {
 
     public UnauthorizedException() {
-        super();
+        super("인증 정보가 없습니다.");
     }
 
     public UnauthorizedException(String message) {
@@ -14,11 +16,4 @@ public class UnauthorizedException extends RuntimeException{
         super(message, cause);
     }
 
-    public UnauthorizedException(Throwable cause) {
-        super(cause);
-    }
-
-    protected UnauthorizedException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }
