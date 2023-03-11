@@ -17,6 +17,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -45,12 +47,14 @@ public class ApplicantController {
 
 	/** 신청자 조회 */
 	@GetMapping("/{applicantId}")
+	@PostAuthorize("@webSecurity.checkAuthority(returnObject.memberId)")
 	public ApplicantDto read(@PathVariable Long applicantId) {
 		return applicantService.getApplicantDto(applicantId);
 	}
 
 	/** 신청자 리스트 조회 */
 	@GetMapping
+	@PreAuthorize("@webSecurity.checkAuthority(#searchRequirements.memberId)")
 	public Page<ApplicantDto> readAll(ApplicantSearchRequirements searchRequirements,
 									  @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 		searchRequirements.setPageable(pageable);
@@ -59,6 +63,7 @@ public class ApplicantController {
 
 	/** 신청자 수정 */
 	@PutMapping("/{applicantId}")
+	@PostAuthorize("@webSecurity.checkAuthority(returnObject.memberId)")
 	public ResponseEntity<?> update(@PathVariable Long applicantId,
 									@Valid @RequestBody UpdateApplicantDto updateApplicantDto) {
 
@@ -89,6 +94,7 @@ public class ApplicantController {
 	/** 신청자 삭제 */
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping("/{applicantId}")
+	@PostAuthorize("@webSecurity.checkAuthority(returnObject.memberId)")
 	public void delete(@PathVariable Long applicantId) {
 		applicantService.deleteApplicant(applicantId);
 	}

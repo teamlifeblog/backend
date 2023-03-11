@@ -65,7 +65,7 @@ public class MemberController {
 
     /** 회원 단건 조회 */
     @GetMapping("/{memberId}")
-    @PreAuthorize("isAuthenticated() and (( #memberId == principal.memberId ) or hasRole('ADMIN'))")
+	@PreAuthorize("@webSecurity.checkAuthority(#memberId)")
     public MemberInfoDto read(@PathVariable Long memberId) {
         return memberService.getMember(memberId);
     }
@@ -79,7 +79,7 @@ public class MemberController {
 
     /** 회원정보 수정 */
     @PutMapping("/{memberId}")
-    @PreAuthorize("isAuthenticated() and (( #memberId == principal.memberId ) or hasRole('ADMIN'))")
+	@PreAuthorize("@webSecurity.checkAuthority(#memberId)")
     public ResponseEntity<?> update(@PathVariable Long memberId,
                              		@Valid UpdateMemberDto updateMemberDto) {
 
@@ -93,7 +93,7 @@ public class MemberController {
 
     /** 비밀번호 변경 */
     @PutMapping("/{memberId}/password")
-    @PreAuthorize("!isAuthenticated() or (isAuthenticated() and (( #memberId == principal.memberId ) or hasRole('ADMIN')))")
+    @PreAuthorize("!isAuthenticated() or @webSecurity.checkAuthority(#memberId)")
     public ResponseEntity<?> updatePassword(@PathVariable Long memberId,
                                             @RequestBody UpdatePasswordDto updatePasswordDto) {
 
@@ -121,7 +121,7 @@ public class MemberController {
     /** 회원 탈퇴 */
 	@ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{memberId}")
-    @PreAuthorize("isAuthenticated() and (( #memberId == principal.memberId ) or hasRole('ADMIN'))")
+	@PreAuthorize("@webSecurity.checkAuthority(#memberId)")
     public void withdraw(@PathVariable Long memberId){
         memberService.withdraw(memberId);
     }

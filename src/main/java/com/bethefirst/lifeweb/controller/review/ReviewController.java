@@ -32,7 +32,7 @@ public class ReviewController {
 
 	/** 리뷰 등록 */
 	@PostMapping
-	@PreAuthorize("isAuthenticated() and (( #createReviewDto.memberId == principal.memberId ) or hasRole('ADMIN'))")
+	@PreAuthorize("@webSecurity.checkAuthority(#createReviewDto.memberId)")
 	public ResponseEntity<?> create(@RequestBody CreateReviewDto createReviewDto) {
 
 		//URL 유효성 검사
@@ -46,7 +46,7 @@ public class ReviewController {
 
 	/** 리뷰 삭제 */
 	@DeleteMapping("/{reviewId}")
-	@PreAuthorize("isAuthenticated() and (( #deleteReviewDto.memberId == principal.memberId ) or hasRole('ADMIN'))")
+	@PreAuthorize("@webSecurity.checkAuthority(#deleteReviewDto.memberId)")
 	public ResponseEntity<?> delete(@PathVariable Long reviewId,
 									@RequestBody DeleteReviewDto deleteReviewDto){
 		reviewService.deleteReview(reviewId);
@@ -58,7 +58,7 @@ public class ReviewController {
 	/** 리뷰 수정 */
 	@ResponseStatus(HttpStatus.OK)
 	@PutMapping("/{reviewId}")
-	@PreAuthorize("isAuthenticated() and (( #updateReviewDto.memberId == principal.memberId ) or hasRole('ADMIN'))")
+	@PreAuthorize("@webSecurity.checkAuthority(#updateReviewDto.memberId)")
 	public ResponseEntity<?> update(@PathVariable Long reviewId,
 									@RequestBody UpdateReviewDto updateReviewDto){
 
